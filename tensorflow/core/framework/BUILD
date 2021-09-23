@@ -154,6 +154,7 @@ exports_files(
         "node_def_util.h",
         "node_properties.h",
         "op.h",
+        "fuzzing.h",
         "op_def_builder.h",
         "full_type_util.h",
         "op_def_util.h",
@@ -204,6 +205,7 @@ filegroup(
         "node_properties.h",
         "numeric_op.h",
         "numeric_types.h",
+        "fuzzing.h",
         "op.h",
         "op_def_builder.h",
         "op_def_util.h",
@@ -275,6 +277,7 @@ filegroup(
         "model.cc",
         "node_def_builder.cc",
         "op_kernel.cc",
+        "fuzzing.cc",
         "op_segment.cc",
         "ops_util.cc",
         "rendezvous.cc",
@@ -1003,6 +1006,24 @@ cc_library(
         ":types_proto_cc",
         "//tensorflow/core/platform:statusor",
         "//tensorflow/core/protobuf:error_codes_proto_impl_cc",
+    ],
+)
+
+# Fuzzing
+cc_library(
+    name = "tffuzzing",
+    srcs = ["fuzzing.cc"],
+    hdrs = ["fuzzing.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow/core:framework",
+        "//third_party/eigen3",
+        "//tensorflow/core:lib",
+        "//tensorflow/core:lib_internal",
+        "//tensorflow/core:protos_all_cc",
+        "//tensorflow/core/framework:bounds_check",
+        "//tensorflow/core/kernels:eigen_helpers",
+        "//tensorflow/core/util/tensor_bundle",
     ],
 )
 

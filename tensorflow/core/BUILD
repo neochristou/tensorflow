@@ -80,6 +80,9 @@ load(
 )
 
 # buildifier: disable=same-origin-load
+load("//tensorflow:tensorflow.bzl", "tf_cc_shared_object")
+
+# buildifier: disable=same-origin-load
 load("//tensorflow:tensorflow.bzl", "cc_header_only_library")
 
 # buildifier: disable=same-origin-load
@@ -1198,6 +1201,7 @@ alias(
 
 # -----------------------------------------------------------------------------
 # Internal targets
+
 filegroup(
     name = "lib_internal_private_headers",
     srcs = [

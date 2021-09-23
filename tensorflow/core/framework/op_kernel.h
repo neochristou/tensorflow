@@ -674,6 +674,8 @@ class OpKernelContext {
 
   int64 step_id() const { return params_->step_id; }
 
+  Params* get_params() { return params_; }
+
   const OpKernel& op_kernel() const { return *params_->op_kernel; }
 
   // Stack trace of where the op was defined (if defined in eager mode).

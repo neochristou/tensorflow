@@ -14,6 +14,7 @@ tensorflow {
     *PyInit_*;
     *SE_*;
     *SP_*;
+    *tffuzzing*;
   local:
     *;
 };

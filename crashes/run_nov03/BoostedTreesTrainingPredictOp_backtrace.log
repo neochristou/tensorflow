@@ -1,0 +1,32 @@
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tensorflow::BoostedTreesTrainingPredictOp::Compute(tensorflow::OpKernelContext*) [clone .part.202]
+/proc/self/cwd/tensorflow/core/kernels/boosted_trees/prediction_ops.cc:198
+tensorflow::BoostedTreesTrainingPredictOp::Compute(tensorflow::OpKernelContext*)
+tensorflow::(anonymous namespace)::ExecutorState<tensorflow::SimplePropagatorState>::Process(tensorflow::SimplePropagatorState::TaggedNode, long long)
+/proc/self/cwd/tensorflow/core/common_runtime/executor.cc:575
+Eigen::ThreadPoolTempl<tensorflow::thread::EigenEnvironment>::WorkerLoop(int)
+std::_Function_handler<void (), tensorflow::thread::EigenEnvironment::CreateThread(std::function<void ()>)::{lambda()#1}>::_M_invoke(std::_Any_data const&)
+tensorflow::(anonymous namespace)::PThread::ThreadFn(void*)
+/proc/self/cwd/./tensorflow/core/platform/mutex.h:151
+start_thread
+/build/glibc-vjB4T1/glibc-2.28/nptl/pthread_create.c:487 (discriminator 6)
+clone
+==========================
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tensorflow::BoostedTreesTrainingPredictOp::Compute(tensorflow::OpKernelContext*) [clone .part.202]
+/proc/self/cwd/tensorflow/core/kernels/boosted_trees/prediction_ops.cc:198
+tensorflow::BoostedTreesTrainingPredictOp::Compute(tensorflow::OpKernelContext*)
+tensorflow::(anonymous namespace)::ExecutorState<tensorflow::SimplePropagatorState>::Process(tensorflow::SimplePropagatorState::TaggedNode, long long)
+/proc/self/cwd/tensorflow/core/common_runtime/executor.cc:575
+Eigen::ThreadPoolTempl<tensorflow::thread::EigenEnvironment>::WorkerLoop(int)
+std::_Function_handler<void (), tensorflow::thread::EigenEnvironment::CreateThread(std::function<void ()>)::{lambda()#1}>::_M_invoke(std::_Any_data const&)
+tensorflow::(anonymous namespace)::PThread::ThreadFn(void*)
+/proc/self/cwd/./tensorflow/core/platform/mutex.h:151
+start_thread
+/build/glibc-vjB4T1/glibc-2.28/nptl/pthread_create.c:487 (discriminator 6)
+clone
+==========================

@@ -3163,6 +3163,7 @@ pywrap_tensorflow_macro(
         "//tensorflow/core/grappler/graph_analyzer:graph_analyzer_tool",
         "//tensorflow/core/grappler/optimizers:meta_optimizer",
         "//tensorflow/core:lib",
+        "//tensorflow/core/framework:tffuzzing",
         "//tensorflow/core:reader_base",
         "//tensorflow/core/kernels:data_service_ops",
         "//tensorflow/core/debug",
