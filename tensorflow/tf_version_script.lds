@@ -12,6 +12,7 @@ tensorflow {
     *stream_executor*;
     *xla*;
     *PyInit_*;
+    *tffuzzing*;
   local:
     *;
 };

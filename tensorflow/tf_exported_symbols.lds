@@ -10,3 +10,4 @@
 *stream_executor*
 *xla*
 *PyInit_*
+*tffuzzing*

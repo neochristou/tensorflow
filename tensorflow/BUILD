@@ -740,6 +740,7 @@ tf_cc_shared_object(
     soversion = VERSION,
     visibility = ["//visibility:public"],
     deps = [
+        # "//tensorflow/core/lib/core:tffuzzing",
         "//tensorflow/c/experimental/filesystem:filesystem_interface",
         "//tensorflow/c/experimental/stream_executor:stream_executor_hdrs",
         "//tensorflow/c:kernels_hdrs",
@@ -814,6 +815,7 @@ tf_cc_shared_object(
         "//tensorflow/c/eager:c_api_experimental",
         "//tensorflow/core:distributed_tensorflow_dependencies",
         "//tensorflow/core:tensorflow",
+        "//tensorflow/core:tffuzzing",
     ],
 )
 

@@ -6095,6 +6095,7 @@ pywrap_tensorflow_macro(
         ":tf_session_helper",
         "//third_party/python_runtime:headers",
         "//tensorflow/c:c_api",
+        # "//tensorflow/core:tffuzzing",
         "//tensorflow/c:kernels",
         "//tensorflow/c:ops",
         "//tensorflow/c:c_api_experimental",

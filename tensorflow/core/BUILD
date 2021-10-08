@@ -81,6 +81,9 @@ load(
 )
 
 # buildifier: disable=same-origin-load
+load("//tensorflow:tensorflow.bzl", "tf_cc_shared_object")
+
+# buildifier: disable=same-origin-load
 load("//tensorflow:tensorflow.bzl", "cc_header_only_library")
 
 # buildifier: disable=same-origin-load
@@ -1168,6 +1171,7 @@ alias(
 
 # -----------------------------------------------------------------------------
 # Internal targets
+
 filegroup(
     name = "lib_internal_private_headers",
     srcs = [
@@ -2150,3 +2154,14 @@ transitive_hdrs(
         "//tensorflow/core/platform:stream_executor",
     ],
 )
+
+# Fuzzing
+# tf_cc_shared_object(
+#     name = "tffuzzing",
+#     hdrs = ["fuzzing.h"],
+#     visibility = ["//visibility:public"],
+#     deps = [
+#         "//tensorflow/core:framework",
+#         "//third_party/eigen3",
+#     ],
+# )

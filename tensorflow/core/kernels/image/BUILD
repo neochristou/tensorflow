@@ -127,6 +127,7 @@ cc_library(
 )
 
 IMAGE_DEPS = [
+    "//tensorflow/core/lib/core:tffuzzing",
     "//third_party/eigen3",
     "//tensorflow/core:framework",
     "//tensorflow/core:gif_internal",
