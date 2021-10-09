@@ -39,7 +39,7 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
         tffuzzing::already_fuzzing = true;
 
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("%1$s", context);
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("%1$s", %2$s);
         OpKernelContext *fuzz_ctx;
 
         while (fuzzer.has_more_mutations(true)) {
@@ -48,10 +48,10 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
         }
 
         tffuzzing::already_fuzzing = false;
-        do_%1$s(context);
+        do_%1$s(%2$s);
 
       } else {
-        do_%1$s(context);
+        do_%1$s(%2$s);
       }
 
   })"""";
@@ -82,17 +82,17 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
   std::string ComputeText = get_source_text(ComputeSR, InjectFuzzerRewriter.getSourceMgr());
 
+  StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
+
   char FilledBody[0x1000];
   char NewFname[0x100];
   memset(FilledBody, 0, 0x1000);
   memset(NewFname, 0, 0x100);
-  sprintf(FilledBody, FuzzBodyTemplate, OpName.str().c_str());
-  sprintf(NewFname, "void do_%s(OpKernelContext *context)", OpName.str().c_str());
+  sprintf(FilledBody, FuzzBodyTemplate, OpName.str().c_str(), CtxParamName.str().c_str());
+  sprintf(NewFname, "void do_%s(OpKernelContext *%s)", OpName.str().c_str(), CtxParamName.str().c_str());
   std::string FilledBodyStr(FilledBody);
 
   InjectFuzzerRewriter.InsertText(ComputeStartLoc, (Twine(NewFname) + ComputeText + "\n\n").str());
-  /* InjectFuzzerRewriter.InsertText(ComputeEndLoc.getLocWithOffset(2), "Test 456\n", false); */
-  /* InjectFuzzerRewriter.ReplaceText(ComputeStartLoc, ComputeSource); */
   InjectFuzzerRewriter.RemoveText(ComputeSR);
   InjectFuzzerRewriter.InsertText(ComputeBodyStartLoc, FilledBodyStr);
 
@@ -100,11 +100,11 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
 void InjectFuzzerMatcher::onEndOfTranslationUnit() {
   // Replace in place
-  // InjectFuzzerRewriter.overwriteChangedFiles();
+  InjectFuzzerRewriter.overwriteChangedFiles();
 
   // Output to stdout
-  InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID())
-      .write(llvm::outs());
+  /* InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID()) */
+  /*     .write(llvm::outs()); */
 
 }
 

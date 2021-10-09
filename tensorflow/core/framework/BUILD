@@ -154,6 +154,7 @@ exports_files(
         "node_def_util.h",
         "node_properties.h",
         "op.h",
+        "fuzzing.h",
         "op_def_builder.h",
         "op_def_util.h",
         "registration_options",
@@ -205,6 +206,7 @@ filegroup(
         "numeric_op.h",
         "numeric_op_base.h",
         "numeric_types.h",
+        "fuzzing.h",
         "op.h",
         "op_def_builder.h",
         "op_def_util.h",
@@ -987,6 +989,24 @@ cc_library(
         "selective_registration.h",
     ],
     deps = tf_selective_registration_deps(),
+)
+
+# Fuzzing
+cc_library(
+    name = "tffuzzing",
+    srcs = ["fuzzing.cc"],
+    hdrs = ["fuzzing.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow/core:framework",
+        "//third_party/eigen3",
+        "//tensorflow/core:lib",
+        "//tensorflow/core:lib_internal",
+        "//tensorflow/core:protos_all_cc",
+        "//tensorflow/core/framework:bounds_check",
+        "//tensorflow/core/kernels:eigen_helpers",
+        "//tensorflow/core/util/tensor_bundle",
+    ],
 )
 
 cc_library(

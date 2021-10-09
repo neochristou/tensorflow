@@ -2154,14 +2154,3 @@ transitive_hdrs(
         "//tensorflow/core/platform:stream_executor",
     ],
 )
-
-# Fuzzing
-# tf_cc_shared_object(
-#     name = "tffuzzing",
-#     hdrs = ["fuzzing.h"],
-#     visibility = ["//visibility:public"],
-#     deps = [
-#         "//tensorflow/core:framework",
-#         "//third_party/eigen3",
-#     ],
-# )

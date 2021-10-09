@@ -1,5 +1,5 @@
 
-#include "tensorflow/core/lib/core/fuzzing.h"
+#include "tensorflow/core/framework/fuzzing.h"
 
 namespace tffuzzing {
 
@@ -345,16 +345,16 @@ namespace tffuzzing {
         }
 
         // Create tensors with the same shapes and types as the original
-        idx = 0;
-        for (auto &tshape : tensor_shapes) {
-            tensor_type = tensor_types.at(idx++);
-            std::vector<double> contents(tshape.num_elements(), 1.0);
-            tensorflow::TensorBuffer *tensor_buf((tensorflow::TensorBuffer *) &contents[0]);
-            tensor = new tensorflow::Tensor(tensor_type, tshape, tensor_buf);
-            tensor_val = new tensorflow::TensorValue(tensor);
-            tensor_mutations.push_back(*tensor_val);
-            /* tensor_contents.push_back(1); */
-        }
+        /* idx = 0; */
+        /* for (auto &tshape : tensor_shapes) { */
+        /*     tensor_type = tensor_types.at(idx++); */
+        /*     std::vector<double> contents(tshape.num_elements(), 1.0); */
+        /*     tensorflow::TensorBuffer *tensor_buf((tensorflow::TensorBuffer *) &contents[0]); */
+        /*     tensor = new tensorflow::Tensor(tensor_type, tshape, tensor_buf); */
+        /*     tensor_val = new tensorflow::TensorValue(tensor); */
+        /*     tensor_mutations.push_back(*tensor_val); */
+        /*     /1* tensor_contents.push_back(1); *1/ */
+        /* } */
 
         /* for (int i = 0; i < TENSOR_NUM_DIMS_FUZZ; i++) { */
         /*     tensor = at::ones(fuzz_dims_vec); */
@@ -456,6 +456,11 @@ namespace tffuzzing {
 
     tensorflow::OpKernelContext *Fuzzer::get_fuzzed_context() {
 
+      if (fuzz_ctx) {
+        delete (*fuzz_ctx->get_params()).inputs;
+        delete fuzz_ctx;
+      }
+
       tensorflow::OpKernelContext::Params *fuzz_ctx_params = original_ctx->get_params();
       std::vector<tensorflow::TensorValue> fuzz_vec;
       tensorflow::TensorValue fuzz_tensval;
@@ -471,14 +476,14 @@ namespace tffuzzing {
       tensorflow::gtl::InlinedVector<tensorflow::TensorValue, 4> *fuzz_inputs = new
         tensorflow::gtl::InlinedVector<tensorflow::TensorValue, 4>(fuzz_vec.begin(), fuzz_vec.end());
       fuzz_ctx_params->inputs = fuzz_inputs;
-      tensorflow::OpKernelContext *fuzz_ctx = new tensorflow::OpKernelContext(fuzz_ctx_params);
+      fuzz_ctx = new tensorflow::OpKernelContext(fuzz_ctx_params);
 
       return fuzz_ctx;
 
     }
 
-    double Fuzzer::get_tensor_contents() {
-        return tensor_contents.at(indices[cur_idx - 1]);
-    }
+    /* double Fuzzer::get_tensor_contents() { */
+    /*     return tensor_contents.at(indices[cur_idx - 1]); */
+    /* } */
 
 }
