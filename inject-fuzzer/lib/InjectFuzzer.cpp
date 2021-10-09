@@ -33,6 +33,18 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
   // ASTContext is used to retrieve the source location
   ASTContext *Ctx = Result.Context;
 
+  const FunctionDecl *ComputeDecl =
+      Result.Nodes.getNodeAs<clang::FunctionDecl>("computecall");
+
+  // We don't handle static compute functions for now
+  if (ComputeDecl->getStorageClass() == SC_Static) {
+    return;
+  }
+
+  Stmt *ComputeBody = ComputeDecl->getBody();
+
+  assert(ComputeDecl && ComputeBody);
+
   const char *FuzzBodyTemplate = R""""({
 
     if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("%1$s")) {
@@ -55,14 +67,6 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
       }
 
   })"""";
-
-
-  const FunctionDecl *ComputeDecl =
-      Result.Nodes.getNodeAs<clang::FunctionDecl>("computecall");
-
-  Stmt *ComputeBody = ComputeDecl->getBody();
-
-  assert(ComputeDecl && ComputeBody);
 
   const CXXRecordDecl* ParentClass;
   const auto Parents = Ctx->getParents(*ComputeDecl);
