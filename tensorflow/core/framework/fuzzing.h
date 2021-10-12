@@ -1,4 +1,7 @@
 
+/* #ifndef TENSORFLOW_CORE_FUZZING_H_ */
+/* #define TENSORFLOW_CORE_FUZZING_H_ */
+
 #pragma once
 
 #include <array>
@@ -10,7 +13,6 @@
 #include <iostream>
 #include <initializer_list>
 #include <fstream>
-#include <set>
 #include <random>
 #include <execinfo.h>
 #include <sys/stat.h>
@@ -50,21 +52,23 @@
 #define LARGE_TENSOR_DIMS_FUZZ 30
 #define SMALL_INT_FUZZ 0xfffe
 #define SMALL_INT_NEG_FUZZ -0xfffe
+#define FILENAME_SZ 100
+#define BUFSZ 0x100
 
 namespace tffuzzing {
 
     extern bool already_fuzzing;
     extern char* results_dir;
 
-    enum TFType {
-        FUZZ_TENSOR = 0,
+    /* enum TFType { */
+    /*     FUZZ_TENSOR = 0, */
 
-        FUZZ_NUM_TYPES,
-    };
+    /*     FUZZ_NUM_TYPES, */
+    /* }; */
 
-    std::unordered_map<std::string, tffuzzing::TFType> const map_str_enum = {
-        {"Tensor", tffuzzing::FUZZ_TENSOR},
-    };
+    /* std::unordered_map<std::string, tffuzzing::TFType> const map_str_enum = { */
+    /*     {"Tensor", tffuzzing::FUZZ_TENSOR}, */
+    /* }; */
 
     bool was_fuzzed(std::string fname);
 
@@ -84,24 +88,30 @@ namespace tffuzzing {
         std::vector<int> indices;
         std::vector<tensorflow::TensorShape> tensor_shapes;
         std::vector<tensorflow::DataType> tensor_types;
-        std::vector<TFType> func_types;
+        /* std::vector<TFType> func_types; */
         tensorflow::OpKernelContext *original_ctx;
+        char *filename;
+        tensorflow::gtl::InlinedVector<tensorflow::TensorValue, 4> *last_fuzz_inputs;
 
         std::vector<int> int_mutations = {ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, SMALL_INT_FUZZ, SMALL_INT_NEG_FUZZ};
         std::vector<tensorflow::int64> long_mutations = {ZERO_FUZZ, LARGE_LONG_FUZZ, LARGE_LONG_NEG_FUZZ,
             LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
-            // MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ,
+            HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ
+            /* MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, */
         };
-            //HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ, SMALL_INT_FUZZ, SMALL_INT_NEG_FUZZ, 1, 2, 3};
         std::vector<float> float_mutations = {ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
         std::vector<double> double_mutations = {ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
         std::vector<std::string> string_mutations = {std::string(""), std::string(LARGE_STRING)};
-        std::vector<tensorflow::TensorValue> tensor_mutations;
-        std::vector<double> tensor_contents;
+        std::vector<tensorflow::TensorValue> int_tensor_mutations;
+        std::vector<tensorflow::TensorValue> long_tensor_mutations;
+        std::vector<tensorflow::TensorValue> float_tensor_mutations;
+        std::vector<tensorflow::TensorValue> double_tensor_mutations;
+        std::vector<int> pool_sizes;
+        /* std::vector<double> tensor_contents; */
 
         void log_backtrace(char *fname);
-        void initialize_tensor_pool();
+        void initialize_tensor_pools();
         void calculate_total_mutations();
         void next_mutations_indices(bool log);
         inline void inc_mutations_indices(bool log);
@@ -114,10 +124,15 @@ namespace tffuzzing {
         ~Fuzzer();
 
         bool has_more_mutations(bool reset);
-        tensorflow::TensorValue get_next_mut();
+        tensorflow::TensorValue get_next_mut_int();
+        tensorflow::TensorValue get_next_mut_long();
+        tensorflow::TensorValue get_next_mut_float();
+        tensorflow::TensorValue get_next_mut_double();
         tensorflow::OpKernelContext *get_fuzzed_context();
         /* double get_tensor_contents(); */
 
     };
 
 }
+
+/* #endif  // TENSORFLOW_CORE_FUZZING_H_ */
