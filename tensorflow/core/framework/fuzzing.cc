@@ -23,10 +23,12 @@ namespace tffuzzing {
     return retval;
   }
 
-  bool is_number(const std::string& s) {
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
+  bool is_number(std::string& s) {
+    /* std::string::const_iterator it = s.begin(); */
+    /* while (it != s.end() && std::isdigit(*it)) ++it; */
+    /* return !s.empty() && it == s.end(); */
+    // Trim trailing non-digits
+    return s.find_first_not_of("0123456789") == std::string::npos;
   }
 
   Fuzzer::Fuzzer(char *fname, tensorflow::OpKernelContext* ctx)
@@ -57,9 +59,6 @@ namespace tffuzzing {
 
       memset(&glob_result, 0, sizeof(glob_result));
 
-      std::string type;
-      va_list vals;
-
       tensorflow::Tensor tensor;
       tensorflow::TensorShape tensor_shape;
 
@@ -86,6 +85,7 @@ namespace tffuzzing {
         glob_ret = glob(mutfile_pattern, 0, NULL, &glob_result);
         if (glob_ret != GLOB_NOMATCH && !restore) {
           // A mutation file for the same function exists
+          /* std::cout << "Found mutation file for " << fname << std::endl << std::flush; */
           for(size_t i = 0; i < glob_result.gl_pathc && !restore; ++i) {
             existing_pid = glob_result.gl_pathv[i] + strlen(mutfile_prefix) + 1;
             snprintf(proc_filename, BUFSZ, "/proc/%s", existing_pid);
@@ -100,12 +100,15 @@ namespace tffuzzing {
             } else {
               // The mutations file doesn't belong to any running process, something crashed
               mutations_restore_filename = glob_result.gl_pathv[i];
-              /* printf("%s crashed, will restore from %s\n", fname, mutations_restore_filename.c_str()); */
+              printf("%s crashed, will restore from %s\n", fname, mutations_restore_filename.c_str());
               mutations_file.open(mutations_logger_filename, fflags);
               restore = true;
             }
           }
         }
+        /* else { */
+        /* std::cout << "No mutation file found for " << fname << std::endl << std::flush; */
+        /* } */
         globfree(&glob_result);
       }
 
@@ -137,23 +140,28 @@ namespace tffuzzing {
         std::string last_line;
         while (!got_last && tries < 10) {
           getline(mutations_restore, last_line);
-          if (is_number(last_line)) {
+          std::cout << "Got " << last_line << " with length " << last_line.length() << std::endl << std::flush;
+          if (last_line.length() > 0) {
             last_mutation = std::stoll(last_line);
+            std::cout << "Crashing mutation: " << last_mutation << std::endl << std::flush;
             got_last = true;
           } else {
-            /* printf("Error: reading %s (got %s)...\n", mutations_restore_filename.c_str(), last_line.c_str()); */
+            printf("Error: reading %s (got %s)...\n", mutations_restore_filename.c_str(), last_line.c_str());
             tries++;
           }
         }
         mutations_restore.close();
         if (last_mutation > 0) {
           restore_last_mutation(last_mutation, fname);
-          std::remove(mutations_restore_filename.c_str());
+          // Delete the file since we already logged the crash
+          std::cout << "Removing " << mutations_restore_filename << std::endl << std::flush;
+          if (std::remove(mutations_restore_filename.c_str()) != 0) {
+            std::cout << "Couldn't remove " << mutations_restore_filename << std::flush;
+          }
         }
         /* else { */
         /*   printf("Error: couldn't get last mutation number for %s\n", mutations_restore_filename.c_str()); */
         /* } */
-        // Delete the file since we already logged the crash
       } else {
         indices[0] = -1;
       }
@@ -250,13 +258,12 @@ namespace tffuzzing {
       return;
     }
 
-
     printf("Restoring from mutation %lld\n", last_mutation);
 
     log_backtrace(fname);
 
     char *crashes_filename = new char[BUFSZ];
-    char *logbuf = new char[20];
+    char *logbuf = new char[LOGBUFSZ];
     long last_crash; // Used to bound number of crashes
     struct stat stat_buffer;
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
@@ -274,10 +281,10 @@ namespace tffuzzing {
       num_crashes_file.seekg(0, std::ios_base::beg);
       std::string last_line;
       getline(num_crashes_file, last_line);
-      if (is_number(last_line)) {
+      if (last_line.length() > 0) {
         last_crash = std::stoll(last_line);
       } else {
-        printf("Error while reading file with number of crashes...");
+        std::cout << "Error while reading file with number of crashes..." << std::flush;
       }
     } else {
       last_crash = 0;
@@ -285,9 +292,9 @@ namespace tffuzzing {
       num_crashes_file.open(filename, fflags);
     }
     last_crash++;
-    snprintf(logbuf, 20, "%ld\n", last_crash);
+    snprintf(logbuf, LOGBUFSZ, "%ld\n", last_crash);
     num_crashes_file.seekg(0, std::ios::beg);
-    num_crashes_file << logbuf;
+    num_crashes_file.write(logbuf, LOGBUFSZ);
     num_crashes_file.flush();
     num_crashes_file.close();
 
@@ -300,7 +307,7 @@ namespace tffuzzing {
     for (auto &ttype : tensor_types) {
       switch (ttype) {
         default: {
-                   std::cout << "Unknown type: " << ttype;
+                   std::cout << "Unknown type: " << ttype << std::flush;
                    abort();
                  }
         case tensorflow::DataType::DT_INT32: {
@@ -319,6 +326,10 @@ namespace tffuzzing {
                                                 tensor_val = get_next_mut_double();
                                                 break;
                                               }
+        case tensorflow::DataType::DT_BOOL: {
+                                              tensor_val = get_next_mut_bool();
+                                              break;
+                                            }
       }
       crashes_file << tensor_val.tensor->DebugString() << ";\n";
     }
@@ -344,11 +355,10 @@ namespace tffuzzing {
 
     long long nmut_fuzz;
 
-    /* total_mutations = pow(tensor_mutations.size(), num_args); */
     for (auto &ttype : tensor_types) {
       switch (ttype) {
         default: {
-                   std::cout << "Unknown type: " << ttype;
+                   std::cout << "Unknown type: " << ttype << std::flush;
                    abort();
                  }
         case tensorflow::DataType::DT_INT32: {
@@ -371,6 +381,11 @@ namespace tffuzzing {
                                                 pool_sizes.push_back(double_tensor_mutations.size());
                                                 break;
                                               }
+        case tensorflow::DataType::DT_BOOL: {
+                                              total_mutations *= bool_tensor_mutations.size();
+                                              pool_sizes.push_back(bool_tensor_mutations.size());
+                                              break;
+                                            }
       }
     }
 
@@ -420,7 +435,7 @@ namespace tffuzzing {
       tensor_type = tensor_types.at(i);
       switch (tensor_type) {
         default: {
-                   std::cout << "Unknown type: " << tensor_type;
+                   std::cout << "Unknown type: " << tensor_type << std::flush;
                    abort();
                  }
         case tensorflow::DataType::DT_INT32: {
@@ -439,6 +454,10 @@ namespace tffuzzing {
                                                 double_tensor_mutations.push_back(*tensor_val);
                                                 break;
                                               }
+        case tensorflow::DataType::DT_BOOL: {
+                                              // Will just create both later
+                                              break;
+                                            }
       }
     }
 
@@ -453,7 +472,7 @@ namespace tffuzzing {
       /* std::copy_n(contents.begin(), contents.size(), tensor->flat<tensor_type>().data()); */
       switch (tensor_type) {
         default: {
-                   std::cout << "Unknown type: " << tensor_type;
+                   std::cout << "Unknown type: " << tensor_type << std::flush;
                    abort();
                  }
         case tensorflow::DataType::DT_INT32: {
@@ -484,6 +503,10 @@ namespace tffuzzing {
                                                 double_tensor_mutations.push_back(*tensor_val);
                                                 break;
                                               }
+        case tensorflow::DataType::DT_BOOL: {
+                                              // Will just create both later
+                                              break;
+                                            }
       }
 
       /* std::cout  << tensor_val->tensor->DebugString() << std::endl; */
@@ -519,6 +542,13 @@ namespace tffuzzing {
       tensor_val = new tensorflow::TensorValue(tensor);
       double_tensor_mutations.push_back(*tensor_val);
     }
+    tensor = new tensorflow::Tensor(true);
+    tensor_val = new tensorflow::TensorValue(tensor);
+    bool_tensor_mutations.push_back(*tensor_val);
+    tensor = new tensorflow::Tensor(false);
+    tensor_val = new tensorflow::TensorValue(tensor);
+    bool_tensor_mutations.push_back(*tensor_val);
+
     /* for (int cur_ndims = 1; cur_ndims < TENSOR_NUM_DIMS_FUZZ; cur_ndims++) { */
     /*   long int dims_vec[cur_ndims]; */
     /*   for (int i = 0; i < cur_ndims; i++) { */
@@ -588,12 +618,12 @@ namespace tffuzzing {
     }
 
     if (log) {
-      char *logbuf = new char[BUFSZ];
-      memset(logbuf, 0, BUFSZ);
-      snprintf(logbuf, 100, "%llu", total_mutations);
+      char *logbuf = new char[LOGBUFSZ];
+      memset(logbuf, 0, LOGBUFSZ);
+      snprintf(logbuf, LOGBUFSZ, "%llu", total_mutations);
       mutations_file.seekp(0, std::ios::beg);
-      mutations_file << logbuf;
-      /* mutations_file.flush(); */
+      mutations_file.write(logbuf, LOGBUFSZ);
+      mutations_file.flush();
       delete[] logbuf;
     }
 
@@ -615,6 +645,10 @@ namespace tffuzzing {
     return double_tensor_mutations.at(indices[cur_idx++]);
   }
 
+  tensorflow::TensorValue Fuzzer::get_next_mut_bool() {
+    return bool_tensor_mutations.at(indices[cur_idx++]);
+  }
+
   tensorflow::OpKernelContext *Fuzzer::get_fuzzed_context() {
 
     if (fuzz_ctx) {
@@ -632,7 +666,7 @@ namespace tffuzzing {
     for (auto &ttype : tensor_types) {
       switch (ttype) {
         default: {
-                   std::cout << "Unknown type: " << ttype;
+                   std::cout << "Unknown type: " << ttype << std::flush;
                    abort();
                  }
         case tensorflow::DataType::DT_INT32: {
@@ -651,6 +685,10 @@ namespace tffuzzing {
                                                 fuzz_tensval = get_next_mut_double();
                                                 break;
                                               }
+        case tensorflow::DataType::DT_BOOL: {
+                                              fuzz_tensval = get_next_mut_bool();
+                                              break;
+                                            }
       }
       fuzz_vec.push_back(fuzz_tensval);
       /* std::cout << "Argument " << i << ": " << fuzz_tensval.tensor->DebugString() << "\n"; */

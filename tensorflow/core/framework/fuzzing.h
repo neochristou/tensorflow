@@ -13,6 +13,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <fstream>
+#include <filesystem>
 #include <random>
 #include <execinfo.h>
 #include <sys/stat.h>
@@ -54,6 +55,7 @@
 #define SMALL_INT_NEG_FUZZ -0xfffe
 #define FILENAME_SZ 100
 #define BUFSZ 0x100
+#define LOGBUFSZ 0x20
 
 namespace tffuzzing {
 
@@ -107,6 +109,7 @@ namespace tffuzzing {
         std::vector<tensorflow::TensorValue> long_tensor_mutations;
         std::vector<tensorflow::TensorValue> float_tensor_mutations;
         std::vector<tensorflow::TensorValue> double_tensor_mutations;
+        std::vector<tensorflow::TensorValue> bool_tensor_mutations;
         std::vector<int> pool_sizes;
         /* std::vector<double> tensor_contents; */
 
@@ -128,6 +131,7 @@ namespace tffuzzing {
         tensorflow::TensorValue get_next_mut_long();
         tensorflow::TensorValue get_next_mut_float();
         tensorflow::TensorValue get_next_mut_double();
+        tensorflow::TensorValue get_next_mut_bool();
         tensorflow::OpKernelContext *get_fuzzed_context();
         /* double get_tensor_contents(); */
 
