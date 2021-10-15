@@ -41,9 +41,12 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
+  assert(ComputeDecl);
+
   Stmt *ComputeBody = ComputeDecl->getBody();
 
-  assert(ComputeDecl && ComputeBody);
+  if (!ComputeBody)
+    return;
 
   const char *FuzzBodyTemplate = R""""({
 
@@ -79,14 +82,16 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
   }
 
   StringRef OpName = ParentClass->getName();
+  StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
+  if (CtxParamName.empty()) {
+    return;
+  }
 
   FullSourceLoc ComputeStartLoc = Ctx->getFullLoc(ComputeDecl->getBeginLoc());
   FullSourceLoc ComputeBodyStartLoc = Ctx->getFullLoc(ComputeBody->getBeginLoc());
   SourceRange ComputeSR = ComputeBody->getSourceRange();
 
   std::string ComputeText = get_source_text(ComputeSR, InjectFuzzerRewriter.getSourceMgr());
-
-  StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
 
   char FilledBody[0x1000];
   char NewFname[0x100];

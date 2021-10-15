@@ -278,6 +278,7 @@ filegroup(
         "model.cc",
         "node_def_builder.cc",
         "op_kernel.cc",
+        "fuzzing.cc",
         "op_segment.cc",
         "ops_util.cc",
         "rendezvous.cc",

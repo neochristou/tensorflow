@@ -1,9 +1,9 @@
 #!/bin/bash
 
-TF_KERNELS_PATH="/media/tf-fuzzing/tensorflow/tensorflow/core/kernels"
+TF_KERNELS_PATH="/media/mlfuzz/tensorflow/tensorflow/core/kernels"
 INCLUDE_OP_STRING="#include \"tensorflow/core/framework/op_kernel.h\""
 
-filenames=$(/usr/bin/fdfind -t f '.*\.cc$' $TF_KERNELS_PATH)
+filenames=$(/usr/bin/fdfind -t f '.*\.cc$' $TF_KERNELS_PATH --ignore-file inject-ignore)
 
 for filename in $filenames; do
     includeopline=$(grep -n "$INCLUDE_OP_STRING" "$filename")

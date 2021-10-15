@@ -815,7 +815,7 @@ tf_cc_shared_object(
         "//tensorflow/c/eager:c_api_experimental",
         "//tensorflow/core:distributed_tensorflow_dependencies",
         "//tensorflow/core:tensorflow",
-        "//tensorflow/core:tffuzzing",
+        "//tensorflow/core/framework:tffuzzing",
     ],
 )
 
