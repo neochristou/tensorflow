@@ -110,6 +110,7 @@ namespace tffuzzing {
         std::vector<tensorflow::TensorValue> float_tensor_mutations;
         std::vector<tensorflow::TensorValue> double_tensor_mutations;
         std::vector<tensorflow::TensorValue> bool_tensor_mutations;
+        /* std::vector<tensorflow::TensorValue> resource_args; */
         std::vector<int> pool_sizes;
         /* std::vector<double> tensor_contents; */
 
