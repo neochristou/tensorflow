@@ -31,7 +31,7 @@
 #define NMUT_UPPER_BOUND 2000000
 #define NMUT_LOWER_BOUND 500000
 #define NMUT_PERCENT 10
-#define CRASHES_BOUND 4
+#define CRASHES_BOUND 2
 #define MUTFILE_TRIES 5
 #define MEDIUM_INT_FUZZ 0x20000000
 #define MEDIUM_INT_NEG_FUZZ -0x20000000
@@ -45,6 +45,8 @@
 #define LARGE_FLOAT_NEG_FUZZ -3.5e+035
 #define LARGE_DOUBLE_FUZZ 1.5e+300
 #define LARGE_DOUBLE_NEG_FUZZ -1.5e+300
+#define LARGE_HALF_FUZZ 65000
+#define LARGE_HALF_NEG_FUZZ -65000
 #define LARGE_STRING "aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac"
 #define ZERO_FUZZ 0
 #define ARRAYREF_LEN 10
@@ -61,16 +63,6 @@ namespace tffuzzing {
 
     extern bool already_fuzzing;
     extern char* results_dir;
-
-    /* enum TFType { */
-    /*     FUZZ_TENSOR = 0, */
-
-    /*     FUZZ_NUM_TYPES, */
-    /* }; */
-
-    /* std::unordered_map<std::string, tffuzzing::TFType> const map_str_enum = { */
-    /*     {"Tensor", tffuzzing::FUZZ_TENSOR}, */
-    /* }; */
 
     bool was_fuzzed(std::string fname);
 
@@ -97,6 +89,7 @@ namespace tffuzzing {
 
         std::vector<int> int_mutations = {ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, SMALL_INT_FUZZ, SMALL_INT_NEG_FUZZ};
+        std::vector<float> half_mutations = {ZERO_FUZZ, LARGE_HALF_FUZZ, LARGE_HALF_NEG_FUZZ};
         std::vector<tensorflow::int64> long_mutations = {ZERO_FUZZ, LARGE_LONG_FUZZ, LARGE_LONG_NEG_FUZZ,
             LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ
@@ -107,10 +100,11 @@ namespace tffuzzing {
         std::vector<std::string> string_mutations = {std::string(""), std::string(LARGE_STRING)};
         std::vector<tensorflow::TensorValue> int_tensor_mutations;
         std::vector<tensorflow::TensorValue> long_tensor_mutations;
+        std::vector<tensorflow::TensorValue> half_tensor_mutations;
         std::vector<tensorflow::TensorValue> float_tensor_mutations;
         std::vector<tensorflow::TensorValue> double_tensor_mutations;
         std::vector<tensorflow::TensorValue> bool_tensor_mutations;
-        /* std::vector<tensorflow::TensorValue> resource_args; */
+        std::vector<tensorflow::TensorValue> string_tensor_mutations;
         std::vector<int> pool_sizes;
         /* std::vector<double> tensor_contents; */
 
@@ -130,9 +124,11 @@ namespace tffuzzing {
         bool has_more_mutations(bool reset);
         tensorflow::TensorValue get_next_mut_int();
         tensorflow::TensorValue get_next_mut_long();
+        tensorflow::TensorValue get_next_mut_half();
         tensorflow::TensorValue get_next_mut_float();
         tensorflow::TensorValue get_next_mut_double();
         tensorflow::TensorValue get_next_mut_bool();
+        tensorflow::TensorValue get_next_mut_string();
         tensorflow::OpKernelContext *get_fuzzed_context();
         /* double get_tensor_contents(); */
 

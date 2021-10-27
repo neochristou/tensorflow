@@ -6,9 +6,9 @@ import time
 from glob import glob
 from multiprocessing import Lock, Manager, Process, current_process
 
-NUM_PARALLEL_PROCESSES = 6
-TOTAL_TESTS = 10
-# TOTAL_TESTS = 314
+NUM_PARALLEL_PROCESSES = 4
+# TOTAL_TESTS = 10
+TOTAL_TESTS = 314
 RES_FOLDER = "/media/tf-fuzzing/results/"
 DONE_FOLDER = "/media/tf-fuzzing/done-tests/"
 TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/kernel_tests/"

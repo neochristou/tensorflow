@@ -12,41 +12,24 @@ using namespace ast_matchers;
 // From https://www.py4u.net/discuss/94401
 
 std::string get_source_text_raw(clang::SourceRange range, const clang::SourceManager& sm) {
-    return clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions());
+  return clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions());
 }
 
 std::string get_source_text(clang::SourceRange range, const clang::SourceManager& sm) {
-    clang::LangOptions lo;
+  clang::LangOptions lo;
 
-    // NOTE: sm.getSpellingLoc() used in case the range corresponds to a macro/preprocessed source.
-    auto start_loc = sm.getSpellingLoc(range.getBegin());
-    auto last_token_loc = sm.getSpellingLoc(range.getEnd());
-    auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
-    auto printable_range = clang::SourceRange{start_loc, end_loc};
-    return get_source_text_raw(printable_range, sm);
+  // NOTE: sm.getSpellingLoc() used in case the range corresponds to a macro/preprocessed source.
+  auto start_loc = sm.getSpellingLoc(range.getBegin());
+  auto last_token_loc = sm.getSpellingLoc(range.getEnd());
+  auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
+  auto printable_range = clang::SourceRange{start_loc, end_loc};
+  return get_source_text_raw(printable_range, sm);
 }
 
 //-----------------------------------------------------------------------------
 // InjectFuzzer - implementation
 //-----------------------------------------------------------------------------
 void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
-  // ASTContext is used to retrieve the source location
-  ASTContext *Ctx = Result.Context;
-
-  const FunctionDecl *ComputeDecl =
-      Result.Nodes.getNodeAs<clang::FunctionDecl>("computecall");
-
-  // We don't handle static compute functions for now
-  if (ComputeDecl->getStorageClass() == SC_Static) {
-    return;
-  }
-
-  assert(ComputeDecl);
-
-  Stmt *ComputeBody = ComputeDecl->getBody();
-
-  if (!ComputeBody)
-    return;
 
   const char *FuzzBodyTemplate = R""""({
 
@@ -71,6 +54,14 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
   })"""";
 
+  // ASTContext is used to retrieve the source location
+  ASTContext *Ctx = Result.Context;
+
+  const FunctionDecl *ComputeDecl =
+    Result.Nodes.getNodeAs<clang::FunctionDecl>("computecall");
+
+  assert(ComputeDecl);
+
   const CXXRecordDecl* ParentClass;
   const auto Parents = Ctx->getParents(*ComputeDecl);
 
@@ -82,8 +73,30 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
   }
 
   StringRef OpName = ParentClass->getName();
+
+  // We don't handle static compute functions for now
+  if (ComputeDecl->getStorageClass() == SC_Static) {
+    llvm::outs() << "Skipping " << OpName << " (static)\n";
+    return;
+  }
+
+  // Skip gradops for now
+  if (OpName.endswith("GradOp")) {
+    llvm::outs() << "Skipping " << OpName << " (GradOp)\n";
+    return;
+  }
+
+  Stmt *ComputeBody = ComputeDecl->getBody();
+
+  if (!ComputeBody) {
+    llvm::outs() << "Skipping " << OpName << " (no body)\n";
+    return;
+  }
+
   StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
+
   if (CtxParamName.empty()) {
+    llvm::outs() << "Skipping " << OpName << " (no param name)\n";
     return;
   }
 
@@ -119,7 +132,7 @@ void InjectFuzzerMatcher::onEndOfTranslationUnit() {
 
 InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : InjectFuzzerHandler(R) {
   DeclarationMatcher CallSiteMatcher =
-      functionDecl(hasName("Compute"))
+    functionDecl(hasName("Compute"))
     .bind("computecall");
 
 
@@ -132,27 +145,27 @@ InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : InjectFuzzerHand
 // FrotendAction
 //-----------------------------------------------------------------------------
 class InjectFuzzerPluginAction : public PluginASTAction {
-public:
-  // Our plugin can alter behavior based on the command line options
-  bool ParseArgs(const CompilerInstance &,
-                 const std::vector<std::string> &) override {
-    return true;
-  }
+  public:
+    // Our plugin can alter behavior based on the command line options
+    bool ParseArgs(const CompilerInstance &,
+                   const std::vector<std::string> &) override {
+      return true;
+    }
 
-  // Returns our ASTConsumer per translation unit.
-  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
-                                                 StringRef file) override {
-    RewriterForInjectFuzzer.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-    return std::make_unique<InjectFuzzerASTConsumer>(RewriterForInjectFuzzer);
-  }
+    // Returns our ASTConsumer per translation unit.
+    std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
+                                                   StringRef file) override {
+      RewriterForInjectFuzzer.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
+      return std::make_unique<InjectFuzzerASTConsumer>(RewriterForInjectFuzzer);
+    }
 
-private:
-  Rewriter RewriterForInjectFuzzer;
+  private:
+    Rewriter RewriterForInjectFuzzer;
 };
 
 //-----------------------------------------------------------------------------
 // Registration
 //-----------------------------------------------------------------------------
 static FrontendPluginRegistry::Add<InjectFuzzerPluginAction>
-    X(/*Name=*/"InjectFuzzer",
-      /*Desc=*/"Inject fuzzing code in tensorflow kernels");
+X(/*Name=*/"InjectFuzzer",
+  /*Desc=*/"Inject fuzzing code in tensorflow kernels");
