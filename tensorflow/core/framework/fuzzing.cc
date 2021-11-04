@@ -128,13 +128,14 @@ namespace tffuzzing {
       if (restore) {
 
         mutations_restore.open(mutations_restore_filename, std::ios::out | std::ios::in);
-        /* mutations_restore.seekg(0, std::ios_base::beg); */
         std::string last_line;
         while (!got_last && tries < 10) {
           getline(mutations_restore, last_line);
+          /* last_line.erase(std::find(last_line.begin(), last_line.end(), '\0'), last_line.end()); */
           /* std::cout << "Got " << last_line << " with length " << last_line.length() << std::endl << std::flush; */
           if (last_line.length() > 0) {
-            last_mutation = std::stoll(last_line);
+            char *line_end;
+            last_mutation = std::strtoll(last_line.c_str(), &line_end, 10);
             /* std::cout << "Crashing mutation: " << last_mutation << std::endl << std::flush; */
             got_last = true;
           } else {
@@ -272,11 +273,11 @@ namespace tffuzzing {
 
     if (stat(filename, &stat_buffer) == 0){
       num_crashes_file.open(filename, fflags);
-      num_crashes_file.seekg(0, std::ios_base::beg);
       std::string last_line;
       getline(num_crashes_file, last_line);
       if (last_line.length() > 0) {
-        last_crash = std::stoll(last_line);
+        char *line_end;
+        last_crash = std::strtoll(last_line.c_str(), &line_end, 10);
       } else {
         std::cout << "Error while reading file with number of crashes..." << std::flush;
       }
@@ -286,10 +287,11 @@ namespace tffuzzing {
       num_crashes_file.open(filename, fflags);
     }
     last_crash++;
-    snprintf(logbuf, LOGBUFSZ, "%ld\n", last_crash);
 
     memset(logbuf, 0, LOGBUFSZ);
-    num_crashes_file.seekg(0, std::ios::beg);
+    snprintf(logbuf, LOGBUFSZ, "%ld\n", last_crash);
+
+    num_crashes_file.seekp(0, std::ios::beg);
     num_crashes_file.write(logbuf, LOGBUFSZ);
     num_crashes_file.flush();
     num_crashes_file.close();
@@ -313,6 +315,14 @@ namespace tffuzzing {
                                              }
         case tensorflow::DataType::DT_INT64: {
                                                tensor_val = get_next_mut_long();
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT32: {
+                                               tensor_val = get_next_mut_uint();
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT64: {
+                                               tensor_val = get_next_mut_ulong();
                                                break;
                                              }
         case tensorflow::DataType::DT_FLOAT: {
@@ -384,6 +394,16 @@ namespace tffuzzing {
                                                pool_sizes.push_back(long_tensor_mutations.size());
                                                break;
                                              }
+        case tensorflow::DataType::DT_UINT32: {
+                                               total_mutations *= uint_tensor_mutations.size();
+                                               pool_sizes.push_back(uint_tensor_mutations.size());
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT64: {
+                                               total_mutations *= ulong_tensor_mutations.size();
+                                               pool_sizes.push_back(ulong_tensor_mutations.size());
+                                               break;
+                                             }
         case tensorflow::DataType::DT_HALF: {
                                                total_mutations *= half_tensor_mutations.size();
                                                pool_sizes.push_back(half_tensor_mutations.size());
@@ -450,7 +470,7 @@ namespace tffuzzing {
     float rand_float;
     Eigen::half rand_half;
     double rand_double;
-    std::string rand_string;
+    tensorflow::tstring rand_string;
 
     // Random generators
     std::mt19937 rngenerator(123);
@@ -464,6 +484,7 @@ namespace tffuzzing {
     std::uniform_int_distribution<> flip(0, 1);
 
     /* std::cout << "Creating mutations same as input\n" << std::flush; */
+    // Copy original arguments
     for (int i = 0; i < num_args; i++) {
       tensor = new tensorflow::Tensor(original_ctx->input(i));
       tensor_val = new tensorflow::TensorValue(tensor);
@@ -479,6 +500,14 @@ namespace tffuzzing {
                                              }
         case tensorflow::DataType::DT_INT64: {
                                                long_tensor_mutations.push_back(*tensor_val);
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT32: {
+                                               uint_tensor_mutations.push_back(*tensor_val);
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT64: {
+                                               ulong_tensor_mutations.push_back(*tensor_val);
                                                break;
                                              }
         case tensorflow::DataType::DT_HALF: {
@@ -511,13 +540,12 @@ namespace tffuzzing {
     // Create tensors with the same shapes as the original
     // but change values by picking a random value from the
     // mutations of the corresponding data type
-    /* std::cout << "Creating mutations same shape as input\n" << std::flush; */
+    // plus a Tensor with zeroes for the integral types
     idx = 0;
     for (auto &tshape : tensor_shapes) {
       tensor_type = tensor_types.at(idx++);
 
       tensor = new tensorflow::Tensor(tensor_type, tshape);
-      /* std::copy_n(contents.begin(), contents.size(), tensor->flat<tensor_type>().data()); */
       switch (tensor_type) {
         default: {
                    std::cout << "\033[1;31mUnknown type:\033[0m " << tensor_type << std::endl << std::flush;
@@ -528,6 +556,11 @@ namespace tffuzzing {
                                                tensor->flat<int>().setConstant(rand_int);
                                                tensor_val = new tensorflow::TensorValue(tensor);
                                                int_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<int>().setConstant(0);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               int_tensor_mutations.push_back(*tensor_val);
                                                break;
                                              }
         case tensorflow::DataType::DT_INT64: {
@@ -535,11 +568,45 @@ namespace tffuzzing {
                                                tensor->flat<long>().setConstant(rand_long);
                                                tensor_val = new tensorflow::TensorValue(tensor);
                                                long_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<long>().setConstant(0);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               long_tensor_mutations.push_back(*tensor_val);
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT32: {
+                                               rand_int = int_mutations.at(int_distr(rngenerator));
+                                               tensor->flat<unsigned int>().setConstant(rand_int);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               uint_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<unsigned int>().setConstant(0);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               uint_tensor_mutations.push_back(*tensor_val);
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT64: {
+                                               rand_long = long_mutations.at(long_distr(rngenerator));
+                                               tensor->flat<unsigned long>().setConstant(rand_long);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               ulong_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<unsigned long>().setConstant(0);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               ulong_tensor_mutations.push_back(*tensor_val);
                                                break;
                                              }
         case tensorflow::DataType::DT_HALF: {
                                                rand_half = Eigen::half(half_mutations.at(half_distr(rngenerator)));
                                                tensor->flat<Eigen::half>().setConstant(rand_half);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               half_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<Eigen::half>().setConstant(Eigen::half(0.0));
                                                tensor_val = new tensorflow::TensorValue(tensor);
                                                half_tensor_mutations.push_back(*tensor_val);
                                                break;
@@ -549,11 +616,21 @@ namespace tffuzzing {
                                                tensor->flat<float>().setConstant(rand_float);
                                                tensor_val = new tensorflow::TensorValue(tensor);
                                                float_tensor_mutations.push_back(*tensor_val);
+
+                                               tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                               tensor->flat<float>().setConstant(0);
+                                               tensor_val = new tensorflow::TensorValue(tensor);
+                                               float_tensor_mutations.push_back(*tensor_val);
                                                break;
                                              }
         case tensorflow::DataType::DT_DOUBLE: {
                                                 rand_double = double_mutations.at(double_distr(rngenerator));
                                                 tensor->flat<double>().setConstant(rand_double);
+                                                tensor_val = new tensorflow::TensorValue(tensor);
+                                                double_tensor_mutations.push_back(*tensor_val);
+
+                                                tensor = new tensorflow::Tensor(tensor_type, tshape);
+                                                tensor->flat<double>().setConstant(0);
                                                 tensor_val = new tensorflow::TensorValue(tensor);
                                                 double_tensor_mutations.push_back(*tensor_val);
                                                 break;
@@ -582,9 +659,15 @@ namespace tffuzzing {
     /* } */
 
     /* std::cout << "Creating mutations single value\n" << std::flush; */
-    // Create tensors with single value
+    // Create tensors with single value and no value
     for (auto &fuzzval : int_mutations) {
       tensor = new tensorflow::Tensor(fuzzval);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      int_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_INT32, dims);
       tensor_val = new tensorflow::TensorValue(tensor);
       int_tensor_mutations.push_back(*tensor_val);
     }
@@ -592,9 +675,21 @@ namespace tffuzzing {
       tensor = new tensorflow::Tensor(fuzzval);
       tensor_val = new tensorflow::TensorValue(tensor);
       long_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_INT64, dims);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      long_tensor_mutations.push_back(*tensor_val);
     }
     for (auto &fuzzval : half_mutations) {
       tensor = new tensorflow::Tensor(Eigen::half(fuzzval));
+      tensor_val = new tensorflow::TensorValue(tensor);
+      half_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_HALF, dims);
       tensor_val = new tensorflow::TensorValue(tensor);
       half_tensor_mutations.push_back(*tensor_val);
     }
@@ -602,11 +697,34 @@ namespace tffuzzing {
       tensor = new tensorflow::Tensor(fuzzval);
       tensor_val = new tensorflow::TensorValue(tensor);
       float_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_FLOAT, dims);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      float_tensor_mutations.push_back(*tensor_val);
     }
     for (auto &fuzzval : double_mutations) {
       tensor = new tensorflow::Tensor(fuzzval);
       tensor_val = new tensorflow::TensorValue(tensor);
       double_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_DOUBLE, dims);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      int_tensor_mutations.push_back(*tensor_val);
+    }
+    for (auto &fuzzval : string_mutations) {
+      tensor = new tensorflow::Tensor(fuzzval);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      string_tensor_mutations.push_back(*tensor_val);
+
+      dims = tensorflow::TensorShape();
+      dims.AddDim(0);
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_STRING, dims);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      string_tensor_mutations.push_back(*tensor_val);
     }
     tensor = new tensorflow::Tensor(true);
     tensor_val = new tensorflow::TensorValue(tensor);
@@ -616,12 +734,9 @@ namespace tffuzzing {
     bool_tensor_mutations.push_back(*tensor_val);
 
     // Create tensors with increasing number of dimensions, random values
-    /* std::cout << "Creating mutations varying dimensions\n" << std::flush; */
     for (int cur_ndims = 1; cur_ndims < TENSOR_NUM_DIMS_FUZZ; cur_ndims++) {
-      /* long int dims_vec[cur_ndims]; */
       dims = tensorflow::TensorShape();
       for (int i = 0; i < cur_ndims; i++) {
-        /* dims_vec[i] = dims_distr(rngenerator); */
         rand_dim = dims_distr(rngenerator);
         dims.AddDim(rand_dim);
       }
@@ -638,6 +753,18 @@ namespace tffuzzing {
       tensor->flat<long>().setConstant(rand_long);
       tensor_val = new tensorflow::TensorValue(tensor);
       long_tensor_mutations.push_back(*tensor_val);
+
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_UINT32, dims);
+      rand_int = int_mutations.at(int_distr(rngenerator));
+      tensor->flat<unsigned int>().setConstant(rand_int);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      uint_tensor_mutations.push_back(*tensor_val);
+
+      tensor = new tensorflow::Tensor(tensorflow::DataType::DT_UINT64, dims);
+      rand_long = long_mutations.at(long_distr(rngenerator));
+      tensor->flat<unsigned long>().setConstant(rand_long);
+      tensor_val = new tensorflow::TensorValue(tensor);
+      ulong_tensor_mutations.push_back(*tensor_val);
 
       tensor = new tensorflow::Tensor(tensorflow::DataType::DT_FLOAT, dims);
       rand_float = float_mutations.at(float_distr(rngenerator));
@@ -658,9 +785,6 @@ namespace tffuzzing {
       double_tensor_mutations.push_back(*tensor_val);
     }
 
-    //TODO Maybe create tensors with random dimensions
-
-    /* printf("Pools inizialized\n"); */
 
   }
 
@@ -721,6 +845,15 @@ namespace tffuzzing {
     return long_tensor_mutations.at(indices[cur_idx++]);
   }
 
+  tensorflow::TensorValue Fuzzer::get_next_mut_uint() {
+    return uint_tensor_mutations.at(indices[cur_idx++]);
+  }
+
+  tensorflow::TensorValue Fuzzer::get_next_mut_ulong() {
+    return ulong_tensor_mutations.at(indices[cur_idx++]);
+  }
+
+
   tensorflow::TensorValue Fuzzer::get_next_mut_float() {
     return float_tensor_mutations.at(indices[cur_idx++]);
   }
@@ -771,6 +904,14 @@ namespace tffuzzing {
                                              }
         case tensorflow::DataType::DT_INT64: {
                                                fuzz_tensval = get_next_mut_long();
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT32: {
+                                               fuzz_tensval = get_next_mut_uint();
+                                               break;
+                                             }
+        case tensorflow::DataType::DT_UINT64: {
+                                               fuzz_tensval = get_next_mut_ulong();
                                                break;
                                              }
         case tensorflow::DataType::DT_HALF: {

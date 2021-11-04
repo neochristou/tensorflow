@@ -97,9 +97,11 @@ namespace tffuzzing {
         };
         std::vector<float> float_mutations = {ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
         std::vector<double> double_mutations = {ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
-        std::vector<std::string> string_mutations = {std::string(""), std::string(LARGE_STRING)};
+        std::vector<tensorflow::tstring> string_mutations = {tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
         std::vector<tensorflow::TensorValue> int_tensor_mutations;
+        std::vector<tensorflow::TensorValue> uint_tensor_mutations;
         std::vector<tensorflow::TensorValue> long_tensor_mutations;
+        std::vector<tensorflow::TensorValue> ulong_tensor_mutations;
         std::vector<tensorflow::TensorValue> half_tensor_mutations;
         std::vector<tensorflow::TensorValue> float_tensor_mutations;
         std::vector<tensorflow::TensorValue> double_tensor_mutations;
@@ -124,6 +126,8 @@ namespace tffuzzing {
         bool has_more_mutations(bool reset);
         tensorflow::TensorValue get_next_mut_int();
         tensorflow::TensorValue get_next_mut_long();
+        tensorflow::TensorValue get_next_mut_uint();
+        tensorflow::TensorValue get_next_mut_ulong();
         tensorflow::TensorValue get_next_mut_half();
         tensorflow::TensorValue get_next_mut_float();
         tensorflow::TensorValue get_next_mut_double();

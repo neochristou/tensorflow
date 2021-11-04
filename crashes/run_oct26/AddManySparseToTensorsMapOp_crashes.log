@@ -1,0 +1,4 @@
+Tensor<type: int64 shape: [3,2] values: [0 0][0...]...>Tensor<type: string shape: [3] values: a b c>Tensor<type: int64 shape: [2] values: -1879048192 -1879048192>
+--------------------------------------
+Tensor<type: int64 shape: [3,2] values: [-1879048192 -1879048192][-1879048192...]...>Tensor<type: string shape: [3] values: a b c>Tensor<type: int64 shape: [2] values: -1879048192 -1879048192>
+--------------------------------------

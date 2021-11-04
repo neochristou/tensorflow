@@ -86,6 +86,11 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
+  if (OpName.startswith("BoostedTreesCreate")) {
+    llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n";
+    return;
+  }
+
   Stmt *ComputeBody = ComputeDecl->getBody();
 
   if (!ComputeBody) {
@@ -105,6 +110,18 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
   SourceRange ComputeSR = ComputeBody->getSourceRange();
 
   std::string ComputeText = get_source_text(ComputeSR, InjectFuzzerRewriter.getSourceMgr());
+
+  if (ComputeText.find(std::string("PhiloxRandom")) != std::string::npos) {
+    llvm::outs() << "Skipping " << OpName << " (PhiloxRandom)\n";
+    return;
+  }
+
+  if (ComputeText.find(std::string("mutex")) != std::string::npos ||
+      ComputeText.find(std::string("Mutex")) != std::string::npos
+      ) {
+    llvm::outs() << "Skipping " << OpName << " (mutex)\n";
+    return;
+  }
 
   char FilledBody[0x1000];
   char NewFname[0x100];

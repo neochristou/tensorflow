@@ -1,0 +1,7 @@
+Tensor<type: double shape: [1,21,12,18] values: [[[0 0 0...]]]...>
+Tensor<type: int32 shape: [] values: -1879048192>
+Tensor<type: int32 shape: [] values: -1>
+Tensor<type: int32 shape: [] values: -1>
+Tensor<type: double shape: [] values: 0>
+
+--------------------------------------

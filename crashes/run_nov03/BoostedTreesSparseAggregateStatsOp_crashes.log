@@ -1,0 +1,16 @@
+Tensor<type: int32 shape: [] values: -1879048192>
+Tensor<type: float shape: [10,2] values: [2.41642356 3.24965119][1.43290794...]...>
+Tensor<type: float shape: [10,2] values: [2.41642356 3.24965119][1.43290794...]...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+
+--------------------------------------
+Tensor<type: int32 shape: [] values: 536870912>
+Tensor<type: float shape: [10,2] values: [2.44031596 4.42658663][1.22132432...]...>
+Tensor<type: float shape: [10,2] values: [2.41642356 3.24965119][1.43290794...]...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+
+--------------------------------------

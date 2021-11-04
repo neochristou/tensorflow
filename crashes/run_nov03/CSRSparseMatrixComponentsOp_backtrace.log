@@ -1,0 +1,10 @@
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tensorflow::CSRSparseMatrixComponentsOp<Eigen::ThreadPoolDevice, float>::Compute(tensorflow::OpKernelContext*) [clone .part.323]
+/proc/self/cwd/tensorflow/core/kernels/sparse/sparse_matrix_components_op.cc:114
+tensorflow::CSRSparseMatrixComponentsOp<Eigen::ThreadPoolDevice, float>::Compute(tensorflow::OpKernelContext*) [clone .part.323]
+/proc/self/cwd/tensorflow/core/kernels/sparse/sparse_matrix_components_op.cc:114
