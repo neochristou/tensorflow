@@ -1,14 +1,14 @@
 Tensor<type: resource shape: [] values: ?>
-Tensor<type: string shape: [] values: .14862.152.v2>
+Tensor<type: string shape: [] values: .27575.152.v2>
 Tensor<type: int32 shape: [] values: 10>
 Tensor<type: int32 shape: [] values: 10>
-Tensor<type: string shape: [] values: /tmp/summary_ops_testd2ntkoyb/tmp0v9d03g7>
+Tensor<type: string shape: [] values: /tmp/summary_ops_testf58loyh2/tmpx48pwvrx>
 
 --------------------------------------
 Tensor<type: resource shape: [] values: ?>
-Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Tensor<type: string shape: [0] values: >
 Tensor<type: int32 shape: [] values: 10>
 Tensor<type: int32 shape: [] values: 10>
-Tensor<type: string shape: [] values: /tmp/summary_ops_test2xjh1l3n/tmprprs8aa0>
+Tensor<type: string shape: [] values: /tmp/summary_ops_testhlvy_qjs/tmpv6x_fr0u>
 
 --------------------------------------

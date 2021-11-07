@@ -1,0 +1,14 @@
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: string shape: [] values: .2737.152.v2>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: string shape: [] values: /tmp/summary_ops_test9gol0a72/tmpzt9vopry>
+
+--------------------------------------
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: string shape: [] values: /tmp/summary_ops_testutcghtnf/tmpa0w3wnz6>
+
+--------------------------------------

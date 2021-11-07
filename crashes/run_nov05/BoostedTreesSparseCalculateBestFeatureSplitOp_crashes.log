@@ -1,0 +1,20 @@
+Tensor<type: int32 shape: [] values: 65534>
+Tensor<type: int32 shape: [22] values: 536870912 536870912 536870912...>
+Tensor<type: float shape: [2,16,22,16] values: [[[3.5e+35 3.5e+35 3.5e+35...]]]...>
+Tensor<type: int32 shape: [24,4] values: [1 0 1...]...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+
+--------------------------------------
+Tensor<type: int32 shape: [2,16,22,16] values: [[[-1879048192 -1879048192 -1879048192...]]]...>
+Tensor<type: int32 shape: [] values: 0>
+Tensor<type: float shape: [2,16,22,16] values: [[[3.5e+35 3.5e+35 3.5e+35...]]]...>
+Tensor<type: int32 shape: [4] values: -1879048192 -1879048192 -1879048192...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+Tensor<type: float shape: [24] values: 0.15 0.36 0.06...>
+
+--------------------------------------

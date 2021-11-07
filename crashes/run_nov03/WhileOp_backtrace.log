@@ -1,0 +1,204 @@
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tensorflow::(anonymous namespace)::WhileOp::Compute(tensorflow::OpKernelContext*) [clone .part.401]
+/proc/self/cwd/tensorflow/core/kernels/functional_ops.cc:399
+tensorflow::(anonymous namespace)::WhileOp::Compute(tensorflow::OpKernelContext*)
+/usr/include/c++/8/bits/basic_string.h:220
+tensorflow::data::(anonymous namespace)::SingleThreadedExecutorImpl::Run(tensorflow::Executor::Args const&)
+/usr/include/c++/8/bits/unique_ptr.h:150
+tensorflow::DirectSession::RunInternal(long long, tensorflow::RunOptions const&, tensorflow::CallFrameInterface*, tensorflow::DirectSession::ExecutorsAndKeys*, tensorflow::RunMetadata*, tensorflow::thread::ThreadPoolOptions const&)
+tensorflow::DirectSession::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*, tensorflow::thread::ThreadPoolOptions const&)
+tensorflow::DirectSession::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*)
+tensorflow::SessionRef::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*)
+TF_Run_Helper(tensorflow::Session*, char const*, TF_Buffer const*, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, TF_Tensor**, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, TF_Buffer*, TF_Status*)
+/proc/self/cwd/./tensorflow/core/platform/status.h:176
+TF_SessionRun
+tensorflow::TF_SessionRun_wrapper_helper(TF_Session*, char const*, TF_Buffer const*, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<_object*, std::allocator<_object*> > const&, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<TF_Operation*, std::allocator<TF_Operation*> > const&, TF_Buffer*, TF_Status*, std::vector<_object*, std::allocator<_object*> >*)
+tensorflow::TF_SessionRun_wrapper(TF_Session*, TF_Buffer const*, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<_object*, std::allocator<_object*> > const&, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<TF_Operation*, std::allocator<TF_Operation*> > const&, TF_Buffer*, TF_Status*, std::vector<_object*, std::allocator<_object*> >*)
+operator()
+/proc/self/cwd/tensorflow/python/client/tf_session_wrapper.cc:450
+pybind11::cpp_function::dispatcher(_object*, _object*, _object*)
+/proc/self/cwd/bazel-out/k8-opt/bin/external/pybind11/_virtual_includes/pybind11/pybind11/pybind11.h:624
+PyCFunction_Call
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+PyObject_Call
+_PyEval_EvalFrameDefault
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+==========================
+tffuzzing::Fuzzer::log_backtrace(char*)
+tffuzzing::Fuzzer::restore_last_mutation(long long, char*)
+tffuzzing::Fuzzer::Fuzzer(char*, tensorflow::OpKernelContext*)
+tensorflow::(anonymous namespace)::WhileOp::Compute(tensorflow::OpKernelContext*) [clone .part.401]
+/proc/self/cwd/tensorflow/core/kernels/functional_ops.cc:399
+tensorflow::(anonymous namespace)::WhileOp::Compute(tensorflow::OpKernelContext*)
+/usr/include/c++/8/bits/basic_string.h:220
+tensorflow::data::(anonymous namespace)::SingleThreadedExecutorImpl::Run(tensorflow::Executor::Args const&)
+/usr/include/c++/8/bits/unique_ptr.h:150
+tensorflow::DirectSession::RunInternal(long long, tensorflow::RunOptions const&, tensorflow::CallFrameInterface*, tensorflow::DirectSession::ExecutorsAndKeys*, tensorflow::RunMetadata*, tensorflow::thread::ThreadPoolOptions const&)
+tensorflow::DirectSession::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*, tensorflow::thread::ThreadPoolOptions const&)
+tensorflow::DirectSession::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*)
+tensorflow::SessionRef::Run(tensorflow::RunOptions const&, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<tensorflow::Tensor, std::allocator<tensorflow::Tensor> >*, tensorflow::RunMetadata*)
+TF_Run_Helper(tensorflow::Session*, char const*, TF_Buffer const*, std::vector<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor>, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, tensorflow::Tensor> > > const&, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, TF_Tensor**, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, TF_Buffer*, TF_Status*)
+/proc/self/cwd/./tensorflow/core/platform/status.h:176
+TF_SessionRun
+tensorflow::TF_SessionRun_wrapper_helper(TF_Session*, char const*, TF_Buffer const*, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<_object*, std::allocator<_object*> > const&, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<TF_Operation*, std::allocator<TF_Operation*> > const&, TF_Buffer*, TF_Status*, std::vector<_object*, std::allocator<_object*> >*)
+tensorflow::TF_SessionRun_wrapper(TF_Session*, TF_Buffer const*, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<_object*, std::allocator<_object*> > const&, std::vector<TF_Output, std::allocator<TF_Output> > const&, std::vector<TF_Operation*, std::allocator<TF_Operation*> > const&, TF_Buffer*, TF_Status*, std::vector<_object*, std::allocator<_object*> >*)
+operator()
+/proc/self/cwd/tensorflow/python/client/tf_session_wrapper.cc:450
+pybind11::cpp_function::dispatcher(_object*, _object*, _object*)
+/proc/self/cwd/bazel-out/k8-opt/bin/external/pybind11/_virtual_includes/pybind11/pybind11/pybind11.h:624
+PyCFunction_Call
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+PyVectorcall_Call
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+_PyObject_MakeTpCall
+_PyEval_EvalFrameDefault
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyObject_FastCallDict
+_PyObject_Call_Prepend
+PyObject_Call
+_PyEval_EvalFrameDefault
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+_PyFunction_Vectorcall
+_PyEval_EvalCodeWithName
+==========================

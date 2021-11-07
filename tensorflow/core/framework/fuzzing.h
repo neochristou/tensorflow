@@ -117,6 +117,7 @@ namespace tffuzzing {
         inline void inc_mutations_indices(bool log);
         void restore_last_mutation(long long last_mutation, char *fname);
         tensorflow::OpKernelContext *fuzz_ctx = nullptr;
+        void mark_fuzzing_done();
 
     public:
 

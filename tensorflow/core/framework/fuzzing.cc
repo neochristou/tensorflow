@@ -76,12 +76,23 @@ namespace tffuzzing {
       for (int r = 0; r < MUTFILE_TRIES; r++){
         glob_ret = glob(mutfile_pattern, 0, NULL, &glob_result);
         if (glob_ret != GLOB_NOMATCH && !restore) {
+
+          // A lot of empty mutation files, probably deadlock or bug, stop
+          // fuzzing this kernel
+          if (glob_result.gl_pathc > 5) {
+            mark_fuzzing_done();
+            printf("%s has a lot of empty mutation files, skip\n", fname);
+            total_mutations = 0;
+            return;
+          }
+
           // A mutation file for the same function exists
           /* std::cout << "Found mutation file for " << fname << std::endl << std::flush; */
           for(size_t i = 0; i < glob_result.gl_pathc && !restore; ++i) {
+
             existing_pid = glob_result.gl_pathv[i] + strlen(mutfile_prefix) + 1;
             snprintf(proc_filename, BUFSZ, "/proc/%s", existing_pid);
-            /* printf("%s\n", proc_filename); */
+
             if (stat(proc_filename, &stat_buffer) == 0){
               // The mutations file belongs to a running process, skip
               /* printf("%s belongs to a running process, skipping\n", glob_result.gl_pathv[i]); */
@@ -255,7 +266,7 @@ namespace tffuzzing {
 
     printf("Restoring from mutation %lld\n", last_mutation);
 
-    log_backtrace(fname);
+    /* log_backtrace(fname); */
 
     char *crashes_filename = new char[BUFSZ];
     char *logbuf = new char[LOGBUFSZ];
@@ -649,15 +660,6 @@ namespace tffuzzing {
       /* std::cout  << tensor_val->tensor->DebugString() << std::endl; */
     }
 
-    /* for (int i = 0; i < TENSOR_NUM_DIMS_FUZZ; i++) { */
-    /*     tensor = at::ones(fuzz_dims_vec); */
-    /*     tensor_mutations.push_back(tensor); */
-    /*     tensor_contents.push_back(1); */
-    /*     for (int j = 0; j < TENSOR_DIM_SIZE_FUZZ; j++) { */
-    /*         fuzz_dims_vec.push_back(2); */
-    /*     } */
-    /* } */
-
     /* std::cout << "Creating mutations single value\n" << std::flush; */
     // Create tensors with single value and no value
     for (auto &fuzzval : int_mutations) {
@@ -785,8 +787,15 @@ namespace tffuzzing {
       double_tensor_mutations.push_back(*tensor_val);
     }
 
-
   }
+
+  void Fuzzer::mark_fuzzing_done()
+  {
+      memset(filename, 0, FILENAME_SZ);
+      snprintf(filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, cur_fname.c_str());
+      std::ofstream output(filename);
+  }
+
 
   bool Fuzzer::has_more_mutations(bool reset){
 
@@ -798,9 +807,7 @@ namespace tffuzzing {
     bool has_more = total_mutations > 0;
 
     if (!has_more && !is_running) {
-      memset(filename, 0, FILENAME_SZ);
-      snprintf(filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, cur_fname.c_str());
-      std::ofstream output(filename);
+      mark_fuzzing_done();
       /* output.rdbuf()->pubsetbuf(0, 0); */
       remove(mutations_logger_filename.c_str());
     }
