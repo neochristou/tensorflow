@@ -1,4 +1,0 @@
-Tensor<type: int32 shape: [] values: 10>Tensor<type: int32 shape: [4096] values: 6 3 7...>Tensor<type: float shape: [0] values: >
---------------------------------------
-Tensor<type: int32 shape: [] values: -536870912>Tensor<type: int32 shape: [4096] values: 6 3 7...>Tensor<type: float shape: [0] values: >
---------------------------------------

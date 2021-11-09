@@ -6,9 +6,19 @@ import os
 # import tensorflow as tf
 from tensorflow import raw_ops
 
-CRASHFILES_PATH = "/media/mlfuzz/tensorflow/crashes/run_nov03/"
+CRASHFILES_PATH = "/media/mlfuzz/tensorflow/crashes/"
 REPRODUCE_PATH = "/media/fuzzing-pytorch/pytorch-reproduce-tests/tf/all-crashes/"
 CRASH_DELIM = '--------------------------------------\n'
+
+
+def get_tf_type(ttype):
+    if ttype == 'half':
+        return 'float16'
+    if ttype == 'float':
+        return 'float32'
+    if ttype == 'double':
+        return 'float64'
+    return ttype
 
 
 def get_function_param_names(kernel_name):
@@ -49,7 +59,7 @@ def synthesize_args(crashing_args, param_names):
         if tensor_type == 'string':
             value = '"' + value + '"'
 
-        fuzz_tensor = f"arg_{idx} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{tensor_type})"
+        fuzz_tensor = f"arg_{idx} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
         fuzz_tensors.append(fuzz_tensor)
 
     return fuzz_tensors
@@ -80,7 +90,8 @@ def synthesize_file(crash, kernel_name):
 
 
 def get_kernel_name(filename):
-    kernel_name = filename.replace(
+    crash_filename = filename.split('/')[-1]
+    kernel_name = crash_filename.replace(
         CRASHFILES_PATH, '').replace('_crashes.log', '')
     if kernel_name.endswith('Op'):
         kernel_name = kernel_name.replace('Op', '')
@@ -101,20 +112,21 @@ def save_synth_file(synth_file, kernel_name):
 
 
 def main():
-    for crash_filename in glob.glob(CRASHFILES_PATH + '*_crashes.log'):
+    for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
+        for crash_filename in glob.glob(crash_dir + '*_crashes.log'):
 
-        crash_file = open(crash_filename, 'r').read()
-        crashes = list(filter(None, crash_file.split(CRASH_DELIM)))
-        crashes_file.close()
+            crash_file = open(crash_filename, 'r')
+            crashes = list(filter(None, crash_file.read().split(CRASH_DELIM)))
+            crash_file.close()
 
-        kernel_name = get_kernel_name(crash_filename)
+            kernel_name = get_kernel_name(crash_filename)
 
-        for crash in crashes:
-            crash = crash.strip()
-            # print(kernel_name)
-            synth_file = synthesize_file(crash, kernel_name)
-            if synth_file is not None:
-                save_synth_file(synth_file, kernel_name)
+            for crash in crashes:
+                crash = crash.strip()
+                # print(kernel_name)
+                synth_file = synthesize_file(crash, kernel_name)
+                if synth_file is not None:
+                    save_synth_file(synth_file, kernel_name)
 
 
 if __name__ == "__main__":

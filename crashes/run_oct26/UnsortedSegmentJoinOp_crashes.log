@@ -1,7 +1,0 @@
-Tensor<type: string shape: [4] values: this is a...>Tensor<type: int32 shape: [] values: 1>Tensor<type: int32 shape: [4] values: 0 0 0...>
---------------------------------------
-Tensor<type: string shape: [4] values: this is a...>
-Tensor<type: int32 shape: [] values: -536870912>
-Tensor<type: int32 shape: [4] values: 0 0 0...>
-
---------------------------------------

@@ -1,3 +1,6 @@
 /media/mlfuzz/tensorflow/tensorflow/core/kernels/batch_kernels.cc
 /media/mlfuzz/tensorflow/tensorflow/core/kernels/isotonic_regression_op.cc
 /media/mlfuzz/tensorflow/tensorflow/core/kernels/fact_op.cc
+/media/mlfuzz/tensorflow/tensorflow/core/kernels/resource_variable_ops.cc
+/media/mlfuzz/tensorflow/tensorflow/core/kernels/broadcast_to_op.cc
+/media/mlfuzz/tensorflow/tensorflow/core/kernels/list_kernels.cc

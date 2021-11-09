@@ -1,6 +1,0 @@
-Tensor<type: int64 shape: [6] values: -1879048192 -1879048192 -1879048192...>
-Tensor<type: int32 shape: [7] values: 3 0 1...>
-Tensor<type: int32 shape: [7] values: 3 0 1...>
-Tensor<type: float shape: [0] values: >
-
---------------------------------------
