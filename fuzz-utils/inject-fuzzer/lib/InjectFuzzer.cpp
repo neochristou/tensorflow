@@ -74,6 +74,11 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
+  if (ComputeDecl->getNumParams() > 1) {
+    llvm::outs() << "Skipping " << OpName << " (>1 params)\n";
+    return;
+  }
+
   // We don't handle static compute functions for now
   if (ComputeDecl->getStorageClass() == SC_Static) {
     llvm::outs() << "Skipping " << OpName << " (static)\n";
