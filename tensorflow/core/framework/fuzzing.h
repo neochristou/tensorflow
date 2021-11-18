@@ -95,9 +95,11 @@ namespace tffuzzing {
             HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ
             /* MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, */
         };
+        std::vector<tensorflow::uint8> ubyte_mutations = {ZERO_FUZZ, 255};
         std::vector<float> float_mutations = {ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
         std::vector<double> double_mutations = {ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
         std::vector<tensorflow::tstring> string_mutations = {tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
+        std::vector<tensorflow::TensorValue> ubyte_tensor_mutations;
         std::vector<tensorflow::TensorValue> int_tensor_mutations;
         std::vector<tensorflow::TensorValue> uint_tensor_mutations;
         std::vector<tensorflow::TensorValue> long_tensor_mutations;
@@ -118,6 +120,7 @@ namespace tffuzzing {
         void restore_last_mutation(long long last_mutation, char *fname);
         tensorflow::OpKernelContext *fuzz_ctx = nullptr;
         void mark_fuzzing_done();
+        template <class T> tensorflow::TensorValue *get_constant_tensor(T value);
 
     public:
 
@@ -125,18 +128,8 @@ namespace tffuzzing {
         ~Fuzzer();
 
         bool has_more_mutations(bool reset);
-        tensorflow::TensorValue get_next_mut_int();
-        tensorflow::TensorValue get_next_mut_long();
-        tensorflow::TensorValue get_next_mut_uint();
-        tensorflow::TensorValue get_next_mut_ulong();
-        tensorflow::TensorValue get_next_mut_half();
-        tensorflow::TensorValue get_next_mut_float();
-        tensorflow::TensorValue get_next_mut_double();
-        tensorflow::TensorValue get_next_mut_bool();
-        tensorflow::TensorValue get_next_mut_string();
+        tensorflow::TensorValue get_next_mut(tensorflow::DataType ttype, int idx);
         tensorflow::OpKernelContext *get_fuzzed_context();
-        /* double get_tensor_contents(); */
-
     };
 
 }

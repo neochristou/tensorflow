@@ -6,8 +6,8 @@ import time
 from glob import glob
 from multiprocessing import Lock, Manager, Process, current_process
 
-NUM_PARALLEL_PROCESSES = 4
-#TOTAL_TESTS = 314
+NUM_PARALLEL_PROCESSES = 5
+TIME_LIMIT = 10800
 RES_FOLDER = "/media/tf-fuzzing/results/"
 DONE_FOLDER = "/media/tf-fuzzing/done-tests/"
 TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/"
@@ -19,6 +19,7 @@ running_tests = []
 done_tests = 0
 crashes_set = set()
 aborts_set = set()
+killed_set = set()
 
 
 def execute(test, proc_ecodes, pidx):
@@ -66,10 +67,13 @@ def main():
                 # Remove it after the loop so as not to mess with the indices
                 tests_to_remove.append(t)
                 # Save the exitcode in the dictionary
-                exitcode = proc_ecodes[proc_ids[proc]]
+                exitcode = proc_ecodes[proc_ids[proc][0]]
 
                 if exitcode == -signal.SIGABRT:
                     aborts_set.add(t)
+
+                if exitcode == -signal.SIGKILL:
+                    killed_set.add(t)
 
                 # If the test crashed, re-queue it so that it runs again
                 if exitcode < 0:
@@ -83,6 +87,14 @@ def main():
                     done_tests += 1
                     changed = True
 
+            # Check if the test has been running for too long and kill them
+            start_time = proc_ids[proc][1]
+            if time.time() - start_time > TIME_LIMIT:
+                logging.debug(
+                    f"{running_tests[idx]} exceeded time limit, killing")
+                killed_set.add(proc)
+                proc.kill()
+
         # Remove the finished processes and tests
         proc_ids = {p: e for p, e in proc_ids.items()
                     if p not in procs_to_remove}
@@ -94,20 +106,26 @@ def main():
             running_tests.append(test_to_run)
             p = Process(target=execute, args=(
                 test_to_run, proc_ecodes, proc_id))
-            proc_ids[p] = proc_id
+
+            # Save an id and the start time of the process
+            proc_ids[p] = (proc_id, time.time())
             proc_id += 1
             p.start()
-            # p.join()
 
         if changed:
             logging.info(f"Finished tests so far: {done_tests}")
             logging.info(f"Total crashes: {len(crashes_set)}")
             # logging.info(f"Of which are aborts: {len(aborts_set)}")
+            # logging.info(f"Of which were killed: {len(killed_set)}")
 
         time.sleep(10)
 
     for p in proc_ids.keys():
         p.join()
+
+    # Also run native tests
+    subprocess.run(["bazel", "test", "//tensorflow/core/kernels:all",
+                    "--test_output=all", "--cache_test_results=no", "--runs_per_test=5"])
 
     logging.info(f"Total tests run: {done_tests}")
 
