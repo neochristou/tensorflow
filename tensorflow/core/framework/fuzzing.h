@@ -31,7 +31,7 @@
 #define NMUT_UPPER_BOUND 5000000
 #define NMUT_LOWER_BOUND 500000
 #define NMUT_PERCENT 10
-#define CRASHES_BOUND 2
+#define CRASHES_BOUND 3
 #define MUTFILE_TRIES 5
 #define MEDIUM_INT_FUZZ 0x20000000
 #define MEDIUM_INT_NEG_FUZZ -0x20000000
@@ -49,14 +49,14 @@
 #define LARGE_HALF_NEG_FUZZ -65000
 #define LARGE_STRING "aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac"
 #define ZERO_FUZZ 0
-#define ARRAYREF_LEN 10
+#define SMALL_INT_FUZZ 0xfffe
+#define SMALL_INT_NEG_FUZZ -0xfffe
+
 #define TENSOR_NUM_DIMS_FUZZ 5
 #define TENSOR_DIM_SIZE_FUZZ 5
 #define LARGE_TENSOR_DIMS_FUZZ 30
-#define SMALL_INT_FUZZ 0xfffe
-#define SMALL_INT_NEG_FUZZ -0xfffe
-#define FILENAME_SZ 100
-#define BUFSZ 0x100
+
+#define FILENAME_SZ 0x100
 #define LOGBUFSZ 0x20
 
 namespace tffuzzing {
@@ -84,10 +84,9 @@ namespace tffuzzing {
         std::vector<tensorflow::DataType> tensor_types;
         /* std::vector<TFType> func_types; */
         tensorflow::OpKernelContext *original_ctx;
-        char *filename;
         tensorflow::gtl::InlinedVector<tensorflow::TensorValue, 4> *last_fuzz_inputs;
 
-        std::vector<int> int_mutations = {ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
+        std::vector<tensorflow::int32> int_mutations = {ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, SMALL_INT_FUZZ, SMALL_INT_NEG_FUZZ};
         std::vector<float> half_mutations = {ZERO_FUZZ, LARGE_HALF_FUZZ, LARGE_HALF_NEG_FUZZ};
         std::vector<tensorflow::int64> long_mutations = {ZERO_FUZZ, LARGE_LONG_FUZZ, LARGE_LONG_NEG_FUZZ,
@@ -95,15 +94,22 @@ namespace tffuzzing {
             HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ
             /* MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, */
         };
-        std::vector<tensorflow::uint8> ubyte_mutations = {ZERO_FUZZ, 255};
+        std::vector<tensorflow::uint8> int8_mutations = {-127, ZERO_FUZZ, 127};
+        std::vector<tensorflow::uint8> uint8_mutations = {ZERO_FUZZ, 255};
         std::vector<float> float_mutations = {ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
         std::vector<double> double_mutations = {ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
         std::vector<tensorflow::tstring> string_mutations = {tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
-        std::vector<tensorflow::TensorValue> ubyte_tensor_mutations;
-        std::vector<tensorflow::TensorValue> int_tensor_mutations;
-        std::vector<tensorflow::TensorValue> uint_tensor_mutations;
-        std::vector<tensorflow::TensorValue> long_tensor_mutations;
-        std::vector<tensorflow::TensorValue> ulong_tensor_mutations;
+        std::vector<tensorflow::TensorValue> qint8_tensor_mutations;
+        std::vector<tensorflow::TensorValue> qint16_tensor_mutations;
+        std::vector<tensorflow::TensorValue> qint32_tensor_mutations;
+        std::vector<tensorflow::TensorValue> quint8_tensor_mutations;
+        std::vector<tensorflow::TensorValue> quint16_tensor_mutations;
+        std::vector<tensorflow::TensorValue> int8_tensor_mutations;
+        std::vector<tensorflow::TensorValue> uint8_tensor_mutations;
+        std::vector<tensorflow::TensorValue> int32_tensor_mutations;
+        std::vector<tensorflow::TensorValue> uint32_tensor_mutations;
+        std::vector<tensorflow::TensorValue> int64_tensor_mutations;
+        std::vector<tensorflow::TensorValue> uint64_tensor_mutations;
         std::vector<tensorflow::TensorValue> half_tensor_mutations;
         std::vector<tensorflow::TensorValue> float_tensor_mutations;
         std::vector<tensorflow::TensorValue> double_tensor_mutations;
@@ -120,7 +126,8 @@ namespace tffuzzing {
         void restore_last_mutation(long long last_mutation, char *fname);
         tensorflow::OpKernelContext *fuzz_ctx = nullptr;
         void mark_fuzzing_done();
-        template <class T> tensorflow::TensorValue *get_constant_tensor(T value);
+        void mark_unknown_type(tensorflow::DataType ttype);
+        template <class T> tensorflow::TensorValue *get_constant_tensor(T value, tensorflow::Tensor *tensor);
 
     public:
 
