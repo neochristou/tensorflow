@@ -46,6 +46,12 @@ def handle_value_edge_cases(value):
 
 def parse_crash_argument(arg):
     attrs = arg.split(':')
+
+    # This usually means unknown type (e.g., 'Resource' or 'Variant')
+    # which is not printed as expected
+    if len(args) < 3:
+        return None
+
     tensor_type = attrs[1].replace(' shape', '').strip(' ')
     tensor_shape = attrs[2].replace(' values', '').strip(' ')
     # TODO get the actual values, for now we assume they are all the same
@@ -65,7 +71,13 @@ def synthesize_args(crashing_args, param_names):
             break
 
         param_name = param_names[idx]
-        tensor_type, tensor_shape, tensor_values = parse_crash_argument(arg)
+        crash_args = parse_crash_argument(arg)
+
+        # Will return none if it finds an arg in an unexpected format
+        if crash_args is None:
+            return None
+
+        tensor_type, tensor_shape, tensor_values = crash_args
 
         if len(tensor_values) > 0:
             value = tensor_values[0]
@@ -95,6 +107,12 @@ def synthesize_file(crash, kernel_name):
         return None
 
     fuzz_tensors = synthesize_args(crashing_args, param_names)
+
+    if fuzz_tensors is None:
+        # Contains bad type
+        print(f"Bad type {kernel_name}, skipping")
+        return None
+
     synth_file.extend(fuzz_tensors)
 
     kwargs = ["{}=arg_{}".format(param_names[idx], idx)
@@ -140,6 +158,11 @@ def main():
 
             for crash in crashes:
                 crash = crash.strip()
+
+                if len(crash) == 0:
+                    print("Skipping empty crash for", kernel_name)
+                    continue
+
                 # print(kernel_name)
                 synth_file = synthesize_file(crash, kernel_name)
                 if synth_file is not None:

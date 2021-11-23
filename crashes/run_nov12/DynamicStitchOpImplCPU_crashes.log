@@ -1,0 +1,12 @@
+Tensor<type: double shape: [0] values: >
+Tensor<type: int32 shape: [0,2] values: >
+Tensor<type: int32 shape: [0] values: >
+Tensor<type: int32 shape: [0] values: >
+
+--------------------------------------
+Tensor<type: int32 shape: [] values: 536870912>
+Tensor<type: double shape: [0] values: >
+Tensor<type: int32 shape: [] values: -1879048192>
+Tensor<type: int32 shape: [0] values: >
+
+--------------------------------------

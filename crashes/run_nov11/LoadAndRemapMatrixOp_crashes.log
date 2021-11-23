@@ -1,0 +1,14 @@
+Tensor<type: string shape: [1] values: /tmp/checkpoint_ops_testnelqx2ot/bundle_checkpoint>
+Tensor<type: string shape: [1] values: /tmp/checkpoint_ops_testnelqx2ot/bundle_checkpoint>
+Tensor<type: int64 shape: [] values: 0>
+Tensor<type: int64 shape: [7] values: -1 -1 -1...>
+Tensor<type: float shape: [112] values: 42 42 42...>
+
+--------------------------------------
+Tensor<type: string shape: [] values: >
+Tensor<type: string shape: [1] values: /tmp/checkpoint_ops_test1low1wmo/bundle_checkpoint>
+Tensor<type: int64 shape: [] values: 0>
+Tensor<type: int64 shape: [7] values: -1 -1 -1...>
+Tensor<type: float shape: [112] values: 42 42 42...>
+
+--------------------------------------

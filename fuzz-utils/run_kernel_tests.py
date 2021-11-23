@@ -4,13 +4,11 @@ import signal
 import subprocess
 import time
 from glob import glob
-from multiprocessing import Lock, Manager, Pool, Process, current_process
+from multiprocessing import Lock, Manager, Pool, Process
 
 NUM_PARALLEL_PROCESSES = 5
 NUM_CRASHES = 3
 TIME_LIMIT = 900
-RES_FOLDER = "/media/tf-fuzzing/results/"
-DONE_FOLDER = "/media/tf-fuzzing/done-tests/"
 PYTHON_TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/"
 CC_TEST_FOLDER = "/media/mlfuzz/tensorflow/bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
@@ -21,7 +19,7 @@ tests_to_run += glob(CC_TEST_FOLDER + "*_test")
 
 TOTAL_TESTS = len(tests_to_run)
 
-done_tests = []
+done_tests = set()
 crashes_set = set()
 aborts_set = set()
 killed_set = set()
@@ -29,7 +27,7 @@ killed_set = set()
 crash_counts = {}
 
 
-def execute(test, proc_ecodes, pidx, start_time):
+def execute(test):
 
     args = [test]
 
@@ -38,6 +36,7 @@ def execute(test, proc_ecodes, pidx, start_time):
 
     retcode = 0
 
+    start_time = time.time()
     try:
         completed = subprocess.run(args,
                                    stdout=subprocess.DEVNULL,
@@ -45,10 +44,11 @@ def execute(test, proc_ecodes, pidx, start_time):
                                    timeout=TIME_LIMIT)
         retcode = completed.returncode
     except subprocess.TimeoutExpired as e:
-        logging.info(f"Timeout expired for {test}")
+        logging.debug(f"Timeout expired for {test}")
         retcode = -9
     finally:
-        return (test, time.time() - start_time, retcode)
+        end_time = time.time() - start_time
+        return (test, end_time, retcode)
 
 
 def log_test_duration(dur, test):
@@ -62,7 +62,7 @@ def proc_finished(results):
 
     test, running_time, exitcode = results
 
-    done_tests.append(test)
+    done_tests.add(test)
     log_test_duration(running_time, test)
 
     if exitcode == -signal.SIGABRT:
@@ -76,7 +76,7 @@ def proc_finished(results):
 
         crash_counts[test] += 1
         crashes_set.add(test)
-        logging.info(
+        logging.debug(
             f"Test {test} crashed with exit code {exitcode}, requeueing")
 
         if crash_counts[test] < NUM_CRASHES:
@@ -85,34 +85,30 @@ def proc_finished(results):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
+    # logging.basicConfig(level=logging.DEBUG)
     # lock = Lock()
     manager = Manager()
     pool = Pool(processes=NUM_PARALLEL_PROCESSES)
-    # Used to save the test exit codes
-    proc_ecodes = manager.dict()
-    proc_ids = {}
-    proc_id = 0
-
-    # Save an id and the start time of the process
-    # proc_ids[p] = (proc_id, time.time())
-    # proc_id += 1
+    last_finished = 0
 
     while len(done_tests) < TOTAL_TESTS:
 
         while len(tests_to_run) > 0:
 
             test_to_run = tests_to_run.pop()
-            p = pool.apply_async(execute, args=(
-                test_to_run, proc_ecodes, proc_id, time.time()),
-                callback=proc_finished,
-                error_callback=proc_finished)
+            p = pool.apply_async(execute, args=(test_to_run,),
+                                 callback=proc_finished,
+                                 error_callback=proc_finished)
 
             # logging.info(f"Total crashes: {len(crashes_set)}")
             # logging.info(f"Of which are aborts: {len(aborts_set)}")
             # logging.info(f"Of which were killed: {len(killed_set)}")
 
         time.sleep(10)
-        logging.info(f"Finished tests so far: {len(done_tests)}")
+        finished = len(done_tests)
+        if finished != last_finished:
+            logging.info(f"Finished tests so far: {finished}")
+            last_finished = finished
 
-    logging.info(f"Total tests run: {done_tests}")
+    logging.info(f"Total tests run: {len(done_tests)}")

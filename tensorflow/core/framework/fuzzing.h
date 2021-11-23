@@ -31,7 +31,7 @@
 #define NMUT_UPPER_BOUND 5000000
 #define NMUT_LOWER_BOUND 500000
 #define NMUT_PERCENT 10
-#define CRASHES_BOUND 3
+#define CRASHES_BOUND 2
 #define MUTFILE_TRIES 5
 #define MEDIUM_INT_FUZZ 0x20000000
 #define MEDIUM_INT_NEG_FUZZ -0x20000000
@@ -82,23 +82,22 @@ namespace tffuzzing {
         std::vector<int> indices;
         std::vector<tensorflow::TensorShape> tensor_shapes;
         std::vector<tensorflow::DataType> tensor_types;
-        /* std::vector<TFType> func_types; */
         tensorflow::OpKernelContext *original_ctx;
-        tensorflow::gtl::InlinedVector<tensorflow::TensorValue, 4> *last_fuzz_inputs;
 
-        std::vector<tensorflow::int32> int_mutations = {ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
+        std::vector<tensorflow::int32> int_mutations{ZERO_FUZZ, LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, SMALL_INT_FUZZ, SMALL_INT_NEG_FUZZ};
-        std::vector<float> half_mutations = {ZERO_FUZZ, LARGE_HALF_FUZZ, LARGE_HALF_NEG_FUZZ};
-        std::vector<tensorflow::int64> long_mutations = {ZERO_FUZZ, LARGE_LONG_FUZZ, LARGE_LONG_NEG_FUZZ,
+        // Float here, converted to Eigen::half when used
+        std::vector<float> half_mutations{ZERO_FUZZ, LARGE_HALF_FUZZ, LARGE_HALF_NEG_FUZZ};
+        std::vector<tensorflow::int64> long_mutations{ZERO_FUZZ, LARGE_LONG_FUZZ, LARGE_LONG_NEG_FUZZ,
             LARGE_INT_FUZZ, LARGE_INT_NEG_FUZZ,
             HUGE_LONG_FUZZ, HUGE_LONG_NEG_FUZZ
-            /* MEDIUM_INT_FUZZ, MEDIUM_INT_NEG_FUZZ, */
         };
-        std::vector<tensorflow::uint8> int8_mutations = {-127, ZERO_FUZZ, 127};
-        std::vector<tensorflow::uint8> uint8_mutations = {ZERO_FUZZ, 255};
-        std::vector<float> float_mutations = {ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
-        std::vector<double> double_mutations = {ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
-        std::vector<tensorflow::tstring> string_mutations = {tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
+        std::vector<tensorflow::int8> int8_mutations{-127, ZERO_FUZZ, 127};
+        std::vector<tensorflow::uint8> uint8_mutations{ZERO_FUZZ, 255};
+        std::vector<float> float_mutations{ZERO_FUZZ, LARGE_FLOAT_FUZZ, LARGE_FLOAT_NEG_FUZZ};
+        std::vector<double> double_mutations{ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
+        std::vector<tensorflow::tstring> string_mutations{tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
+
         std::vector<tensorflow::TensorValue> qint8_tensor_mutations;
         std::vector<tensorflow::TensorValue> qint16_tensor_mutations;
         std::vector<tensorflow::TensorValue> qint32_tensor_mutations;
@@ -106,6 +105,8 @@ namespace tffuzzing {
         std::vector<tensorflow::TensorValue> quint16_tensor_mutations;
         std::vector<tensorflow::TensorValue> int8_tensor_mutations;
         std::vector<tensorflow::TensorValue> uint8_tensor_mutations;
+        std::vector<tensorflow::TensorValue> int16_tensor_mutations;
+        std::vector<tensorflow::TensorValue> uint16_tensor_mutations;
         std::vector<tensorflow::TensorValue> int32_tensor_mutations;
         std::vector<tensorflow::TensorValue> uint32_tensor_mutations;
         std::vector<tensorflow::TensorValue> int64_tensor_mutations;
@@ -116,7 +117,6 @@ namespace tffuzzing {
         std::vector<tensorflow::TensorValue> bool_tensor_mutations;
         std::vector<tensorflow::TensorValue> string_tensor_mutations;
         std::vector<int> pool_sizes;
-        /* std::vector<double> tensor_contents; */
 
         void log_backtrace(char *fname);
         void initialize_tensor_pools();
@@ -127,7 +127,10 @@ namespace tffuzzing {
         tensorflow::OpKernelContext *fuzz_ctx = nullptr;
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
-        template <class T> tensorflow::TensorValue *get_constant_tensor(T value, tensorflow::Tensor *tensor);
+        tensorflow::TensorValue *get_empty_tensor_dims(tensorflow::DataType ttype, tensorflow::TensorShape dims);
+        template <class T> tensorflow::TensorValue *get_constant_tensor(T value);
+        template <class T> tensorflow::TensorValue *get_flat_tensor(T value, tensorflow::Tensor *tensor);
+        template <class T> tensorflow::TensorValue *get_flat_tensor_dims(T value, tensorflow::DataType ttype, tensorflow::TensorShape dims);
 
     public:
 

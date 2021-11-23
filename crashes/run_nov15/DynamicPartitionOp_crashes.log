@@ -1,0 +1,4 @@
+Tensor<type: double shape: [12,10,19] values: [[1.5e+300 1.5e+300 1.5e+300...]]...>
+Tensor<type: int32 shape: [] values: 1879048192>
+
+--------------------------------------

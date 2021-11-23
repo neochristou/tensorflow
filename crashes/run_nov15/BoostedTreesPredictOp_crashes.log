@@ -1,0 +1,10 @@
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: int32 shape: [3] values: 2 2 1>
+Tensor<type: int32 shape: [3] values: 13 1 3>
+
+--------------------------------------
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: int32 shape: [3] values: 0 0 0>
+Tensor<type: int32 shape: [3] values: 13 1 3>
+
+--------------------------------------

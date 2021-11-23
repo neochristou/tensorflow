@@ -1,0 +1,10 @@
+Tensor<type: int64 shape: [10,3] values: [0 0 0]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: int64 shape: [] values: 8608480567731124087>
+
+--------------------------------------
+Tensor<type: int64 shape: [3,2] values: [0 0][1...]...>
+Tensor<type: int32 shape: [13] values: 1879048192 1879048192 1879048192...>
+Tensor<type: int64 shape: [24,30] values: [-1879048192 -1879048192 -1879048192...]...>
+
+--------------------------------------

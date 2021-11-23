@@ -1,0 +1,5 @@
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [32] values: nan 3.08272e-41 0...>
+Tensor<type: float shape: [32] values: nan 3.08272e-41 0...>
+
+--------------------------------------

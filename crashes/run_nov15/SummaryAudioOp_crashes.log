@@ -1,0 +1,10 @@
+Tensor<type: string shape: [] values: >
+Tensor<type: float shape: [4,2,2] values: [[0 0][0...]]...>
+Tensor<type: float shape: [4,2,2] values: [[0 0][0...]]...>
+
+--------------------------------------
+Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Tensor<type: float shape: [4,2,2] values: [[0 0][0...]]...>
+Tensor<type: float shape: [4,2,2] values: [[0 0][0...]]...>
+
+--------------------------------------

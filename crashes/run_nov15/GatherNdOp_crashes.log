@@ -1,0 +1,8 @@
+Tensor<type: float shape: [5] values: 0 1 2...>
+Tensor<type: double shape: [0] values: >
+
+--------------------------------------
+Tensor<type: float shape: [5] values: 0 0 0...>
+Tensor<type: double shape: [0] values: >
+
+--------------------------------------

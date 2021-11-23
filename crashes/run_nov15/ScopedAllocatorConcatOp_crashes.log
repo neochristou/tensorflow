@@ -1,0 +1,10 @@
+Tensor<type: float shape: [32] values: 0 0 3.60134e-43...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [32] values: 0 0 3.60134e-43...>
+
+--------------------------------------
+Tensor<type: float shape: [32] values: -3.5e+35 -3.5e+35 -3.5e+35...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [32] values: 3.83868268e-28 4.57636e-41 3.83868268e-28...>
+
+--------------------------------------
