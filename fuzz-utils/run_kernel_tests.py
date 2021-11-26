@@ -7,15 +7,25 @@ from glob import glob
 from multiprocessing import Lock, Manager, Pool, Process
 
 NUM_PARALLEL_PROCESSES = 5
-NUM_CRASHES = 3
-TIME_LIMIT = 900
+TIME_LIMIT = 1800
 PYTHON_TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/"
 CC_TEST_FOLDER = "/media/mlfuzz/tensorflow/bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
+BAZEL_TEST_ARGS = ['--test_output=all',
+                   '----cache_test_results=no', '--runs_per_test=20', '--flaky_test_attempts=10']
+
+EXCLUDE_TESTS = [
+    '/media/mlfuzz/tensorflow/tensorflow/python/eager/remote_cluster_test.py',
+    '/media/mlfuzz/tensorflow/tensorflow/python/kernel_tests/segment_reduction_ops_test.py',
+    '/media/mlfuzz/tensorflow/tensorflow/python/kernel_tests/sparse_reorder_op_test.py',
+    #    '/media/mlfuzz/tensorflow/tensorflow/python/kernel_tests/reshape_op_test.py'
+]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
 tests_to_run += glob(CC_TEST_FOLDER + "*_test")
+for t in EXCLUDE_TESTS:
+    tests_to_run.remove(t)
 
 TOTAL_TESTS = len(tests_to_run)
 
@@ -24,15 +34,16 @@ crashes_set = set()
 aborts_set = set()
 killed_set = set()
 
-crash_counts = {}
-
 
 def execute(test):
 
-    args = [test]
+    args = []
 
     if PYTHON_TEST_FOLDER in os.path.realpath(test):
-        args.insert(0, "python3")
+        args = ["python3", test]
+    elif CC_TEST_FOLDER in os.path.realpath(test):
+        bazel_test = '//tensorflow/core/kernels:' + test
+        args = ["bazel", "test", bazel_test] + BAZEL_TEST_ARGS
 
     retcode = 0
 
@@ -62,7 +73,6 @@ def proc_finished(results):
 
     test, running_time, exitcode = results
 
-    done_tests.add(test)
     log_test_duration(running_time, test)
 
     if exitcode == -signal.SIGABRT:
@@ -71,22 +81,18 @@ def proc_finished(results):
     # If the test crashed, re-queue it so that it runs again
     if exitcode < 0:
 
-        if test not in crash_counts:
-            crash_counts[test] = 0
-
-        crash_counts[test] += 1
         crashes_set.add(test)
         logging.debug(
             f"Test {test} crashed with exit code {exitcode}, requeueing")
-
-        if crash_counts[test] < NUM_CRASHES:
-            tests_to_run.append(test)
+        tests_to_run.append(test)
+    else:
+        done_tests.add(test)
 
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.INFO)
-    # logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     # lock = Lock()
     manager = Manager()
     pool = Pool(processes=NUM_PARALLEL_PROCESSES)

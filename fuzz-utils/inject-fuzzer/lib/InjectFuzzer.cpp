@@ -91,6 +91,12 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
+  // Skip SummaryOps
+  if (OpName.contains("SummaryOp")) {
+    llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
+    return;
+  }
+
   if (OpName.startswith("BoostedTreesCreate")) {
     llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n";
     return;
@@ -116,10 +122,15 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
   std::string ComputeText = get_source_text(ComputeSR, InjectFuzzerRewriter.getSourceMgr());
 
-  if (ComputeText.find(std::string("PhiloxRandom")) != std::string::npos) {
-    llvm::outs() << "Skipping " << OpName << " (PhiloxRandom)\n";
+  if (ComputeText.find(std::string("ResourceMgr")) != std::string::npos) {
+    llvm::outs() << "Skipping " << OpName << " (ResourceMgr)\n";
     return;
   }
+
+  /* if (ComputeText.find(std::string("PhiloxRandom")) != std::string::npos) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (PhiloxRandom)\n"; */
+  /*   return; */
+  /* } */
 
   if (ComputeText.find(std::string("mutex")) != std::string::npos ||
       ComputeText.find(std::string("Mutex")) != std::string::npos

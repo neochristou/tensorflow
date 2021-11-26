@@ -49,7 +49,7 @@ def parse_crash_argument(arg):
 
     # This usually means unknown type (e.g., 'Resource' or 'Variant')
     # which is not printed as expected
-    if len(args) < 3:
+    if len(attrs) < 3:
         return None
 
     tensor_type = attrs[1].replace(' shape', '').strip(' ')
@@ -110,7 +110,7 @@ def synthesize_file(crash, kernel_name):
 
     if fuzz_tensors is None:
         # Contains bad type
-        print(f"Bad type {kernel_name}, skipping")
+        print(f"Bad type in {kernel_name}, skipping")
         return None
 
     synth_file.extend(fuzz_tensors)

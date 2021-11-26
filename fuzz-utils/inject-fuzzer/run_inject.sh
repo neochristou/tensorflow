@@ -5,7 +5,8 @@ INCLUDE_OP_STRING="#include \"tensorflow/core/framework/op_kernel.h\""
 INCLUDE_EIGEN_STRING="#define EIGEN_USE"
 
 filenames=$(/usr/bin/fdfind -t f '.*\.cc$' $TF_KERNELS_PATH --ignore-file inject-ignore)
-extra_files=("cwise_ops_common.h" "cwise_ops_gpu_common.cu.h" "function_ops.h" "data/experimental/compute_batch_size_op.cc" "shape_ops.h" "conditional_accumulator_base.h" "tensor_to_hash_bucket_op.h" "example_parsing_ops.cc" "string_to_hash_bucket_op.h")
+filenames+=('reshape_op.h')
+extra_header_files=("cwise_ops_common.h" "cwise_ops_gpu_common.cu.h" "function_ops.h" "data/experimental/compute_batch_size_op.cc" "shape_ops.h" "conditional_accumulator_base.h" "tensor_to_hash_bucket_op.h" "example_parsing_ops.cc" "string_to_hash_bucket_op.h")
 
 for filename in $filenames; do
     includeopline=$(grep -n "$INCLUDE_OP_STRING" "$filename")
@@ -25,7 +26,7 @@ done
 
 # Manually inject fuzzing header in some common header files
 
-for file in "${extra_files[@]}"; do
+for file in "${extra_header_files[@]}"; do
     filename="$TF_KERNELS_PATH/$file"
     includeopline=$(grep -n "$INCLUDE_OP_STRING" "$filename")
     if [[ ! $includeopline ]]; then

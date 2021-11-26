@@ -98,6 +98,8 @@ namespace tffuzzing {
         std::vector<double> double_mutations{ZERO_FUZZ, LARGE_DOUBLE_FUZZ, LARGE_DOUBLE_NEG_FUZZ};
         std::vector<tensorflow::tstring> string_mutations{tensorflow::tstring(""), tensorflow::tstring(LARGE_STRING)};
 
+        std::vector<tensorflow::Tensor> original_inputs;
+
         std::vector<tensorflow::TensorValue> qint8_tensor_mutations;
         std::vector<tensorflow::TensorValue> qint16_tensor_mutations;
         std::vector<tensorflow::TensorValue> qint32_tensor_mutations;
@@ -118,13 +120,13 @@ namespace tffuzzing {
         std::vector<tensorflow::TensorValue> string_tensor_mutations;
         std::vector<int> pool_sizes;
 
-        void log_backtrace(char *fname);
+        tensorflow::OpKernelContext *fuzz_ctx = nullptr;
+
         void initialize_tensor_pools();
         void calculate_total_mutations();
         void next_mutations_indices(bool log);
         inline void inc_mutations_indices(bool log);
         void restore_last_mutation(long long last_mutation, char *fname);
-        tensorflow::OpKernelContext *fuzz_ctx = nullptr;
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
         tensorflow::TensorValue *get_empty_tensor_dims(tensorflow::DataType ttype, tensorflow::TensorShape dims);

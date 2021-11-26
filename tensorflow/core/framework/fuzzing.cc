@@ -20,9 +20,6 @@ namespace tffuzzing {
     int done_status;
     int unknown_status;
 
-    /* memset(stat_filename, 0, FILENAME_SZ); */
-    /* memset(unknown_filename, 0, FILENAME_SZ); */
-
     snprintf(stat_filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, fname.c_str());
     snprintf(unknown_filename, FILENAME_SZ, "%s/%s.unknown", results_dir, fname.c_str());
 
@@ -41,6 +38,8 @@ namespace tffuzzing {
       cur_fname = fname;
 
       num_args = ctx->num_inputs();
+      printf("Copying original inputs\n");
+
       original_ctx = new tensorflow::OpKernelContext(ctx->get_params());
 
       /* printf("Original num args: %d\n", original_ctx->num_inputs()); */
@@ -71,11 +70,6 @@ namespace tffuzzing {
       tensorflow::TensorShape tensor_shape;
 
       mypid = ::getpid();
-
-      /* memset(proc_filename, 0, FILENAME_SZ); */
-      /* memset(mutfile_pattern, 0, FILENAME_SZ); */
-      /* memset(mutfile_prefix, 0, FILENAME_SZ); */
-      /* memset(mut_filename, 0, FILENAME_SZ); */
 
       printf("Writing to filename buffers\n");
 
@@ -134,7 +128,7 @@ namespace tffuzzing {
         globfree(&glob_result);
       }
 
-      printf("fuzzing function %s\n", fname);
+      printf("Fuzzing function %s\n", fname);
 
       // Disable buffering else program might crash before writing to logger
       if (!restore)
@@ -170,6 +164,10 @@ namespace tffuzzing {
             tries++;
           }
         }
+        // Mutation file is empty, abort
+        if (!last_line.length() > 0) {
+          abort();
+        }
         /* mutations_restore.close(); */
 
         if (last_mutation > 0) {
@@ -193,7 +191,9 @@ namespace tffuzzing {
 
   tensorflow::TensorValue Fuzzer::get_next_mut(tensorflow::DataType ttype, int idx) {
 
-    /* printf("get_next_mut()\n"); */
+    printf("get_next_mut()\n");
+
+    tensorflow::Tensor *tensor;
 
     switch (ttype) {
       default:
@@ -237,12 +237,21 @@ namespace tffuzzing {
 
         //  No mutations for these so just return the original tensor
       case tensorflow::DataType::DT_VARIANT:
+      {
+        /* std::cout << "Creating DT_VARIANT tensor\n" << std::flush; */
+        tensorflow::Tensor orig = original_ctx->input(idx);
+        tensor = new tensorflow::Tensor();
+        tensor->flat<tensorflow::Variant>() = orig.flat<tensorflow::Variant>();
+        return tensorflow::TensorValue(tensor);
+      }
+
       case tensorflow::DataType::DT_COMPLEX64:
       case tensorflow::DataType::DT_COMPLEX128:
       case tensorflow::DataType::DT_RESOURCE:
-        tensorflow::Tensor tensor;
-        tensor = tensorflow::Tensor(original_ctx->input(idx));
-        return tensorflow::TensorValue(&tensor);
+      {
+        tensor = new tensorflow::Tensor(original_ctx->input(idx));
+        return tensorflow::TensorValue(tensor);
+      }
     }
   }
 
@@ -267,10 +276,6 @@ namespace tffuzzing {
     long last_crash; // Used to bound number of crashes
     struct stat stat_buffer;
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
-
-    /* memset(crashes_num_filename, 0, FILENAME_SZ); */
-    /* memset(crashes_filename, 0, FILENAME_SZ); */
-    /* memset(logbuf, 0, LOGBUFSZ); */
 
     snprintf(crashes_filename, FILENAME_SZ, "%s/%s_crashes.log", results_dir, fname);
     crashes_logger_filename = crashes_filename;
@@ -317,9 +322,9 @@ namespace tffuzzing {
         default:
           crashes_file << tensor_val.tensor->DebugString() << "\n";
         case tensorflow::DataType::DT_VARIANT:
-          crashes_file << "Variant" << "\n";
+          crashes_file << "Variant" << std::endl << std::flush;
         case tensorflow::DataType::DT_RESOURCE:
-          crashes_file << "Resource" << "\n";
+          crashes_file << "Resource" << std::endl << std::flush;
       }
     }
 
@@ -418,10 +423,12 @@ namespace tffuzzing {
           total_mutations *= string_tensor_mutations.size();
           pool_sizes.push_back(string_tensor_mutations.size());
           break;
+        // Just the original
         case tensorflow::DataType::DT_VARIANT:
         case tensorflow::DataType::DT_COMPLEX64:
         case tensorflow::DataType::DT_COMPLEX128:
         case tensorflow::DataType::DT_RESOURCE:
+          pool_sizes.push_back(1);
           break;
       }
     }
@@ -798,7 +805,6 @@ namespace tffuzzing {
     char filename[FILENAME_SZ] = {};
 
     std::cout << "\033[1;31mUnknown type:\033[0m " << ttype << std::endl << std::flush;
-    /* memset(filename, 0, FILENAME_SZ); */
 
     // Indicates a type that isn't handled in the fuzzer
     snprintf(filename, FILENAME_SZ, "%s/%s.unknown", results_dir, cur_fname.c_str());
@@ -817,7 +823,6 @@ namespace tffuzzing {
     /* printf("mark_fuzzing_done()\n"); */
 
     char filename[FILENAME_SZ] = {};
-    /* memset(filename, 0, FILENAME_SZ); */
 
     // This file indicates to the fuzzer that this kernel has been already fuzzed
     snprintf(filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, cur_fname.c_str());
@@ -851,7 +856,7 @@ namespace tffuzzing {
   // Skips ahead num_mut_skip mutations to bound the total mutations
   void Fuzzer::next_mutations_indices(bool log){
 
-    /* printf("Mutations left: %lu\n", total_mutations); */
+    printf("Mutations left: %lu\n", total_mutations);
 
     if (total_mutations <= 0) {
       return;
@@ -867,30 +872,21 @@ namespace tffuzzing {
 
     if (log) {
       char logbuf[LOGBUFSZ] = {};
-      /* memset(logbuf, 0, LOGBUFSZ); */
       snprintf(logbuf, LOGBUFSZ, "%llu", total_mutations);
       mutations_file.seekp(0, std::ios::beg);
       mutations_file.write(logbuf, LOGBUFSZ);
       mutations_file.flush();
     }
 
+    /* std::cout << "next_mutations_indices end\n" << std::flush; */
   }
 
 
   tensorflow::OpKernelContext *Fuzzer::get_fuzzed_context() {
 
-    /* printf("get_fuzzed_context()\n"); */
+    /* std::cout << "get_fuzzed_context()\n" << std::flush; */
 
     tensorflow::DataType ttype;
-
-    /* if (fuzz_ctx) { */
-    /*   delete last_fuzz_inputs; */
-    /*   printf("Num args after last_fuzz_inputs delete: %d\n", original_ctx->num_inputs()); */
-    /*   delete fuzz_ctx; */
-    /*   printf("Num args after fuzz_ctx delete: %d\n", original_ctx->num_inputs()); */
-    /* } */
-
-
     tensorflow::OpKernelContext::Params *fuzz_ctx_params = original_ctx->get_params();
     std::vector<tensorflow::TensorValue> fuzz_vec;
     tensorflow::TensorValue fuzz_tensval;
