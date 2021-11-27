@@ -1,0 +1,11 @@
+Tensor<type: double shape: [6] values: -1 0 1.5...>
+Variant
+Resource
+Tensor<type: double shape: [2] values: 0 5>
+Variant
+Resource
+Tensor<type: int32 shape: [] values: 536870912>
+Variant
+Resource
+
+--------------------------------------

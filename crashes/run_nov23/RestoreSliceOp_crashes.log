@@ -1,0 +1,22 @@
+Tensor<type: string shape: [] values: /tmp/tensor_int>
+Variant
+Resource
+Tensor<type: string shape: [] values: tensor_int>
+Variant
+Resource
+Tensor<type: string shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: string shape: [] values: /tmp/tensor_int>
+Variant
+Resource
+Tensor<type: string shape: [] values: tensor_int>
+Variant
+Resource
+Tensor<type: string shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------

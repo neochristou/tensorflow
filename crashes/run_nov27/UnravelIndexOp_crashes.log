@@ -1,0 +1,12 @@
+Tensor<type: int32 shape: [3] values: -536870912 -536870912 -536870912>
+Resource
+Tensor<type: int32 shape: [3] values: -536870912 -536870912 -536870912>
+Resource
+
+--------------------------------------
+Tensor<type: int32 shape: [2] values: -536870912 -536870912>
+Resource
+Tensor<type: int32 shape: [3] values: -536870912 -536870912 -536870912>
+Resource
+
+--------------------------------------

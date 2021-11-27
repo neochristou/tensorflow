@@ -1,0 +1,8 @@
+Tensor<type: string shape: [2,2] values: [e f][g...]...>
+Resource
+Tensor<type: string shape: [2,2] values: [a b][c...]...>
+Resource
+Tensor<type: string shape: [2,2] values: [a b][c...]...>
+Resource
+
+--------------------------------------

@@ -1,0 +1,28 @@
+Tensor<type: int32 shape: [8,1] values: [3][1][2]...>
+Variant
+Resource
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Variant
+Resource
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Variant
+Resource
+Tensor<type: int32 shape: [8] values: 1 1 2...>
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: int32 shape: [8] values: 0 0 0...>
+Variant
+Resource
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Variant
+Resource
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Variant
+Resource
+Tensor<type: int32 shape: [8] values: 1 1 2...>
+Variant
+Resource
+
+--------------------------------------

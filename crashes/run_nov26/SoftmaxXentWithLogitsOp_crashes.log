@@ -1,0 +1,16 @@
+Tensor<type: float shape: [] values: 0>
+Variant
+Resource
+Tensor<type: float shape: [2,4] values: [1 0 0...]...>
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: float shape: [] values: 3.5e+35>
+Variant
+Resource
+Tensor<type: float shape: [10,2] values: [3.92107654 -1.83817697][5.38703251...]...>
+Variant
+Resource
+
+--------------------------------------

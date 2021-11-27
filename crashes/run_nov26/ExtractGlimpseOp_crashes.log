@@ -1,0 +1,22 @@
+Tensor<type: float shape: [1,61,41,1] values: [[[1][2][3]]]...>
+Variant
+Resource
+Tensor<type: int32 shape: [2] values: -536870912 -536870912>
+Variant
+Resource
+Tensor<type: float shape: [1,61,41,1] values: [[[1][2][3]]]...>
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: float shape: [1,61,41,1] values: [[[-3.5e+35][-3.5e+35][-3.5e+35]]]...>
+Variant
+Resource
+Tensor<type: int32 shape: [2] values: -536870912 -536870912>
+Variant
+Resource
+Tensor<type: float shape: [1,61,41,1] values: [[[1][2][3]]]...>
+Variant
+Resource
+
+--------------------------------------

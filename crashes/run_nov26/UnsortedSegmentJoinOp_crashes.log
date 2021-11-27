@@ -1,0 +1,22 @@
+Tensor<type: string shape: [] values: >
+Variant
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Variant
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Variant
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Variant
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Variant
+Resource
+
+--------------------------------------

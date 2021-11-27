@@ -1,0 +1,12 @@
+Tensor<type: complex128 shape: [0] values: >
+Resource
+Tensor<type: int32 shape: [] values: 0>
+Resource
+Tensor<type: int32 shape: [] values: 536870912>
+Resource
+Tensor<type: int32 shape: [] values: -1>
+Resource
+Tensor<type: complex128 shape: [] values: ?>
+Resource
+
+--------------------------------------

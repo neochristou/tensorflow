@@ -1,0 +1,14 @@
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: string shape: [] values: .27349.16453.v2>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: string shape: [] values: /tmp/base_layer_test1gjtq82v/tmphdlgymqk>
+
+--------------------------------------
+Tensor<type: resource shape: [] values: ?>
+Tensor<type: string shape: [0] values: >
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: string shape: [] values: /tmp/callbacks_v1_testvyt7jziu/tmp_ddyqpoe/train>
+
+--------------------------------------

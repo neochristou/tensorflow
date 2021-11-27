@@ -33,12 +33,12 @@ namespace tffuzzing {
   Fuzzer::Fuzzer(char *fname, tensorflow::OpKernelContext* ctx)
   {
 
-      printf("Initializing fuzzer...\n");
+      /* std::cout << "Initializing fuzzer..." << std::endl; */
 
       cur_fname = fname;
 
       num_args = ctx->num_inputs();
-      printf("Copying original inputs\n");
+      /* std::cout << "Copying original inputs" << std::endl; */
 
       original_ctx = new tensorflow::OpKernelContext(ctx->get_params());
 
@@ -57,33 +57,31 @@ namespace tffuzzing {
       pid_t mypid;
       char *existing_pid;
 
-      printf("Initializing filename buffers...\n");
+      /* std::cout << "Initializing filename buffers..." << std::endl; */
 
       char mutfile_pattern[FILENAME_SZ] = {};
       char mutfile_prefix[FILENAME_SZ] = {};
       char proc_filename[FILENAME_SZ] = {};
       char mut_filename[FILENAME_SZ] = {};
 
-      printf("Filename buffers initialized\n");
+      /* std::cout << "Filename buffers initialized"  << std::endl; */
 
       tensorflow::Tensor tensor;
       tensorflow::TensorShape tensor_shape;
 
       mypid = ::getpid();
 
-      printf("Writing to filename buffers\n");
+      /* std::cout << "Writing to filename buffers" << std::endl; */
 
       snprintf(mutfile_pattern, FILENAME_SZ, "%s/%s_mutations.log.*", results_dir, fname);
       snprintf(mutfile_prefix, FILENAME_SZ, "%s/%s_mutations.log", results_dir, fname);
       snprintf(mut_filename, FILENAME_SZ, "%s/%s_mutations.log.%d", results_dir, fname, mypid);
 
-      printf("Filename buffers written\n");
-
-      printf("Writing to mutations logger filename\n");
+      /* std::cout << "Writing to mutations logger filename" << std::endl; */
 
       mutations_logger_filename = mut_filename;
 
-      printf("Mutation filename written\n");
+      /* std::cout << "Mutation filename written" << std::endl; */
 
       std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
 
@@ -191,7 +189,7 @@ namespace tffuzzing {
 
   tensorflow::TensorValue Fuzzer::get_next_mut(tensorflow::DataType ttype, int idx) {
 
-    printf("get_next_mut()\n");
+    /* std::cout << "get_next_mut()" << std::endl; */
 
     tensorflow::Tensor *tensor;
 
@@ -292,7 +290,7 @@ namespace tffuzzing {
         char *line_end;
         last_crash = std::strtoll(last_line.c_str(), &line_end, 10);
       } else {
-        std::cout << "Error while reading file with number of crashes..." << std::flush;
+        /* std::cout << "Error while reading file with number of crashes..." << std::flush; */
       }
     } else {
       last_crash = 0;
@@ -321,8 +319,8 @@ namespace tffuzzing {
       switch (ttype) {
         default:
           crashes_file << tensor_val.tensor->DebugString() << "\n";
-        case tensorflow::DataType::DT_VARIANT:
-          crashes_file << "Variant" << std::endl << std::flush;
+        /* case tensorflow::DataType::DT_VARIANT: */
+        /*   crashes_file << "Variant" << std::endl << std::flush; */
         case tensorflow::DataType::DT_RESOURCE:
           crashes_file << "Resource" << std::endl << std::flush;
       }
@@ -506,7 +504,7 @@ namespace tffuzzing {
 
   void Fuzzer::initialize_tensor_pools(){
 
-    /* printf("Initializing pools\n"); */
+    /* std::cout << "Initializing pools" << std::endl; */
 
     tensorflow::Tensor *tensor;
     tensorflow::TensorValue *tensor_val;
@@ -820,7 +818,7 @@ namespace tffuzzing {
   void Fuzzer::mark_fuzzing_done()
   {
 
-    /* printf("mark_fuzzing_done()\n"); */
+    /* std::cout << "mark_fuzzing_done()" << std::endl; */
 
     char filename[FILENAME_SZ] = {};
 
@@ -855,8 +853,6 @@ namespace tffuzzing {
 
   // Skips ahead num_mut_skip mutations to bound the total mutations
   void Fuzzer::next_mutations_indices(bool log){
-
-    printf("Mutations left: %lu\n", total_mutations);
 
     if (total_mutations <= 0) {
       return;

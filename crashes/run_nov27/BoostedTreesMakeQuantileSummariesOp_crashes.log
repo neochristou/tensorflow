@@ -1,0 +1,20 @@
+Tensor<type: float shape: [6] values: 2.3 1.2 1.1...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+
+--------------------------------------
+Tensor<type: float shape: [6] values: -3.5e+35 -3.5e+35 -3.5e+35...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Resource
+
+--------------------------------------

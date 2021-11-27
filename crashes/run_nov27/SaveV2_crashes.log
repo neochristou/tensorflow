@@ -1,0 +1,30 @@
+Tensor<type: string shape: [3] values: iterator/.ATTRIBUTES/ITERATOR_STATE save_counter/.ATTRIBUTES/VARIABLE_VALUE _CHECKPOINTABLE_OBJECT_GRAPH>
+Resource
+Tensor<type: string shape: [] values: /tmp/concatenate_testsqmsydyj/tmp581vv8zj/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [] values: /tmp/concatenate_testsqmsydyj/tmp581vv8zj/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [3] values: iterator/.ATTRIBUTES/ITERATOR_STATE save_counter/.ATTRIBUTES/VARIABLE_VALUE _CHECKPOINTABLE_OBJECT_GRAPH>
+Resource
+Tensor<type: string shape: [] values: /tmp/range_testsjz509pp/tmp0tzz1uob/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [] values: /tmp/range_testsjz509pp/tmp0tzz1uob/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [3] values: iterator/.ATTRIBUTES/ITERATOR_STATE save_counter/.ATTRIBUTES/VARIABLE_VALUE _CHECKPOINTABLE_OBJECT_GRAPH>
+Resource
+Tensor<type: string shape: [] values: /tmp/take_test6zuv34f5/tmpm26puic0/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [] values: /tmp/take_test6zuv34f5/tmpm26puic0/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [3] values: iterator/.ATTRIBUTES/ITERATOR_STATE save_counter/.ATTRIBUTES/VARIABLE_VALUE _CHECKPOINTABLE_OBJECT_GRAPH>
+Resource
+Tensor<type: string shape: [] values: /tmp/cache_testgcu2ogpv/tmp6efz03iz/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [] values: /tmp/cache_testgcu2ogpv/tmp6efz03iz/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [3] values: iterator/.ATTRIBUTES/ITERATOR_STATE save_counter/.ATTRIBUTES/VARIABLE_VALUE _CHECKPOINTABLE_OBJECT_GRAPH>
+Resource
+Tensor<type: string shape: [] values: /tmp/map_testxd35rqnc/tmp65gwwdbw/iterator-1_temp/part-00000-of-00001>
+Resource
+Tensor<type: string shape: [] values: /tmp/map_testxd35rqnc/tmp65gwwdbw/iterator-1_temp/part-00000-of-00001>
+Resource

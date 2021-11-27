@@ -1,0 +1,22 @@
+Tensor<type: string shape: [] values: foo>
+Variant
+Resource
+Tensor<type: bool shape: [] values: 1>
+Variant
+Resource
+Tensor<type: string shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: string shape: [] values: >
+Variant
+Resource
+Tensor<type: bool shape: [] values: 1>
+Variant
+Resource
+Tensor<type: string shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------

@@ -1,0 +1,16 @@
+Tensor<type: string shape: [] values: >
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Resource
+
+--------------------------------------
+Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Resource
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Resource
+
+--------------------------------------

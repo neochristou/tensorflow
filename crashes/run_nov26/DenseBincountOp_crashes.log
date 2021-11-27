@@ -1,0 +1,22 @@
+Tensor<type: int64 shape: [] values: 3>
+Variant
+Resource
+Tensor<type: int64 shape: [2,4] values: [1 2 0...]...>
+Variant
+Resource
+Tensor<type: float shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------
+Tensor<type: int64 shape: [2,4] values: [0 0 0...]...>
+Variant
+Resource
+Tensor<type: int64 shape: [2,4] values: [1 1 4...]...>
+Variant
+Resource
+Tensor<type: float shape: [0] values: >
+Variant
+Resource
+
+--------------------------------------

@@ -1,0 +1,12 @@
+Tensor<type: int64 shape: [1,2] values: [-1879048192 -1879048192]>
+Tensor<type: int64 shape: [1,2] values: [0 0]>
+Tensor<type: int64 shape: [1,2] values: [0 0]>
+Tensor<type: string shape: [1] values: batch1-FC1-F1>
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [0] values: >
+Tensor<type: int64 shape: [2] values: 1 1>
+Tensor<type: int64 shape: [2] values: 0 0>
+Tensor<type: int64 shape: [2] values: 1 1>
+Tensor<type: string shape: [1] values: batch1-FC1-F1>
+
+--------------------------------------
