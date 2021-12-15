@@ -1,0 +1,24 @@
+Tensor 
+Contents: 1.87905e+09
+Sizes: 26, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 2, 2, 2, 2, 2, 
+Dtype: double
+Device: cpu
+Requires grad: 0;double -1.251e+12;double 1.251e+12;bool 1;
+--------------------------------------
+Tensor 
+Contents: 0
+Sizes: 21, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: -1.251e+12
+Sizes: 13, 5, 2, 
+Dtype: float
+Device: cpu
+Requires grad: 0;double 1.251e+12;double 1.251e+12;bool 0;
+--------------------------------------

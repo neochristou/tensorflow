@@ -1,0 +1,14 @@
+Tensor 
+Contents: 1
+Sizes: 4, 23, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [1879048192, 1879048192];Scalar 0;
+--------------------------------------
+Tensor 
+Contents: 1.251e+12
+Sizes: 14, 4, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [536870912, 536870912];Scalar 0;
+--------------------------------------

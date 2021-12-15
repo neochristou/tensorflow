@@ -1,0 +1,17 @@
+Tensor 
+Contents: 3
+Sizes: 1, 18, 1, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: -1.87905e+09
+Sizes: 9, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];OptionalTensor 
+Contents: -65534
+Sizes: 14, 18, 9, 17, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [-1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764];IntArrayRef [1879048192, 1879048192];
+--------------------------------------

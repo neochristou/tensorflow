@@ -1,0 +1,34 @@
+Tensor 
+Contents: 1
+Sizes: 2, 2, 27, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 2, 27, 12, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 2, 2, 27, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Scalar 1;Scalar 1;
+--------------------------------------
+Tensor 
+Contents: 1
+Sizes: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: -5.36871e+08
+Sizes: 9, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1.251e+12
+Sizes: 10, 13, 7, 1, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Scalar 1;Scalar 1;
+--------------------------------------

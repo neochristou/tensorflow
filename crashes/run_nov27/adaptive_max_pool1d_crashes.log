@@ -1,0 +1,14 @@
+Tensor 
+Contents: 1
+Sizes: 1, 3, 5, 
+Dtype: double
+Device: cpu
+Requires grad: 0;IntArrayRef [1879048192];
+--------------------------------------
+Tensor 
+Contents: 2
+Sizes: 12, 1, 7, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [536870912];
+--------------------------------------

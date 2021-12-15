@@ -115,7 +115,11 @@ namespace tffuzzing {
               // The mutations file doesn't belong to any running process, something crashed
               mutations_restore_filename = glob_result.gl_pathv[i];
               /* printf("%s crashed, will restore from %s\n", fname, mutations_restore_filename.c_str()); */
-              mutations_file.open(mutations_logger_filename, fflags);
+
+              // Open the file here such that other threads that are also
+              // looking to fuzz this function right now don't
+              /* mutations_file.open(mutations_logger_filename, fflags); */
+
               restore = true;
             }
           }
@@ -129,8 +133,10 @@ namespace tffuzzing {
       printf("Fuzzing function %s\n", fname);
 
       // Disable buffering else program might crash before writing to logger
-      if (!restore)
-        mutations_file.open(mutations_logger_filename, fflags);
+      /* if (!restore) */
+      // Force creation of the file immediately
+      std::ofstream log_file(mutations_logger_filename);
+      mutations_file.open(mutations_logger_filename, fflags);
       mutations_file.rdbuf()->pubsetbuf(0, 0);
 
       for (int i = 0; i < num_args; i++) {
@@ -835,6 +841,12 @@ namespace tffuzzing {
   bool Fuzzer::has_more_mutations(bool reset)
   {
 
+    // Another thread/proc is fuzzing this right now,
+    // return false such that the current thread doesn't
+    // also try to fuzz
+    if (is_running)
+      return false;
+
     if (reset) {
       cur_idx = 0;
       next_mutations_indices(true);
@@ -842,23 +854,19 @@ namespace tffuzzing {
 
     bool has_more = total_mutations > 0;
 
-    if (!has_more && !is_running) {
-      mark_fuzzing_done();
-      /* output.rdbuf()->pubsetbuf(0, 0); */
-      remove(mutations_logger_filename.c_str());
-    }
-
     return has_more;
   }
 
   // Skips ahead num_mut_skip mutations to bound the total mutations
   void Fuzzer::next_mutations_indices(bool log){
 
+    total_mutations -= num_mut_skip;
+
     if (total_mutations <= 0) {
+      mark_fuzzing_done();
+      remove(mutations_logger_filename.c_str());
       return;
     }
-
-    total_mutations -= num_mut_skip;
 
     long long passed = all_mutations - total_mutations;
     for (int i = 0; i < num_args; i++) {

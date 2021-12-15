@@ -1,0 +1,24 @@
+Tensor 
+Contents: 1.251e+12
+Sizes: 12, 10, 19, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 14
+Sizes: 10, 27, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [-1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764, -1250999896764];IntArrayRef [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];int64_t 0;int64_t 1250999896764;bool 1;
+--------------------------------------
+Tensor 
+Contents: 1
+Sizes: 50, 3, 15, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 3, 30, 
+Dtype: double
+Device: cpu
+Requires grad: 0;IntArrayRef [1, 1, 1];IntArrayRef [-1879048192, -1879048192, -1879048192];int64_t 1;int64_t 1250999896764;bool 1;
+--------------------------------------

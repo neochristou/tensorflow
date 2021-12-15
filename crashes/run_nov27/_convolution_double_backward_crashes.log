@@ -1,0 +1,64 @@
+OptionalTensor 
+Contents: 8.60848e+18
+Sizes: 18, 
+Dtype: float
+Device: cpu
+Requires grad: 0;OptionalTensor 
+Contents: 1
+Sizes: 10, 27, 
+Dtype: float
+Device: cpu
+Requires grad: 0;OptionalTensor 
+Contents: 1
+Sizes: 7, 4, 27, 9, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 3
+Sizes: 11, 19, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 8.60848e+18
+Sizes: 13, 10, 0, 9, 
+Dtype: float
+Device: cpu
+Requires grad: 0;IntArrayRef [-1879048192, -1879048192];IntArrayRef [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];IntArrayRef [0, 0];bool 1;IntArrayRef [0, 0];int64_t 0;bool 1;bool 1;bool 1;bool 1;std::array<bool,3> 000;
+--------------------------------------
+OptionalTensor 
+Contents: 3
+Sizes: 27, 4, 9, 12, 
+Dtype: float
+Device: cpu
+Requires grad: 0;OptionalTensor 
+Contents: 1
+Sizes: 7, 
+Dtype: float
+Device: cpu
+Requires grad: 0;OptionalTensor 
+Contents: 65534
+Sizes: 26, 5, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+Dtype: double
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 8.60848e+18
+Sizes: 13, 10, 0, 9, 
+Dtype: float
+Device: cpu
+Requires grad: 0;Tensor 
+Contents: 1
+Sizes: 2, 2, 2, 2, 2, 
+Dtype: double
+Device: cpu
+Requires grad: 0;IntArrayRef [1, 1];IntArrayRef [1879048192, 1879048192];IntArrayRef [1, 1];bool 1;IntArrayRef [0, 0];int64_t 0;bool 1;bool 1;bool 1;bool 1;std::array<bool,3> 000;
+--------------------------------------

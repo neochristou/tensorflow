@@ -1,0 +1,14 @@
+Tensor 
+Contents: 4
+Sizes: 0, 20, 17, 
+Dtype: float
+Device: cpu
+Requires grad: 0;int64_t 1879048192;int64_t 0;
+--------------------------------------
+Tensor 
+Contents: 4
+Sizes: 0, 20, 17, 
+Dtype: float
+Device: cpu
+Requires grad: 0;int64_t 536870912;int64_t 0;
+--------------------------------------
