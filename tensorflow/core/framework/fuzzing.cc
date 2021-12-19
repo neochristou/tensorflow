@@ -11,6 +11,10 @@ namespace tffuzzing {
   static std::fstream crashes_file;
   static std::fstream num_crashes_file;
   static std::fstream unknown_type_file;
+  static std::fstream time_file;
+
+  static std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+  static std::chrono::time_point<std::chrono::high_resolution_clock> end_time;
 
   bool was_fuzzed(std::string fname) {
     // printf("Fuzzed %s\n", fname.c_str());
@@ -63,6 +67,7 @@ namespace tffuzzing {
       char mutfile_prefix[FILENAME_SZ] = {};
       char proc_filename[FILENAME_SZ] = {};
       char mut_filename[FILENAME_SZ] = {};
+      char time_filename[FILENAME_SZ] = {};
 
       /* std::cout << "Filename buffers initialized"  << std::endl; */
 
@@ -76,14 +81,21 @@ namespace tffuzzing {
       snprintf(mutfile_pattern, FILENAME_SZ, "%s/%s_mutations.log.*", results_dir, fname);
       snprintf(mutfile_prefix, FILENAME_SZ, "%s/%s_mutations.log", results_dir, fname);
       snprintf(mut_filename, FILENAME_SZ, "%s/%s_mutations.log.%d", results_dir, fname, mypid);
+      snprintf(time_filename, FILENAME_SZ, "%s/%s.time", results_dir, fname);
 
-      /* std::cout << "Writing to mutations logger filename" << std::endl; */
+      std::ios_base::openmode fflags = std::ios::out | std::ios::in;
+
+      // Create time file if it doesn't exist
+      if (stat(time_filename, &stat_buffer) != 0){
+        fflags |= std::ios::trunc;
+      }
+
+      time_file.open(time_filename, fflags);
+      fflags |= std::ios::trunc;
 
       mutations_logger_filename = mut_filename;
 
       /* std::cout << "Mutation filename written" << std::endl; */
-
-      std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
 
       for (int r = 0; r < MUTFILE_TRIES; r++){
         glob_ret = glob(mutfile_pattern, 0, NULL, &glob_result);
@@ -916,6 +928,22 @@ namespace tffuzzing {
     fuzz_ctx = new tensorflow::OpKernelContext(fuzz_ctx_params);
 
     return fuzz_ctx;
+
+  }
+
+  void Fuzzer::mut_start_time()
+  {
+    start_time = std::chrono::high_resolution_clock::now();
+  }
+
+  void Fuzzer::mut_end_time()
+  {
+
+    char logbuf[BUFSZ] = {};
+    end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end_time - start_time;
+    auto millis = std::chrono::duration_cast< std::chrono::milliseconds>(duration);
+    time_file << total_mutations << ":" << millis.count() << std::endl << std::flush;
 
   }
 
