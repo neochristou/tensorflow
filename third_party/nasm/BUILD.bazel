@@ -137,13 +137,20 @@ cc_binary(
         ":windows": ["config/msvc.h"],
         "//conditions:default": [],
     }),
-    copts = select({
-        ":windows": [],
-        "//conditions:default": [
-            "-w",
-            "-std=c99",
-        ],
-    }),
+    # copts = select({
+    #     ":windows": [],
+    #     "//conditions:default": [
+    #         "-w",
+    #         "-std=c99",
+    #     ],
+    # }) + ["-fno-sanitize=leak",
+    #       "-fsanitize-recover=all",
+    #       ] ,
+
+    copts = ["-fno-sanitize=all",
+          "-w",
+          "-std=c99",
+          ] ,
     defines = select({
         ":windows": [],
         "//conditions:default": [

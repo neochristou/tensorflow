@@ -42,7 +42,9 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
         while (fuzzer.has_more_mutations(true)) {
           fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.start_time_fuzz();
           do_%1$s(fuzz_ctx);
+          fuzzer.end_time_fuzz();
         }
 
         tffuzzing::already_fuzzing = false;

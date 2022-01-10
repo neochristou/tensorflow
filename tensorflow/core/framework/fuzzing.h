@@ -142,6 +142,9 @@ namespace tffuzzing {
         bool has_more_mutations(bool reset);
         tensorflow::TensorValue get_next_mut(tensorflow::DataType ttype, int idx);
         tensorflow::OpKernelContext *get_fuzzed_context();
+
+        void mut_start_time();
+        void mut_end_time();
     };
 
 }

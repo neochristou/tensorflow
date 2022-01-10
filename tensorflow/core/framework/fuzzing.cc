@@ -939,7 +939,6 @@ namespace tffuzzing {
   void Fuzzer::mut_end_time()
   {
 
-    char logbuf[BUFSZ] = {};
     end_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end_time - start_time;
     auto millis = std::chrono::duration_cast< std::chrono::milliseconds>(duration);

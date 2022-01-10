@@ -35,8 +35,12 @@ libjpegturbo_copts = select({
         "-mcpu=power8",
         "-mtune=power8",
     ],
-    "//conditions:default": [],
+    "//conditions:default": ["-fno-sanitize=all", "-fsanitize-recover=all"],
+    # "//conditions:default": [],
 })
+# + select({
+#     "//conditions:default": ["-fno-sanitize=all"],
+# })
 
 cc_library(
     name = "jpeg",
@@ -292,7 +296,8 @@ genrule(
         "simd/x86_64/jsimdcpu.o",
     ],
     cmd = "for out in $(OUTS); do\n" +
-          "  $(location @nasm//:nasm) -f elf64" +
+          # "  $(location @nasm//:nasm) -f elf64" +
+          "  /usr/bin/nasm -f elf64" +
           "    -DELF -DPIC -D__x86_64__" +
           "    -I $$(dirname $(location jconfig.h))/" +
           "    -I $$(dirname $(location jconfigint.h))/" +
