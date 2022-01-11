@@ -1,7 +1,0 @@
-Tensor 
-Contents: 3
-Sizes: 1, 18, 1, 
-Dtype: float
-Device: cpu
-Requires grad: 0;IntArrayRef [536870912];
---------------------------------------

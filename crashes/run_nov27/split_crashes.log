@@ -1,7 +1,0 @@
-Tensor 
-Contents: 2
-Sizes: 11, 12, 17, 21, 
-Dtype: float
-Device: cpu
-Requires grad: 0;int64_t 1;int64_t -1250999896764;
---------------------------------------
