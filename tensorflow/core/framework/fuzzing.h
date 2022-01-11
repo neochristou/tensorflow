@@ -33,6 +33,9 @@
 #define NMUT_PERCENT 10
 #define CRASHES_BOUND 2
 #define MUTFILE_TRIES 5
+#define NS_PER_SEC (1000 * 1000 * 1000)
+#define TIME_THRESH_SECS 30
+
 #define MEDIUM_INT_FUZZ 0x20000000
 #define MEDIUM_INT_NEG_FUZZ -0x20000000
 #define LARGE_INT_FUZZ 0x70000000
@@ -59,12 +62,14 @@
 #define FILENAME_SZ 0x100
 #define LOGBUFSZ 0x20
 
+
 namespace tffuzzing {
 
     extern bool already_fuzzing;
     extern char* results_dir;
 
     bool was_fuzzed(std::string fname);
+    void create_file(const char *filename, std::fstream &file, std::ios_base::openmode fflags);
 
     class Fuzzer {
     private:
@@ -127,6 +132,7 @@ namespace tffuzzing {
         void next_mutations_indices(bool log);
         inline void inc_mutations_indices(bool log);
         void restore_last_mutation(long long last_mutation, char *fname);
+        void log_current_mutation(std::fstream &file);
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
         tensorflow::TensorValue *get_empty_tensor_dims(tensorflow::DataType ttype, tensorflow::TensorShape dims);

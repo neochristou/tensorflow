@@ -12,9 +12,21 @@ namespace tffuzzing {
   static std::fstream num_crashes_file;
   static std::fstream unknown_type_file;
   static std::fstream time_file;
+  /* static std::fstream start_file; */
 
-  static std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
-  static std::chrono::time_point<std::chrono::high_resolution_clock> end_time;
+  static uint64_t start_time;
+  static uint64_t end_time;
+
+  void create_file(const char *filename, std::fstream &file, std::ios_base::openmode fflags)
+  {
+      std::ofstream file_stream(filename);
+      file.clear();
+      file.open(filename, fflags);
+      if (file.fail()) {
+        std::cout << "Failed to open " << filename << std::endl;
+        std::cout << "Error: " << strerror(errno) << std::endl;
+      }
+  }
 
   bool was_fuzzed(std::string fname) {
     // printf("Fuzzed %s\n", fname.c_str());
@@ -68,6 +80,10 @@ namespace tffuzzing {
       char proc_filename[FILENAME_SZ] = {};
       char mut_filename[FILENAME_SZ] = {};
       char time_filename[FILENAME_SZ] = {};
+      /* char start_filename[FILENAME_SZ] = {}; */
+
+      char total_filename[FILENAME_SZ] = {};
+      std::fstream total_file;
 
       /* std::cout << "Filename buffers initialized"  << std::endl; */
 
@@ -82,6 +98,8 @@ namespace tffuzzing {
       snprintf(mutfile_prefix, FILENAME_SZ, "%s/%s_mutations.log", results_dir, fname);
       snprintf(mut_filename, FILENAME_SZ, "%s/%s_mutations.log.%d", results_dir, fname, mypid);
       snprintf(time_filename, FILENAME_SZ, "%s/%s.time", results_dir, fname);
+      /* snprintf(start_filename, FILENAME_SZ, "%s/%s.start.%d", results_dir, fname, mypid); */
+      snprintf(total_filename, FILENAME_SZ, "%s/totals.txt", results_dir);
 
       std::ios_base::openmode fflags = std::ios::out | std::ios::in;
 
@@ -90,7 +108,8 @@ namespace tffuzzing {
         fflags |= std::ios::trunc;
       }
 
-      time_file.open(time_filename, fflags);
+      create_file(time_file, time_filename, fflags);
+
       fflags |= std::ios::trunc;
 
       mutations_logger_filename = mut_filename;
@@ -147,8 +166,7 @@ namespace tffuzzing {
       // Disable buffering else program might crash before writing to logger
       /* if (!restore) */
       // Force creation of the file immediately
-      std::ofstream log_file(mutations_logger_filename);
-      mutations_file.open(mutations_logger_filename, fflags);
+      create_file(log_file, mutations_logger_filename, fflags);
       mutations_file.rdbuf()->pubsetbuf(0, 0);
 
       for (int i = 0; i < num_args; i++) {
@@ -162,6 +180,16 @@ namespace tffuzzing {
 
       initialize_tensor_pools();
       calculate_total_mutations();
+
+      // Log total number of mutations for function
+      total_file.clear();
+      total_file.open(total_filename, std::ios::app);
+      if (total_file.fail()) {
+        std::cout << "Failed to open " << total_filename << std::endl;
+        std::cout << "Error: " << strerror(errno) << std::endl;
+      }
+      total_file << cur_fname << ":" << all_mutations << std::endl << std::flush;
+      total_file.close();
 
       bool got_last = false;
       int tries = 0;
@@ -271,7 +299,27 @@ namespace tffuzzing {
     }
   }
 
-  void Fuzzer::restore_last_mutation(long long last_mutation, char *fname) {
+  void Fuzzer::log_current_mutatoin(std::fstream &file)
+  {
+    for (int idx = 0; idx < num_args; idx++) {
+      ttype = tensor_types.at(idx);
+      tensor_val = get_next_mut(ttype, idx);
+      ttype = tensor_val.tensor->dtype();
+      switch (ttype) {
+        default:
+          file << tensor_val.tensor->DebugString() << "\n";
+        /* case tensorflow::DataType::DT_VARIANT: */
+        /* file << "Variant" << std::endl << std::flush; */
+        case tensorflow::DataType::DT_RESOURCE:
+         file << "Resource" << std::endl << std::flush;
+      }
+    }
+
+   file << "\n--------------------------------------\n";
+  }
+
+  void Fuzzer::restore_last_mutation(long long last_mutation, char *fname)
+  {
 
     tensorflow::TensorValue tensor_val;
     tensorflow::Tensor tensor;
@@ -313,7 +361,7 @@ namespace tffuzzing {
     } else {
       last_crash = 0;
       fflags |= std::ios::trunc;
-      num_crashes_file.open(crashes_num_filename, fflags);
+      create_file(num_crashes_file, crashes_num_filename, fflags);
     }
     last_crash++;
 
@@ -330,25 +378,18 @@ namespace tffuzzing {
 
     /* next_mutations_indices(true); */
 
-    for (int idx = 0; idx < num_args; idx++) {
-      ttype = tensor_types.at(idx);
-      tensor_val = get_next_mut(ttype, idx);
-      ttype = tensor_val.tensor->dtype();
-      switch (ttype) {
-        default:
-          crashes_file << tensor_val.tensor->DebugString() << "\n";
-        /* case tensorflow::DataType::DT_VARIANT: */
-        /*   crashes_file << "Variant" << std::endl << std::flush; */
-        case tensorflow::DataType::DT_RESOURCE:
-          crashes_file << "Resource" << std::endl << std::flush;
-      }
-    }
-
-    crashes_file << "\n--------------------------------------\n";
+    log_current_mutation(crashes_file);
     /* crashes_file.close(); */
 
     if (last_crash >= CRASHES_BOUND) {
       printf("Function %s crashed %d times, skipping rest of fuzzing\n", fname, CRASHES_BOUND);
+      std::fstream run_file;
+      char run_filename[FILENAME_SZ];
+      snprintf(run_filename, FILENAME_SZ, "%s/%s.run", results_dir, fname);
+      std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
+      create_file(run_filename, run_file, fflags);
+      run_file << total_mutations << std::flush;
+      run_file.close();
       mark_fuzzing_done();
       return;
     }
@@ -933,17 +974,69 @@ namespace tffuzzing {
 
   void Fuzzer::mut_start_time()
   {
-    start_time = std::chrono::high_resolution_clock::now();
+    struct timespec ts;
+    struct timespec ts_real;
+    uint64_t real_time;
+    char logbuf[BUFSZ] = {};
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    start_time = ((uint64_t)ts.tv_sec) * NS_PER_SEC + ts.tv_nsec;
+
+    /* clock_gettime(CLOCK_REALTIME, &ts_real); */
+    /* real_time = ((uint64_t)ts_real.tv_sec) * 1000 * 1000 * 1000 + ts_real.tv_nsec; */
+    /* snprintf(logbuf, BUFSZ, "%llu:%lu", total_mutations, real_time); */
+    /* start_file.seekp(0, std::ios::beg); */
+    /* start_file.write(logbuf, BUFSZ); */
+    /* start_file.flush(); */
+    /* start_file.close(); */
   }
 
   void Fuzzer::mut_end_time()
   {
 
-    end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end_time - start_time;
-    auto millis = std::chrono::duration_cast< std::chrono::milliseconds>(duration);
-    time_file << total_mutations << ":" << millis.count() << std::endl << std::flush;
+    struct timespec ts;
+    struct stat stat_buffer;
+    char duration_filename[FILENAME_SZ] = {};
+    std::ios_base::openmode fflags = std::ios::out | std::ios::in;
+    std::fstream duration_file;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    end_time = ((uint64_t)ts.tv_sec) * NS_PER_SEC + ts.tv_nsec;
 
+    uint64_t duration = end_time - start_time;
+    uint64_t duration_secs = duration / (NS_PER_SEC);
+    time_file << total_mutations << ":" << duration << std::endl << std::flush;
+
+    // Log mutations that took more than THRESH seconds to finish
+    if (duration_secs > TIME_THRESH_SECS) {
+      /* We want to log the mutation that just run, so this will achieve it:
+       * 1. Move to the mutation BEFORE the mutation that just run
+       * 2. Call next_mutations_indices to set up the indices array correctly
+       * for the mutation after that, which is the mutation that just run
+       * 3. Call log_current_mutation to log it
+       * 4. When the fuzzed function calls has_more_mutations,
+       * next_mutations_indices will be called again and will move to the next
+       * mutation
+       */
+      total_mutations += (num_mut_skip * 2);
+      next_mutations_indices(false);
+
+      snprintf(duration_filename, sizeof(duration_filename), "%s/%s.duration", results_dir, cur_fname);
+      if (stat(filename, &stat_buffer) != 0) {
+        fflags |= std::ios::trunc;
+        create_file(duration_filename, duration_file, fflags);
+      } else {
+        duration_file.open(duration_filename, std::ios::app);
+        if (duration_file.fail()) {
+          std::cout << "Failed to open " << duration_filename << std::endl;
+          std::cout << "Error: " << strerror(errno) << std::endl;
+        }
+      }
+
+      duration_file << "Duration (secs): " << duration_secs << std::endl;
+      log_current_mutation(duration_file);
+      duration_file << std::flush;
+      duration_file.close();
+    }
   }
 
 }
