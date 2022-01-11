@@ -6,8 +6,9 @@ import os
 # import tensorflow as tf
 from tensorflow import raw_ops
 
-CRASHFILES_PATH = "/media/mlfuzz/tensorflow/crashes/"
-REPRODUCE_PATH = "/media/fuzzing-pytorch/pytorch-reproduce-tests/tf/all-crashes/"
+tf_path = "/Users/neophytoschristou/mlfuzz/tensorflow/"
+CRASHFILES_PATH = tf_path + "crashes/"
+REPRODUCE_PATH = tf_path + "synthesized/all-crashes/"
 CRASH_DELIM = '--------------------------------------\n'
 
 
@@ -103,15 +104,15 @@ def synthesize_file(crash, kernel_name):
         param_names = get_function_param_names(kernel_name)
     except AttributeError as e:
         # No raw op for this
-        print(f"No raw op found for {kernel_name}, skipping")
-        return None
+        # print(f"No raw op found for {kernel_name}, skipping")
+        return -1
 
     fuzz_tensors = synthesize_args(crashing_args, param_names)
 
     if fuzz_tensors is None:
         # Contains bad type
-        print(f"Bad type in {kernel_name}, skipping")
-        return None
+        # print(f"Bad type in {kernel_name}, skipping")
+        return -2
 
     synth_file.extend(fuzz_tensors)
 
@@ -147,6 +148,12 @@ def save_synth_file(synth_file, kernel_name):
 
 
 def main():
+
+    successful = set()
+    all_kernels = set()
+    no_raw_op = set()
+    bad_type = set()
+
     for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
         for crash_filename in glob.glob(crash_dir + '*_crashes.log'):
 
@@ -155,6 +162,7 @@ def main():
             crash_file.close()
 
             kernel_name = get_kernel_name(crash_filename)
+            all_kernels.add(kernel_name)
 
             for crash in crashes:
                 crash = crash.strip()
@@ -165,8 +173,27 @@ def main():
 
                 # print(kernel_name)
                 synth_file = synthesize_file(crash, kernel_name)
-                if synth_file is not None:
-                    save_synth_file(synth_file, kernel_name)
+
+                if synth_file is None:
+                    continue
+                if synth_file == -1:
+                    no_raw_op.add(kernel_name)
+                    continue
+                if synth_file == -2:
+                    bad_type.add(kernel_name)
+                    continue
+
+                successful.add(kernel_name)
+                save_synth_file(synth_file, kernel_name)
+
+    no_raw_op = list([x for x in no_raw_op if x not in successful])
+    bad_type = list([x for x in bad_type if x not in successful])
+    print("No raw op:")
+    print('\n'.join(no_raw_op))
+    print("Bad Type:")
+    print('\n'.join(bad_type))
+    print(f"Total no raw op: {len(no_raw_op)}")
+    print(f"Total bad Type: {len(bad_type)}")
 
 
 if __name__ == "__main__":
