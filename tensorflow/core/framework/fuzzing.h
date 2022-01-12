@@ -28,9 +28,9 @@
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
 
-#define NMUT_UPPER_BOUND 5000000
+#define NMUT_UPPER_BOUND 1000000
 #define NMUT_LOWER_BOUND 500000
-#define NMUT_PERCENT 10
+#define NMUT_PERCENT 50
 #define CRASHES_BOUND 2
 #define MUTFILE_TRIES 5
 #define NS_PER_SEC (1000 * 1000 * 1000)

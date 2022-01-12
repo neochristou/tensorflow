@@ -502,7 +502,8 @@ namespace tffuzzing {
 
     all_mutations = total_mutations;
     printf("Total mutations: %llu\n", total_mutations);
-    /* printf("Step size: %lu\n", num_mut_skip); */
+    printf("Will run with (at least): %llu mutations\n", nmut_fuzz);
+    printf("Step size: %lu\n", num_mut_skip);
 
   }
 
