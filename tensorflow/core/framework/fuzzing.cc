@@ -505,6 +505,9 @@ namespace tffuzzing {
     printf("Will run with (at least): %llu mutations\n", nmut_fuzz);
     printf("Step size: %lu\n", num_mut_skip);
 
+    // To avoid off by one on first mutation
+    total_mutations += num_mut_skip;
+
   }
 
   template <class T>
