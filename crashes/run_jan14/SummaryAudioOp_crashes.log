@@ -1,0 +1,16 @@
+Tensor<type: string shape: [] values: snd>
+Resource
+Tensor<type: float shape: [4,7,1] values: [[-0.84738344][0.55983758][-0.123181537]]...>
+Resource
+Tensor<type: float shape: [4,7,1] values: [[-0.84738344][0.55983758][-0.123181537]]...>
+Resource
+
+--------------------------------------
+Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
+Resource
+Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
+Resource
+Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
+Resource
+
+--------------------------------------

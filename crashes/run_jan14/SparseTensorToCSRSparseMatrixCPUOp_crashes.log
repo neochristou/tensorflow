@@ -1,0 +1,16 @@
+Tensor<type: int64 shape: [3] values: 53 65 127>
+Resource
+Tensor<type: float shape: [218650] values: 0.554979503 0.225623384 0.902773082...>
+Resource
+Tensor<type: int64 shape: [3] values: 53 65 127>
+Resource
+
+--------------------------------------
+Tensor<type: int64 shape: [3] values: -1250999896764 -1250999896764 -1250999896764>
+Resource
+Tensor<type: float shape: [218650] values: 0.554979503 0.225623384 0.902773082...>
+Resource
+Tensor<type: int64 shape: [3] values: 53 65 127>
+Resource
+
+--------------------------------------
