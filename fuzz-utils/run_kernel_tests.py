@@ -61,7 +61,7 @@ def execute(test):
 
 
 def log_test_duration(dur, test):
-    f = open(TEST_DURATION_FILE, 'a')
+    f = open(TEST_DURATION_FILE, 'a+')
     mins = int(dur) / 60
     f.write(test + " " + str(mins) + "\n")
     f.close()

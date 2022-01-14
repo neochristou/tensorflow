@@ -27,6 +27,7 @@
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
+#include "tensorflow/core/lib/core/status.h"
 
 #define NMUT_UPPER_BOUND 1000000
 #define NMUT_LOWER_BOUND 500000
@@ -61,6 +62,7 @@
 
 #define FILENAME_SZ 0x100
 #define LOGBUFSZ 0x20
+#define BUFSZ 0x100
 
 
 namespace tffuzzing {
@@ -150,7 +152,7 @@ namespace tffuzzing {
         tensorflow::OpKernelContext *get_fuzzed_context();
 
         void mut_start_time();
-        void mut_end_time();
+        void mut_end_time(tensorflow::OpKernelContext *fuzz_ctx);
     };
 
 }

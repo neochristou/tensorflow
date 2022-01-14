@@ -12,6 +12,7 @@ namespace tffuzzing {
   static std::fstream num_crashes_file;
   static std::fstream unknown_type_file;
   static std::fstream time_file;
+  static std::fstream except_file;
   /* static std::fstream start_file; */
 
   static uint64_t start_time;
@@ -80,6 +81,7 @@ namespace tffuzzing {
       char proc_filename[FILENAME_SZ] = {};
       char mut_filename[FILENAME_SZ] = {};
       char time_filename[FILENAME_SZ] = {};
+      char except_filename[FILENAME_SZ] = {};
       /* char start_filename[FILENAME_SZ] = {}; */
 
       char total_filename[FILENAME_SZ] = {};
@@ -97,20 +99,22 @@ namespace tffuzzing {
       snprintf(mutfile_pattern, FILENAME_SZ, "%s/%s_mutations.log.*", results_dir, fname);
       snprintf(mutfile_prefix, FILENAME_SZ, "%s/%s_mutations.log", results_dir, fname);
       snprintf(mut_filename, FILENAME_SZ, "%s/%s_mutations.log.%d", results_dir, fname, mypid);
-      snprintf(time_filename, FILENAME_SZ, "%s/%s.time", results_dir, fname);
+      snprintf(time_filename, FILENAME_SZ, "%s/%s.time.%d", results_dir, fname, mypid);
+      snprintf(except_filename, FILENAME_SZ, "%s/%s.failed.%d", results_dir, fname, mypid);
       /* snprintf(start_filename, FILENAME_SZ, "%s/%s.start.%d", results_dir, fname, mypid); */
       snprintf(total_filename, FILENAME_SZ, "%s/totals.txt", results_dir);
 
-      std::ios_base::openmode fflags = std::ios::out | std::ios::in;
+      std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
 
       // Create time file if it doesn't exist
-      if (stat(time_filename, &stat_buffer) != 0){
-        fflags |= std::ios::trunc;
-      }
+      ///if (stat(time_filename, &stat_buffer) != 0){
+      //  fflags |= std::ios::trunc;
+      //}
 
-      create_file(time_file, time_filename, fflags);
+      create_file(time_filename, time_file, fflags);
+      create_file(except_filename, except_file, fflags);
 
-      fflags |= std::ios::trunc;
+      //fflags |= std::ios::trunc;
 
       mutations_logger_filename = mut_filename;
 
@@ -166,7 +170,7 @@ namespace tffuzzing {
       // Disable buffering else program might crash before writing to logger
       /* if (!restore) */
       // Force creation of the file immediately
-      create_file(log_file, mutations_logger_filename, fflags);
+      create_file(mutations_logger_filename.c_str(), mutations_file, fflags);
       mutations_file.rdbuf()->pubsetbuf(0, 0);
 
       for (int i = 0; i < num_args; i++) {
@@ -299,8 +303,11 @@ namespace tffuzzing {
     }
   }
 
-  void Fuzzer::log_current_mutatoin(std::fstream &file)
+  void Fuzzer::log_current_mutation(std::fstream &file)
   {
+    tensorflow::DataType ttype;
+    tensorflow::TensorValue tensor_val;
+
     for (int idx = 0; idx < num_args; idx++) {
       ttype = tensor_types.at(idx);
       tensor_val = get_next_mut(ttype, idx);
@@ -361,7 +368,7 @@ namespace tffuzzing {
     } else {
       last_crash = 0;
       fflags |= std::ios::trunc;
-      create_file(num_crashes_file, crashes_num_filename, fflags);
+      create_file(crashes_num_filename, num_crashes_file,  fflags);
     }
     last_crash++;
 
@@ -995,7 +1002,7 @@ namespace tffuzzing {
     /* start_file.close(); */
   }
 
-  void Fuzzer::mut_end_time()
+  void Fuzzer::mut_end_time(tensorflow::OpKernelContext *fuzz_ctx)
   {
 
     struct timespec ts;
@@ -1008,7 +1015,13 @@ namespace tffuzzing {
 
     uint64_t duration = end_time - start_time;
     uint64_t duration_secs = duration / (NS_PER_SEC);
-    time_file << total_mutations << ":" << duration << std::endl << std::flush;
+
+    if (fuzz_ctx->status() == tensorflow::Status::OK()) {
+        time_file << total_mutations << ":" << duration << std::endl << std::flush;
+    } else {
+        except_file << total_mutations << ":" << duration << std::endl << std::flush;
+    }
+
 
     // Log mutations that took more than THRESH seconds to finish
     if (duration_secs > TIME_THRESH_SECS) {
@@ -1025,7 +1038,7 @@ namespace tffuzzing {
       next_mutations_indices(false);
 
       snprintf(duration_filename, sizeof(duration_filename), "%s/%s.duration", results_dir, cur_fname);
-      if (stat(filename, &stat_buffer) != 0) {
+      if (stat(duration_filename, &stat_buffer) != 0) {
         fflags |= std::ios::trunc;
         create_file(duration_filename, duration_file, fflags);
       } else {
