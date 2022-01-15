@@ -1,8 +1,7 @@
 import glob
 import os
 
-#CRASHES_DIR = "/media/mlfuzz/pytorch/crashes/"
-CRASHES_DIR = "/Users/neophytoschristou/mlfuzz/tensorflow/crashes/"
+CRASHES_DIR = "/media/mlfuzz/tensorflow/crashes/"
 
 
 def get_done_functions():
@@ -10,15 +9,11 @@ def get_done_functions():
     result_dirs = os.listdir(CRASHES_DIR)
     for result_dir in result_dirs:
         result_dir = CRASHES_DIR + result_dir
-        if not asan and 'asan' in result_dir:
-            continue
-        if asan and 'asan' not in result_dir:
-            continue
         for done_file in glob.glob(result_dir + "/*.done"):
             done_file = os.path.basename(done_file)
             done_functions.add(done_file)
     print(
-        f"Total done functions {'with asan' if asan else ''}: {len(done_functions)}")
+        f"Total done functions: {len(done_functions)}")
 
 
 def get_total_crashes():
@@ -27,7 +22,7 @@ def get_total_crashes():
     for result_dir in result_dirs:
         result_dir = CRASHES_DIR + result_dir
         for crash_file in glob.glob(result_dir + "/*_crashes.log"):
-            if os.path.getsize(crash_file) > 0:
+            if os.path.getsize(crash_file) > 1:
                 crash_file = os.path.basename(crash_file)
                 crashes.add(crash_file)
     # if not asan:
@@ -38,5 +33,5 @@ def get_total_crashes():
 
 if __name__ == "__main__":
 
-    # get_done_functions()
+    get_done_functions()
     get_total_crashes()

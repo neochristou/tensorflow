@@ -6,7 +6,7 @@ import os
 # import tensorflow as tf
 from tensorflow import raw_ops
 
-tf_path = "/Users/neophytoschristou/mlfuzz/tensorflow/"
+tf_path = "/media/mlfuzz/tensorflow/"
 CRASHFILES_PATH = tf_path + "crashes/"
 REPRODUCE_PATH = tf_path + "synthesized/all-crashes/"
 CRASH_DELIM = '--------------------------------------\n'
@@ -153,13 +153,21 @@ def main():
     all_kernels = set()
     no_raw_op = set()
     bad_type = set()
+    other_errors = set()
 
     for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
         for crash_filename in glob.glob(crash_dir + '*_crashes.log'):
 
-            crash_file = open(crash_filename, 'r')
-            crashes = list(filter(None, crash_file.read().split(CRASH_DELIM)))
-            crash_file.close()
+            if os.path.getsize(crash_filename) == 0:
+                continue
+
+            with open(crash_filename, 'r') as crash_file:
+                try:
+                    crashes = list(
+                        filter(None, crash_file.read().split(CRASH_DELIM)))
+                except UnicodeDecodeError:
+                    other_errors.add(kernel_name)
+                    continue
 
             kernel_name = get_kernel_name(crash_filename)
             all_kernels.add(kernel_name)
@@ -194,6 +202,9 @@ def main():
     print('\n'.join(bad_type))
     print(f"Total no raw op: {len(no_raw_op)}")
     print(f"Total bad Type: {len(bad_type)}")
+    print(f"Total other errors: {len(other_errors)}")
+    print(f"Total successful: {len(successful)}")
+    print(f"Total crash files: {len(all_kernels)}")
 
 
 if __name__ == "__main__":
