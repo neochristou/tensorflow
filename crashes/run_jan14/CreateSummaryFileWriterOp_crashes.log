@@ -1,0 +1,22 @@
+Resource
+Tensor<type: string shape: [] values: /tmp/sidecar_evaluator_testzmdf_is7/tmpid3l7ylo/summary/train>
+Resource
+Tensor<type: int32 shape: [] values: 10>
+Resource
+Tensor<type: int32 shape: [0] values: >
+Resource
+Tensor<type: string shape: [] values: /tmp/sidecar_evaluator_testzmdf_is7/tmpid3l7ylo/summary/train>
+Resource
+
+--------------------------------------
+Resource
+Tensor<type: string shape: [] values: /tmp/callbacks_test4bzt8bmj/tmpsn9x861m/train>
+Resource
+Tensor<type: int32 shape: [] values: -536870912>
+Resource
+Tensor<type: int32 shape: [0] values: >
+Resource
+Tensor<type: string shape: [] values: /tmp/callbacks_test4bzt8bmj/tmpsn9x861m/train>
+Resource
+
+--------------------------------------
