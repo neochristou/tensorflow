@@ -1,3 +1,4 @@
+import argparse
 import glob
 import hashlib
 import inspect
@@ -8,7 +9,7 @@ from tensorflow import raw_ops
 
 tf_path = "/media/mlfuzz/tensorflow/"
 CRASHFILES_PATH = tf_path + "crashes/"
-REPRODUCE_PATH = tf_path + "synthesized/all-crashes/"
+REPRODUCE_PATH_BASE = tf_path + "synthesized/"
 CRASH_DELIM = '--------------------------------------\n'
 
 
@@ -134,11 +135,11 @@ def get_kernel_name(filename):
     return kernel_name
 
 
-def save_synth_file(synth_file, kernel_name):
+def save_synth_file(synth_file, kernel_name, reproduce_path):
     # Get the hash of the synthesized file to make sure we only
     # have unique reproduced files
     filehash = hashlib.md5(synth_file.encode()).hexdigest()
-    out_filename = REPRODUCE_PATH + kernel_name + '_' + filehash + '.py'
+    out_filename = reproduce_path + kernel_name + '_' + filehash + '.py'
 
     # No duplicates
     if not os.path.isfile(out_filename):
@@ -155,8 +156,21 @@ def main():
     bad_type = set()
     other_errors = set()
 
+    args_parser = argparse.ArgumentParser(
+        description="Parse and transform Pytorch native files")
+    args_parser.add_argument(
+        "--perf", dest="perf", action="store_true", default=False, help="Synth performance logs"
+    )
+
+    args = args_parser.parse_args()
+
+    ext = '.duration' if args.perf else '*_crashes.log'
+    reproduce_path = REPRODUCE_PATH_BASE
+    reproduce_path += 'performance/' if perf else 'all-crashes/'
+    if args.perf:
+
     for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
-        for crash_filename in glob.glob(crash_dir + '*_crashes.log'):
+        for crash_filename in glob.glob(crash_dir + ext):
 
             if os.path.getsize(crash_filename) == 0:
                 continue
@@ -192,7 +206,7 @@ def main():
                     continue
 
                 successful.add(kernel_name)
-                save_synth_file(synth_file, kernel_name)
+                save_synth_file(synth_file, kernel_name, reproduce_path)
 
     no_raw_op = list([x for x in no_raw_op if x not in successful])
     bad_type = list([x for x in bad_type if x not in successful])

@@ -21,7 +21,10 @@ EXCLUDE_TESTS = [
 ]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
-tests_to_run += glob(CC_TEST_FOLDER + "*_test")
+print(f"Python tests: {len(tests_to_run) - len(EXCLUDE_TESTS)}")
+cc_tests = glob(CC_TEST_FOLDER + "*_test")
+print(f"CPP tests: {len(cc_tests)}")
+tests_to_run += cc_tests
 for t in EXCLUDE_TESTS:
     tests_to_run.remove(t)
 
@@ -88,6 +91,8 @@ def proc_finished(results):
 
 
 if __name__ == "__main__":
+
+    exit(1)
 
     # logging.basicConfig(level=logging.INFO)
     logging.basicConfig(level=logging.DEBUG)

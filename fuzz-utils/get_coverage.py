@@ -159,3 +159,4 @@ if __name__ == "__main__":
     get_below_thresh()
 
     print(f"Total functions that didn't log total mutations: {len(no_total)}")
+    print(f"Total successful mutations: {sum(run_mutations.values())}")
