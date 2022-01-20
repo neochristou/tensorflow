@@ -166,8 +166,7 @@ def main():
 
     ext = '.duration' if args.perf else '*_crashes.log'
     reproduce_path = REPRODUCE_PATH_BASE
-    reproduce_path += 'performance/' if perf else 'all-crashes/'
-    if args.perf:
+    reproduce_path += 'performance/' if args.perf else 'all-crashes/'
 
     for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
         for crash_filename in glob.glob(crash_dir + ext):
