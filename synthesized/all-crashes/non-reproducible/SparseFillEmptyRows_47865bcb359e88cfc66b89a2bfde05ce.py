@@ -1,0 +1,9 @@
+# 2022-01-20 07:05:49.779615: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:05:49.781826: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/SparseFillEmptyRows_47865bcb359e88cfc66b89a2bfde05ce.py", line 7, in <module>    tf.raw_ops.SparseFillEmptyRows(indices=arg_0, values=arg_1, dense_shape=arg_2, default_value=arg_3)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_sparse_ops.py", line 1744, in sparse_fill_empty_rows    _ops.raise_from_not_ok_status(e, name)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/framework/ops.py", line 6941, in raise_from_not_ok_status    six.raise_from(core._status_to_exception(e.code, message), None)  File "<string>", line 3, in raise_fromtensorflow.python.framework.errors_impl.InvalidArgumentError: dense_shape must be a vector, saw: [] [Op:SparseFillEmptyRows]
+
+import tensorflow as tf
+
+arg_0 = tf.constant(0, shape=[], dtype=tf.int64)
+arg_1 = tf.constant(1879048192, shape=[7], dtype=tf.int64)
+arg_2 = tf.constant(0, shape=[], dtype=tf.int64)
+arg_3 = tf.constant(1879048192, shape=[7], dtype=tf.int64)
+tf.raw_ops.SparseFillEmptyRows(indices=arg_0, values=arg_1, dense_shape=arg_2, default_value=arg_3)

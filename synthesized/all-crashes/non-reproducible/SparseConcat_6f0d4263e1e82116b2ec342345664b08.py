@@ -1,0 +1,10 @@
+# 2022-01-20 07:05:45.606909: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:05:45.609088: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/SparseConcat_6f0d4263e1e82116b2ec342345664b08.py", line 8, in <module>    tf.raw_ops.SparseConcat(indices=arg_0, values=arg_1, shapes=arg_2, concat_dim=arg_3, name=arg_4)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_sparse_ops.py", line 887, in sparse_concat    return sparse_concat_eager_fallback(  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_sparse_ops.py", line 934, in sparse_concat_eager_fallback    raise TypeError(TypeError: Expected list for 'indices' argument to 'sparse_concat' Op, not <tf.Tensor: shape=(4, 3), dtype=int64, numpy=array([[0, 0, 0],       [0, 0, 0],       [0, 0, 0],       [0, 0, 0]])>.
+
+import tensorflow as tf
+
+arg_0 = tf.constant(0, shape=[4,3], dtype=tf.int64)
+arg_1 = tf.constant(0, shape=[4,3], dtype=tf.int64)
+arg_2 = tf.constant("a0", shape=[4], dtype=tf.string)
+arg_3 = tf.constant("a0", shape=[4], dtype=tf.string)
+arg_4 = tf.constant(-1250999896764, shape=[3], dtype=tf.int64)
+tf.raw_ops.SparseConcat(indices=arg_0, values=arg_1, shapes=arg_2, concat_dim=arg_3, name=arg_4)

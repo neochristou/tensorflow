@@ -1,0 +1,11 @@
+# 2022-01-20 07:05:46.720785: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:05:46.722883: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.2022-01-20 07:05:46.745187: W tensorflow/core/framework/op_kernel.cc:1692] OP_REQUIRES failed at sparse_cross_op.cc:815 : Invalid argument: Input indices should be a matrix but received shape [2] at position 0Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/SparseCrossV2_41344b80f869731db1b2944ccc8ce81e.py", line 9, in <module>    tf.raw_ops.SparseCrossV2(indices=arg_0, values=arg_1, shapes=arg_2, dense_inputs=arg_3, sep=arg_4, name=arg_5)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_sparse_ops.py", line 1378, in sparse_cross_v2    _ops.raise_from_not_ok_status(e, name)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/framework/ops.py", line 6941, in raise_from_not_ok_status    six.raise_from(core._status_to_exception(e.code, message), None)  File "<string>", line 3, in raise_fromtensorflow.python.framework.errors_impl.InvalidArgumentError: <exception str() failed>
+
+import tensorflow as tf
+
+arg_0 = tf.constant(-1879048192, shape=[1,2], dtype=tf.int64)
+arg_1 = tf.constant(0, shape=[1,2], dtype=tf.int64)
+arg_2 = tf.constant(0, shape=[1,2], dtype=tf.int64)
+arg_3 = tf.constant("-FC1", shape=[1], dtype=tf.string)
+arg_4 = tf.constant("[]", shape=[0], dtype=tf.string)
+arg_5 = tf.constant("[]", shape=[0], dtype=tf.string)
+tf.raw_ops.SparseCrossV2(indices=arg_0, values=arg_1, shapes=arg_2, dense_inputs=arg_3, sep=arg_4, name=arg_5)

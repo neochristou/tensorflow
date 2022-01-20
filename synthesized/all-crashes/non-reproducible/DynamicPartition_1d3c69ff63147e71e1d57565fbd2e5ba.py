@@ -1,0 +1,7 @@
+# 2022-01-20 07:04:05.584736: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:04:05.587176: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/DynamicPartition_1d3c69ff63147e71e1d57565fbd2e5ba.py", line 5, in <module>    tf.raw_ops.DynamicPartition(data=arg_0, partitions=arg_1)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)TypeError: dynamic_partition() missing 1 required positional argument: 'num_partitions'
+
+import tensorflow as tf
+
+arg_0 = tf.constant(1.5e+300, shape=[12,10,19], dtype=tf.float64)
+arg_1 = tf.constant(1879048192, shape=[], dtype=tf.int32)
+tf.raw_ops.DynamicPartition(data=arg_0, partitions=arg_1)
