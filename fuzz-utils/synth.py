@@ -161,14 +161,28 @@ def main():
     args_parser.add_argument(
         "--perf", dest="perf", action="store_true", default=False, help="Synth performance logs"
     )
+    args_parser.add_argument(
+        "--last-run", dest="last_run", action="store_true", default=False, help="Synth last run logs"
+    )
 
     args = args_parser.parse_args()
 
     ext = '.duration' if args.perf else '*_crashes.log'
     reproduce_path = REPRODUCE_PATH_BASE
-    reproduce_path += 'performance/' if args.perf else 'all-crashes/'
+    if args.perf:
+        reproduce_path += 'performance/'
+    elif args.last_run:
+        reproduce_path += 'last-run-all/'
+    else:
+        reproduce_path += 'all-crashes/'
+    reproduce_path += 'all/'
 
-    for crash_dir in glob.glob(CRASHFILES_PATH + '/*/'):
+    if args.last_run:
+        loop_dirs = [CRASHFILES_PATH + 'run_jan14/']
+    else:
+        loop_dirs = glob.glob(CRASHFILES_PATH + '/*/')
+
+    for crash_dir in loop_dirs:
         for crash_filename in glob.glob(crash_dir + ext):
 
             if os.path.getsize(crash_filename) == 0:
