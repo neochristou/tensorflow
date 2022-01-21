@@ -1,0 +1,12 @@
+# 2022-01-20 07:03:42.182030: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:03:42.184218: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/BoostedTreesCalculateBestGainsPerFeature_b64b6fd419550abaab22486e20a1ca9d.py", line 10, in <module>    tf.raw_ops.BoostedTreesCalculateBestGainsPerFeature(node_id_range=arg_0, stats_summary_list=arg_1, l1=arg_2, l2=arg_3, tree_complexity=arg_4, min_node_weight=arg_5, max_splits=arg_6)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_boosted_trees_ops.py", line 500, in boosted_trees_calculate_best_gains_per_feature    return boosted_trees_calculate_best_gains_per_feature_eager_fallback(  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_boosted_trees_ops.py", line 540, in boosted_trees_calculate_best_gains_per_feature_eager_fallback    raise TypeError(TypeError: Expected list for 'stats_summary_list' argument to 'boosted_trees_calculate_best_gains_per_feature' Op, not <tf.Tensor: shape=(), dtype=float32, numpy=0.0>.
+
+import tensorflow as tf
+
+arg_0 = tf.constant(0, shape=[2], dtype=tf.int32)
+arg_1 = tf.constant(0, shape=[], dtype=tf.float32)
+arg_2 = tf.constant(3.5e+35, shape=[], dtype=tf.float32)
+arg_3 = tf.constant(0, shape=[], dtype=tf.float32)
+arg_4 = tf.constant(0, shape=[7,4,2], dtype=tf.float32)
+arg_5 = tf.constant(0, shape=[7,4,2], dtype=tf.float32)
+arg_6 = tf.constant(0, shape=[7,4,2], dtype=tf.float32)
+tf.raw_ops.BoostedTreesCalculateBestGainsPerFeature(node_id_range=arg_0, stats_summary_list=arg_1, l1=arg_2, l2=arg_3, tree_complexity=arg_4, min_node_weight=arg_5, max_splits=arg_6)

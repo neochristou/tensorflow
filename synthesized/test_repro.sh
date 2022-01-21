@@ -1,15 +1,20 @@
 #!/bin/bash
 
-FILES=$(ls -1 -d "$PWD/all-crashes/"*)
+crash_dir=$1
+TIMEOUT_DUR=30
+
+FILES=$(ls -1 -d $PWD/$crash_dir/all/*.py)
 for f in $FILES; do
-	output=$(python3 $f 2>&1)
+    echo $f
+	output=$(timeout $TIMEOUT_DUR python3 $f 2>&1)
 	exit_code=$?
 	fname=$(basename $f)
 	if [[ ! $exit_code =~ ^(0|1)$ ]]; then
-		repr_folder="reproducible"
-		output="Signal $exit_code"
+		repr_folder="$crash_dir/reproducible"
+        sig=$(($exit_code - 128))
+		output="Signal -$sig;$output"
 	else
-		repr_folder="non-reproducible"
+		repr_folder="$crash_dir/non-reproducible"
 	fi
 	cp $f $PWD/$repr_folder/
 	output=${output//$'\n'/}
