@@ -1,8 +1,0 @@
-# 2022-01-20 07:05:33.918999: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:05:33.921052: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/ScatterNd_07758d3f83c034a593d9f873f2596323.py", line 6, in <module>    tf.raw_ops.ScatterNd(indices=arg_0, updates=arg_1, shape=arg_2)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/ops/gen_array_ops.py", line 9003, in scatter_nd    _ops.raise_from_not_ok_status(e, name)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/framework/ops.py", line 6941, in raise_from_not_ok_status    six.raise_from(core._status_to_exception(e.code, message), None)  File "<string>", line 3, in raise_fromtensorflow.python.framework.errors_impl.InvalidArgumentError: Indices shape must have rank at least one. Found:[] [Op:ScatterNd]
-
-import tensorflow as tf
-
-arg_0 = tf.constant(1879048192, shape=[], dtype=tf.int32)
-arg_1 = tf.constant([], shape=[0], dtype=tf.int32)
-arg_2 = tf.constant(65534, shape=[], dtype=tf.int32)
-tf.raw_ops.ScatterNd(indices=arg_0, updates=arg_1, shape=arg_2)

@@ -1,8 +1,0 @@
-# 2022-01-20 07:05:31.709751: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-01-20 07:05:31.712067: I tensorflow/core/common_runtime/process_util.cc:146] Creating new thread pool with default inter op setting: 2. Tune using inter_op_parallelism_threads for best performance.Traceback (most recent call last):  File "/home/neo/mlfuzz/tensorflow/synthesized/all-crashes/all/RestoreSlice_f8702d69619ef65a53e0f1d0e283fce0.py", line 6, in <module>    tf.raw_ops.RestoreSlice(file_pattern=arg_0, tensor_name=arg_1, shape_and_slice=arg_2)  File "/home/neo/anaconda3/envs/tf/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)TypeError: restore_slice() missing 1 required positional argument: 'dt'
-
-import tensorflow as tf
-
-arg_0 = tf.constant("/home/neo/.cache/bazel/_bazel_neo/098616a281617113c3854db5f68bcd26/execroot/org_tensorflow/_tmp/b9b0ce4ca376b8f5fef0cc92e88c7d97/tensor_int", shape=[], dtype=tf.string)
-arg_1 = tf.constant("tensor_int", shape=[], dtype=tf.string)
-arg_2 = tf.constant("[]", shape=[0], dtype=tf.string)
-tf.raw_ops.RestoreSlice(file_pattern=arg_0, tensor_name=arg_1, shape_and_slice=arg_2)

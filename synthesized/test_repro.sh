@@ -10,13 +10,27 @@ for f in $FILES; do
 	exit_code=$?
 	fname=$(basename $f)
 	if [[ ! $exit_code =~ ^(0|1)$ ]]; then
-		repr_folder="$crash_dir/reproducible"
         sig=$(($exit_code - 128))
+        case $sig in
+            '11')
+                repr_folder="segfault"
+                ;;
+            '8')
+                repr_folder="fpe"
+                ;;
+            '6')
+                repr_folder="abort"
+                ;;
+            *)
+                repr_folder="other"
+                ;;
+        esac
 		output="Signal -$sig;$output"
+        out_path="$PWD/$crash_dir/reproducible/$repr_folder"
 	else
-		repr_folder="$crash_dir/non-reproducible"
+        out_path="$PWD/$crash_dir/non-reproducible/"
 	fi
-	cp $f $PWD/$repr_folder/
 	output=${output//$'\n'/}
-	sed -i "1i# $output\n" $PWD/$repr_folder/$fname
+    cp $f $out_path
+	sed -i "1i# $output\n" "$out_path/$fname"
 done
