@@ -1,7 +1,8 @@
 import os
+import statistics
 from glob import glob
 
-RESULTS_DIR = "/media/mlfuzz/tensorflow/crashes/run_jan14/"
+RESULTS_DIR = "/media/mlfuzz/tensorflow/crashes/run_feb01_2/"
 COVERAGE_PERCENT_THRESH = 1.0
 MUTATIONS_BOUND = 1000000
 
@@ -13,6 +14,7 @@ no_total = set()
 empty_crash_funcs = []
 below_thresh_funcs = []
 above_thresh_funcs = []
+wrong_timings = 0
 
 
 def get_all_mutations():
@@ -30,12 +32,27 @@ def get_all_mutations():
 
 
 def get_failed_mutations():
+    global wrong_timings
     for filename in glob(RESULTS_DIR + "*.failed.*"):
         fname = filename[:filename.index(".failed")].replace(RESULTS_DIR, '')
         if fname not in failed_mutations:
             failed_mutations[fname] = 0
         with open(filename, 'r') as f:
-            muts = f.read().strip('\n').split('\n')
+            pmuts = f.read().strip('\n').split('\n')
+            muts = []
+            for tpair in pmuts:
+                if ':' not in tpair:
+                    wrong_timings += 1
+                    continue
+                tpair = [x for x in tpair.split(':') if x != '']
+                if len(tpair) != 2:
+                    wrong_timings += 1
+                    continue
+                t = tpair[1]
+                if len(t) > 8:
+                    wrong_timings += 1
+                    continue
+                muts.append(tpair)
             if len(muts) == 1:
                 if muts[0] == '':
                     nmuts = 0
@@ -45,12 +62,27 @@ def get_failed_mutations():
 
 
 def get_run_mutations():
+    global wrong_timings
     for filename in glob(RESULTS_DIR + "*.time.*"):
         fname = filename[:filename.index(".time")].replace(RESULTS_DIR, '')
         if fname not in run_mutations:
             run_mutations[fname] = 0
         with open(filename, 'r') as f:
-            muts = f.read().strip('\n').split('\n')
+            pmuts = f.read().strip('\n').split('\n')
+            muts = []
+            for tpair in pmuts:
+                if ':' not in tpair:
+                    wrong_timings += 1
+                    continue
+                tpair = [x for x in tpair.split(':') if x != '']
+                if len(tpair) != 2:
+                    wrong_timings += 1
+                    continue
+                t = tpair[1]
+                if len(t) > 8:
+                    wrong_timings += 1
+                    continue
+                muts.append(tpair)
             nmuts = len(muts)
             if len(muts) == 1:
                 if muts[0] == '':
@@ -115,14 +147,32 @@ def get_percentages():
 
     avg_percent = run_sum / total_sum * 100
     avg_muts_per_func = run_sum / len(run_mutations.keys())
+    stdev = statistics.stdev(run_mutations.values())
+    min_mutations_num = min(run_mutations.values())
+    min_mutations_func = min(run_mutations, key=run_mutations.get)
+    max_mutations_num = max(run_mutations.values())
+    max_mutations_func = max(run_mutations, key=run_mutations.get)
+
+    run_mutations_no_zeros = dict(
+        filter(lambda elem: elem[1] != 0, run_mutations.items()))
+    min_mutations_num_no_zeros = min(run_mutations_no_zeros.values())
+    min_mutations_func_no_zeros = min(
+        run_mutations_no_zeros, key=run_mutations_no_zeros.get)
+
     print(
         f"Most successful mutations by a single function: {max_mutations_num} ({max_mutations_func})")
+    print(
+        f"Least successful mutations by a single function: {min_mutations_num} ({min_mutations_func})")
+    print(
+        f"Least successful mutations by a single function (no zero muts): {min_mutations_num_no_zeros} ({min_mutations_func_no_zeros})")
     print(
         f"Number of functions with more than {MUTATIONS_BOUND} total mutations: {above_bound}")
     print(f"Average coverage: {avg_percent}%")
     print(f"Average mutations per function: {avg_muts_per_func}")
     print(
         f"Total covered above {COVERAGE_PERCENT_THRESH}%: {len(above_thresh_funcs)}")
+    print(f"Total successful mutations: {run_sum}")
+    print(f"Stdev: {stdev}")
 
 
 def get_below_thresh():

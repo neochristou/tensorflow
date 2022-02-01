@@ -30,6 +30,7 @@ std::string get_source_text(clang::SourceRange range, const clang::SourceManager
 // InjectFuzzer - implementation
 //-----------------------------------------------------------------------------
 void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
+  llvm::outs() << "Test\n";
 
   const char *FuzzBodyTemplate = R""""({
 
@@ -81,7 +82,6 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  // We don't handle static compute functions for now
   if (ComputeDecl->getStorageClass() == SC_Static) {
     llvm::outs() << "Skipping " << OpName << " (static)\n";
     return;

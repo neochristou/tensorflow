@@ -7,7 +7,7 @@ from glob import glob
 from multiprocessing import Lock, Manager, Pool, Process
 
 NUM_PARALLEL_PROCESSES = 4
-TIME_LIMIT = 1800
+TIME_LIMIT = 900
 PYTHON_TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/"
 CC_TEST_FOLDER = "/media/mlfuzz/tensorflow/bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
@@ -18,6 +18,7 @@ BAZEL_TEST_ARGS = ['--test_output=all',
 EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
     '/media/mlfuzz/tensorflow/tensorflow/python/eager/remote_cluster_test.py',
+    '/media/mlfuzz/tensorflow/tensorflow/python/keras/saving/save_weights_test.py'
 ]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
@@ -51,7 +52,7 @@ def execute(test):
     start_time = time.time()
     try:
         completed = subprocess.run(args,
-                                   stdout=subprocess.DEVNULL,
+                                   # stdout=subprocess.DEVNULL,
                                    stderr=subprocess.DEVNULL,
                                    timeout=TIME_LIMIT)
         retcode = completed.returncode
@@ -85,14 +86,13 @@ def proc_finished(results):
         crashes_set.add(test)
         logging.debug(
             f"Test {test} crashed with exit code {exitcode}, requeueing")
-        tests_to_run.append(test)
+        # tests_to_run.append(test)
+        done_tests.add(test)
     else:
         done_tests.add(test)
 
 
 if __name__ == "__main__":
-
-    exit(1)
 
     # logging.basicConfig(level=logging.INFO)
     logging.basicConfig(level=logging.DEBUG)

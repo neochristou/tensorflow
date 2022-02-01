@@ -52,11 +52,11 @@ def parse_crash_argument(arg):
     # This usually means unknown type (e.g., 'Resource' or 'Variant')
     # which is not printed as expected
     if len(attrs) < 3:
+        # print(attrs)
         return None
 
     tensor_type = attrs[1].replace(' shape', '').strip(' ')
     tensor_shape = attrs[2].replace(' values', '').strip(' ')
-    # TODO get the actual values, for now we assume they are all the same
     tensor_values = attrs[3].strip('>').replace(
         '[', '').replace(']', '').split(' ')
     tensor_values = list(filter(None, tensor_values))
@@ -68,7 +68,6 @@ def synthesize_args(crashing_args, param_names):
     for idx, arg in enumerate(crashing_args):
         # Sometimes native function (maybe) has more parameters than python function
         # If this is the case, just take the first crashing parameters
-        # TODO can probably optimize, sometimes there are duplicates -- see SparceConcatOp
         if idx >= len(param_names):
             break
 
@@ -90,7 +89,7 @@ def synthesize_args(crashing_args, param_names):
         if tensor_type == 'string':
             value = '"' + value + '"'
 
-        fuzz_tensor = f"arg_{idx} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
+        fuzz_tensor = f"{param_name} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
         fuzz_tensors.append(fuzz_tensor)
 
     return fuzz_tensors
@@ -117,7 +116,7 @@ def synthesize_file(crash, kernel_name):
 
     synth_file.extend(fuzz_tensors)
 
-    kwargs = ["{}=arg_{}".format(param_names[idx], idx)
+    kwargs = ["{}={}".format(param_names[idx], param_names[idx])
               for idx in range(len(fuzz_tensors))]
 
     synth_file.append(f"tf.raw_ops.{kernel_name}({', '.join(kwargs)})")
@@ -178,7 +177,7 @@ def main():
     reproduce_path += 'all/'
 
     if args.last_run:
-        loop_dirs = [CRASHFILES_PATH + 'run_jan14/']
+        loop_dirs = [CRASHFILES_PATH + 'run_feb01_2/']
     else:
         loop_dirs = glob.glob(CRASHFILES_PATH + '/*/')
 
