@@ -1,0 +1,4 @@
+Tensor<type: float shape: [1,4] values: [0 0 0...]...>
+Tensor<type: int32 shape: [] values: 1879048192>
+
+--------------------------------------

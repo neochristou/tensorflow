@@ -1,16 +1,8 @@
 Tensor<type: string shape: [] values: foo>
-Resource
 Tensor<type: bool shape: [] values: 1>
-Resource
 Tensor<type: string shape: [0] values: >
-Resource
-
 --------------------------------------
 Tensor<type: string shape: [] values: >
-Resource
 Tensor<type: bool shape: [] values: 1>
-Resource
 Tensor<type: string shape: [0] values: >
-Resource
-
 --------------------------------------

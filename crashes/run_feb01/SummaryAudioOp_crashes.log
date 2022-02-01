@@ -1,0 +1,5 @@
+Tensor<type: string shape: [] values: outer/inner>
+Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
+Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
+
+--------------------------------------

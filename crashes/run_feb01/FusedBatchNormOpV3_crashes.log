@@ -1,0 +1,7 @@
+Tensor<type: float shape: [1,6,4,1] values: [[[0][0][0]]]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [6] values: 1 1 1...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [6] values: 1 1 1...>
+
+--------------------------------------

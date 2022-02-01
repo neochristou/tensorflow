@@ -1,0 +1,8 @@
+Tensor<type: int32 shape: [1] values: 100000>
+Tensor<type: int32 shape: [2] values: 0 0>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [] values: -2>
+Tensor<type: float shape: [] values: 1>
+Tensor<type: float shape: [] values: 0>
+
+--------------------------------------

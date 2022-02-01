@@ -1,0 +1,10 @@
+Tensor<type: string shape: [12] values: this is a...>
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+
+--------------------------------------
+Tensor<type: string shape: [0] values: >
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+Tensor<type: int64 shape: [12] values: 0 1 2...>
+
+--------------------------------------

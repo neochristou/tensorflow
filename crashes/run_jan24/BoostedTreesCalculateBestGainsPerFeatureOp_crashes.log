@@ -1,0 +1,18 @@
+Tensor<type: int32 shape: [2] values: 1 3>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+
+--------------------------------------
+Tensor<type: int32 shape: [2] values: 1 3>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0...]]...>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+Tensor<type: float shape: [7,4,2] values: [[0 0][0.08...]]...>
+
+--------------------------------------

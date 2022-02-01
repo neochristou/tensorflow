@@ -1,0 +1,12 @@
+Resource
+Tensor<type: int32 shape: [2] values: 36 32>
+Tensor<type: int32 shape: [] values: 0>
+Tensor<type: int32 shape: [2] values: 36 32>
+
+--------------------------------------
+Resource
+Tensor<type: int32 shape: [2] values: 36 32>
+Tensor<type: int32 shape: [] values: 1879048192>
+Tensor<type: int32 shape: [2] values: 36 32>
+
+--------------------------------------

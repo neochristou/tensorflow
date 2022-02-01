@@ -1,0 +1,6 @@
+Tensor<type: float shape: [10,2] values: [100 0][101...]...>
+Tensor<type: int64 shape: [] values: 3>
+Tensor<type: int64 shape: [] values: 3>
+Tensor<type: int64 shape: [] values: 1250999896764>
+
+--------------------------------------

@@ -1,24 +1,12 @@
 Tensor<type: float shape: [2,8,8,3] values: [[[0 0 0]]]...>
-Resource
 Tensor<type: float shape: [3] values: 0 0 0>
-Resource
 Tensor<type: float shape: [3] values: 1 1 1>
-Resource
 Tensor<type: float shape: [0] values: >
-Resource
 Tensor<type: float shape: [3] values: 1 1 1>
-Resource
-
 --------------------------------------
 Tensor<type: float shape: [64,26,26,32] values: [[[-3.5e+35 -3.5e+35 -3.5e+35...]]]...>
-Resource
 Tensor<type: float shape: [32] values: -3.5e+35 -3.5e+35 -3.5e+35...>
-Resource
 Tensor<type: float shape: [32] values: 1 1 1...>
-Resource
 Tensor<type: float shape: [0] values: >
-Resource
 Tensor<type: float shape: [32] values: 1 1 1...>
-Resource
-
 --------------------------------------

@@ -1,0 +1,16 @@
+Tensor<type: int64 shape: [3,3] values: [-1250999896764 -1250999896764 -1250999896764]...>
+Tensor<type: int64 shape: [3] values: 0 0 0>
+Tensor<type: int64 shape: [3] values: 0 0 0>
+Tensor<type: int64 shape: [3,3] values: [-1250999896764 -1250999896764 -1250999896764]...>
+Tensor<type: int64 shape: [3] values: 2 1 1>
+Tensor<type: int64 shape: [3] values: 2 1 1>
+
+--------------------------------------
+Tensor<type: int64 shape: [3,3] values: [-1250999896764 -1250999896764 -1250999896764]...>
+Tensor<type: int64 shape: [3] values: 0 0 0>
+Tensor<type: int64 shape: [3] values: 0 0 0>
+Tensor<type: int64 shape: [2,3] values: [0 0 0]...>
+Tensor<type: int64 shape: [2] values: -1879048192 -1879048192>
+Tensor<type: int64 shape: [3] values: 2 1 1>
+
+--------------------------------------

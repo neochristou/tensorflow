@@ -1,0 +1,6 @@
+Tensor<type: int32 shape: [8] values: 1 1 2...>
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Tensor<type: float shape: [8,1] values: [0.1][0.2][0.3]...>
+Tensor<type: int32 shape: [8] values: 1 1 2...>
+
+--------------------------------------

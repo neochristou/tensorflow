@@ -1,0 +1,6 @@
+Resource
+Tensor<type: int64 shape: [] values: 2>
+Tensor<type: string shape: [0] values: >
+Tensor<type: float shape: [] values: 2>
+
+--------------------------------------

@@ -1,0 +1,7 @@
+Resource
+Tensor<type: int64 shape: [] values: 0>
+Tensor<type: string shape: [0] values: >
+Tensor<type: float shape: [8,3,3,1] values: [[[0.0403598957][0.245179132][-0.157282397]]]...>
+Tensor<type: uint8 shape: [4] values: 255 0 0...>
+
+--------------------------------------

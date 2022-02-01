@@ -1,0 +1,5 @@
+Tensor<type: float shape: [32] values: 5 5 5...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [32] values: 5 5 5...>
+
+--------------------------------------

@@ -1,28 +1,14 @@
 Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Resource
 Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Resource
 Tensor<type: float shape: [0] values: >
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
-
 --------------------------------------
 Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Resource
 Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Resource
 Tensor<type: float shape: [0] values: >
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
 Tensor<type: float shape: [] values: 0>
-Resource
-
 --------------------------------------

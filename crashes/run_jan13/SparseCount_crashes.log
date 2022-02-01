@@ -1,20 +1,10 @@
 Tensor<type: int64 shape: [3,1] values: [-1879048192][-1879048192][-1879048192]>
-Resource
 Tensor<type: int32 shape: [3] values: 3 1 1>
-Resource
 Tensor<type: int64 shape: [3,1] values: [0][2][3]>
-Resource
 Tensor<type: int32 shape: [3] values: 3 1 1>
-Resource
-
 --------------------------------------
 Tensor<type: int64 shape: [3,1] values: [-1879048192][-1879048192][-1879048192]>
-Resource
 Tensor<type: int32 shape: [3] values: 0 0 0>
-Resource
 Tensor<type: int64 shape: [3,1] values: [0][2][3]>
-Resource
 Tensor<type: int32 shape: [3] values: 3 1 1>
-Resource
-
 --------------------------------------

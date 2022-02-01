@@ -1,12 +1,6 @@
 Tensor<type: float shape: [] values: 0>
-Resource
 Tensor<type: float shape: [5,5] values: [0.336603314 0.25299564 0.302798808...]...>
-Resource
-
 --------------------------------------
 Tensor<type: float shape: [] values: 3.5e+35>
-Resource
 Tensor<type: float shape: [10,4] values: [0 0 0...]...>
-Resource
-
 --------------------------------------
