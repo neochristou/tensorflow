@@ -21,6 +21,9 @@ namespace tffuzzing {
   void create_file(const char *filename, std::fstream &file, std::ios_base::openmode fflags)
   {
       std::ofstream file_stream(filename);
+      if (file.is_open()) {
+        file.close();
+      }
       file.clear();
       file.open(filename, fflags);
       if (file.fail()) {
@@ -213,9 +216,9 @@ namespace tffuzzing {
           }
         }
         // Mutation file is empty, abort
-        if (!last_line.length() > 0) {
-          abort();
-        }
+        /* if (!(last_line.length() > 0)) { */
+        /*   abort(); */
+        /* } */
         /* mutations_restore.close(); */
 
         if (last_mutation > 0) {
@@ -317,8 +320,10 @@ namespace tffuzzing {
           file << tensor_val.tensor->DebugString() << "\n";
         /* case tensorflow::DataType::DT_VARIANT: */
         /* file << "Variant" << std::endl << std::flush; */
+          break;
         case tensorflow::DataType::DT_RESOURCE:
          file << "Resource" << std::endl << std::flush;
+         break;
       }
     }
 
@@ -497,6 +502,7 @@ namespace tffuzzing {
       }
     }
 
+    nmut_fuzz = total_mutations;
     if (total_mutations <= NMUT_LOWER_BOUND) {
       num_mut_skip = 1;
     } else {
