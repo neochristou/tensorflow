@@ -1,0 +1,12 @@
+Duration (secs): 18446744073
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+
+--------------------------------------
+Duration (secs): 18446744073
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+Tensor<type: float shape: [32] values: 1 0 25377536...>
+
+--------------------------------------

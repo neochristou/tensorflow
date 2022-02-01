@@ -1,0 +1,5 @@
+Tensor<type: float shape: [10,19,22] values: [[-3.5e+35 -3.5e+35 -3.5e+35...]]...>
+Tensor<type: int64 shape: [2] values: -1879048192 -1879048192>
+Tensor<type: int32 shape: [2,2] values: [0 0][0...]...>
+
+--------------------------------------
