@@ -86,8 +86,7 @@ def proc_finished(results):
         crashes_set.add(test)
         logging.debug(
             f"Test {test} crashed with exit code {exitcode}, requeueing")
-        # tests_to_run.append(test)
-        done_tests.add(test)
+        tests_to_run.append(test)
     else:
         done_tests.add(test)
 
