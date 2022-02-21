@@ -6,10 +6,12 @@ import time
 from glob import glob
 from multiprocessing import Lock, Manager, Pool, Process
 
+TF_BASE = "/media/ivysyn/tensorflow/"
 NUM_PARALLEL_PROCESSES = 4
+MAX_RESTARTS = 15
 TIME_LIMIT = 900
-PYTHON_TEST_FOLDER = "/media/mlfuzz/tensorflow/tensorflow/python/"
-CC_TEST_FOLDER = "/media/mlfuzz/tensorflow/bazel-out/k8-opt/bin/tensorflow/core/kernels/"
+PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
+CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
 BAZEL_TEST_ARGS = ['--test_output=all',
@@ -17,8 +19,8 @@ BAZEL_TEST_ARGS = ['--test_output=all',
 
 EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
-    '/media/mlfuzz/tensorflow/tensorflow/python/eager/remote_cluster_test.py',
-    '/media/mlfuzz/tensorflow/tensorflow/python/keras/saving/save_weights_test.py'
+    '/media/ivysyn/tensorflow/tensorflow/python/eager/remote_cluster_test.py',
+    '/media/ivysyn/tensorflow/tensorflow/python/keras/saving/save_weights_test.py'
 ]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
@@ -35,6 +37,8 @@ done_tests = set()
 crashes_set = set()
 aborts_set = set()
 killed_set = set()
+
+restart_count = {}
 
 
 def execute(test):
@@ -73,6 +77,8 @@ def log_test_duration(dur, test):
 
 def proc_finished(results):
 
+    global restart_count
+
     test, running_time, exitcode = results
 
     log_test_duration(running_time, test)
@@ -84,9 +90,14 @@ def proc_finished(results):
     if exitcode < 0:
 
         crashes_set.add(test)
-        logging.debug(
-            f"Test {test} crashed with exit code {exitcode}, requeueing")
-        tests_to_run.append(test)
+
+        if test not in restart_count:
+            restart_count[test] = 0
+
+        if restart_count[test] <= MAX_RESTARTS:
+            logging.debug(
+                f"Test {test} crashed with exit code {exitcode}, requeueing")
+            tests_to_run.append(test)
     else:
         done_tests.add(test)
 

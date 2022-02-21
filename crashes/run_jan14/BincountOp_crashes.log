@@ -1,8 +1,0 @@
-Tensor<type: int32 shape: [4] values: 0 0 1...>
-Tensor<type: int32 shape: [] values: 536870912>
-Tensor<type: int64 shape: [0] values: >
---------------------------------------
-Tensor<type: int32 shape: [1] values: 0>
-Tensor<type: int32 shape: [] values: 536870912>
-Tensor<type: int64 shape: [0] values: >
---------------------------------------

@@ -1,0 +1,8 @@
+# 2022-02-15 18:04:19.268907: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.Traceback (most recent call last):  File "/media/ivysyn/tensorflow/synthesized/all-crashes/all/Slice_604c2a2f3754ae42e100f31bc3c4e396.py", line 6, in <module>    tf.raw_ops.Slice(input=input, begin=begin, size=size)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/ops/gen_array_ops.py", line 9407, in _slice    _ops.raise_from_not_ok_status(e, name)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/ops.py", line 6941, in raise_from_not_ok_status    six.raise_from(core._status_to_exception(e.code, message), None)  File "<string>", line 3, in raise_fromtensorflow.python.framework.errors_impl.InvalidArgumentError: Expected begin and size arguments to be 1-D tensors of size 1, but got shapes [1] and [0] instead. [Op:Slice]
+
+import tensorflow as tf
+
+input = tf.constant(-536870912, shape=[1], dtype=tf.int32)
+begin = tf.constant(-536870912, shape=[1], dtype=tf.int32)
+size = tf.constant([], shape=[0], dtype=tf.int32)
+tf.raw_ops.Slice(input=input, begin=begin, size=size)

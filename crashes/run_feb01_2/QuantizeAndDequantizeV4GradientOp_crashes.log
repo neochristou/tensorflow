@@ -1,6 +1,0 @@
-Tensor<type: double shape: [2,2] values: [1 0][0...]...>
-Tensor<type: double shape: [2,2] values: [1 0][0...]...>
-Tensor<type: double shape: [0] values: >
-Tensor<type: double shape: [] values: -10>
-
---------------------------------------

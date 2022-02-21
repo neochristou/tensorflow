@@ -1,6 +1,0 @@
-Resource
-Tensor<type: int64 shape: [] values: 1>
-Tensor<type: int32 shape: [1] values: 6>
-Resource
-Tensor<type: int64 shape: [] values: 1>
-Tensor<type: int32 shape: [1] values: 6>

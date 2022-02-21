@@ -1,7 +1,0 @@
-Tensor<type: string shape: [] values: /tmp/warm_starting_util_test2gl91v2d/tmpfw3f2t4x/model-0>
-Tensor<type: string shape: [] values: /tmp/warm_starting_util_test2gl91v2d/tmpfw3f2t4x/model-0>
-Tensor<type: int64 shape: [] values: 0>
-Tensor<type: int64 shape: [3] values: 0 -1 -1>
-Tensor<type: float shape: [4,1] values: [0.42][0.42][0.42]...>
-
---------------------------------------

@@ -1,6 +1,0 @@
-Resource
-Tensor<type: int64 shape: [] values: 0>
-Tensor<type: string shape: [0] values: >
-Tensor<type: float shape: [3,3,1,8] values: [[[0.0403598957 -0.10976322 0.0635250881...]]]...>
-
---------------------------------------

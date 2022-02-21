@@ -1,8 +1,0 @@
-Tensor<type: string shape: [] values: snd>
-Tensor<type: float shape: [4,7,1] values: [[-0.84738344][0.55983758][-0.123181537]]...>
-Tensor<type: float shape: [4,7,1] values: [[-0.84738344][0.55983758][-0.123181537]]...>
---------------------------------------
-Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
-Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
-Tensor<type: float shape: [5,3,4] values: [[1 1 1...]]...>
---------------------------------------

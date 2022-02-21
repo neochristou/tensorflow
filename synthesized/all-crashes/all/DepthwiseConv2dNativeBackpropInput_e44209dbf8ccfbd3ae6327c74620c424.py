@@ -1,6 +1,0 @@
-import tensorflow as tf
-
-arg_0 = tf.constant(1879048192, shape=[13], dtype=tf.int32)
-arg_1 = tf.constant(0.184634328, shape=[1,1,48,2], dtype=tf.float32)
-arg_2 = tf.constant(0.184634328, shape=[1,1,48,2], dtype=tf.float32)
-tf.raw_ops.DepthwiseConv2dNativeBackpropInput(input_sizes=arg_0, filter=arg_1, out_backprop=arg_2)

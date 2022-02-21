@@ -1,8 +1,0 @@
-Tensor<type: double shape: [2] values: 0 0>
-Tensor<type: double shape: [2] values: 0 5>
-Tensor<type: int32 shape: [] values: 1879048192>
---------------------------------------
-Tensor<type: double shape: [13] values: 1.5e+300 1.5e+300 1.5e+300...>
-Tensor<type: double shape: [2] values: 0 5>
-Tensor<type: int32 shape: [] values: 1879048192>
---------------------------------------

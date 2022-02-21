@@ -1,8 +1,0 @@
-Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Tensor<type: quint8 shape: [1,2,3,3] values: [[[1 2 3]]]...>
-Tensor<type: float shape: [0] values: >
-Tensor<type: float shape: [] values: 0>
-Tensor<type: float shape: [] values: 0>
-Tensor<type: float shape: [] values: 0>
-
---------------------------------------

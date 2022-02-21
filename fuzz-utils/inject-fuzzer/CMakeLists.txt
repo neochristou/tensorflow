@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # VERIFY LLVM INSTALLATION DIR
 #===============================================================================
 # Set this to a valid LLVM installation dir
-set(LT_LLVM_INSTALL_DIR "/usr/lib/llvm-7/" CACHE PATH "LLVM installation directory")
+set(LT_LLVM_INSTALL_DIR "/usr/lib/llvm-11/" CACHE PATH "LLVM installation directory")
 
 # A bit of a sanity checking
 set(LT_LLVM_INCLUDE_DIR "${LT_LLVM_INSTALL_DIR}/include/llvm")
@@ -27,7 +27,7 @@ endif()
 # VERIFY CLANG INSTALLATION DIR
 #===============================================================================
 # Set this to a valid Clang installation dir
-set(CT_LLVM_INSTALL_DIR "/usr/lib/llvm-7/" CACHE PATH "LLVM installation directory")
+set(CT_LLVM_INSTALL_DIR "/usr/lib/llvm-11/" CACHE PATH "LLVM installation directory")
 
 # A bit of a sanity checking
 set(CT_LLVM_INCLUDE_DIR "${CT_LLVM_INSTALL_DIR}/include/llvm")
@@ -58,8 +58,8 @@ find_package(Clang REQUIRED CONFIG)
 # Sanity check. As Clang does not expose e.g. `CLANG_VERSION_MAJOR` through
 # AddClang.cmake, we have to use LLVM_VERSION_MAJOR instead.
 # TODO: Revisit when next version is released.
-if(NOT "7" VERSION_EQUAL "${LLVM_VERSION_MAJOR}")
-  message(FATAL_ERROR "Found LLVM ${LLVM_VERSION_MAJOR}, but need LLVM 7")
+if(NOT "11" VERSION_EQUAL "${LLVM_VERSION_MAJOR}")
+  message(FATAL_ERROR "Found LLVM ${LLVM_VERSION_MAJOR}, but need LLVM 11")
 endif()
 
 message(STATUS "Found Clang ${LLVM_PACKAGE_VERSION}")

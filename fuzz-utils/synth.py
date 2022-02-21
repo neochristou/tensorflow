@@ -7,7 +7,7 @@ import os
 # import tensorflow as tf
 from tensorflow import raw_ops
 
-tf_path = "/media/mlfuzz/tensorflow/"
+tf_path = "/media/ivysyn/tensorflow/"
 CRASHFILES_PATH = tf_path + "crashes/"
 REPRODUCE_PATH_BASE = tf_path + "synthesized/"
 CRASH_DELIM = '--------------------------------------\n'
@@ -31,7 +31,7 @@ def get_function_param_names(kernel_name):
 
 
 def handle_value_edge_cases(value):
-    "Handle bad parsing"
+    """Handle bad parsing"""
 
     value = value.replace('...', '')
 
@@ -160,9 +160,6 @@ def main():
     args_parser.add_argument(
         "--perf", dest="perf", action="store_true", default=False, help="Synth performance logs"
     )
-    args_parser.add_argument(
-        "--last-run", dest="last_run", action="store_true", default=False, help="Synth last run logs"
-    )
 
     args = args_parser.parse_args()
 
@@ -170,55 +167,49 @@ def main():
     reproduce_path = REPRODUCE_PATH_BASE
     if args.perf:
         reproduce_path += 'performance/'
-    elif args.last_run:
-        reproduce_path += 'last-run-all/'
     else:
         reproduce_path += 'all-crashes/'
     reproduce_path += 'all/'
 
-    if args.last_run:
-        loop_dirs = [CRASHFILES_PATH + 'run_feb01_2/']
-    else:
-        loop_dirs = glob.glob(CRASHFILES_PATH + '/*/')
+    for crash_filename in glob.glob(CRASHFILES_PATH + ext):
 
-    for crash_dir in loop_dirs:
-        for crash_filename in glob.glob(crash_dir + ext):
+        # Ignore empty files
+        if os.path.getsize(crash_filename) == 0:
+            continue
 
-            if os.path.getsize(crash_filename) == 0:
+        kernel_name = get_kernel_name(crash_filename)
+
+        with open(crash_filename, 'r') as crash_file:
+            try:
+                crashes = list(
+                    filter(None, crash_file.read().split(CRASH_DELIM)))
+            except UnicodeDecodeError:
+                other_errors.add(kernel_name)
                 continue
 
-            with open(crash_filename, 'r') as crash_file:
-                try:
-                    crashes = list(
-                        filter(None, crash_file.read().split(CRASH_DELIM)))
-                except UnicodeDecodeError:
-                    other_errors.add(kernel_name)
-                    continue
+        all_kernels.add(kernel_name)
 
-            kernel_name = get_kernel_name(crash_filename)
-            all_kernels.add(kernel_name)
+        for crash in crashes:
+            crash = crash.strip()
 
-            for crash in crashes:
-                crash = crash.strip()
+            if len(crash) == 0:
+                print("Skipping empty crash for", kernel_name)
+                continue
 
-                if len(crash) == 0:
-                    print("Skipping empty crash for", kernel_name)
-                    continue
+            # print(kernel_name)
+            synth_file = synthesize_file(crash, kernel_name)
 
-                # print(kernel_name)
-                synth_file = synthesize_file(crash, kernel_name)
+            if synth_file is None:
+                continue
+            if synth_file == -1:
+                no_raw_op.add(kernel_name)
+                continue
+            if synth_file == -2:
+                bad_type.add(kernel_name)
+                continue
 
-                if synth_file is None:
-                    continue
-                if synth_file == -1:
-                    no_raw_op.add(kernel_name)
-                    continue
-                if synth_file == -2:
-                    bad_type.add(kernel_name)
-                    continue
-
-                successful.add(kernel_name)
-                save_synth_file(synth_file, kernel_name, reproduce_path)
+            successful.add(kernel_name)
+            save_synth_file(synth_file, kernel_name, reproduce_path)
 
     no_raw_op = list([x for x in no_raw_op if x not in successful])
     bad_type = list([x for x in bad_type if x not in successful])

@@ -1,8 +1,0 @@
-Tensor<type: complex64 shape: [2,5] values: ? ? ?...>
-Tensor<type: int32 shape: [2,2] values: [0 0][0...]...>
-
---------------------------------------
-Tensor<type: complex64 shape: [2,5] values: ? ? ?...>
-Tensor<type: int32 shape: [] values: 1879048192>
-
---------------------------------------
