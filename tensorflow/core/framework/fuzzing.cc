@@ -184,8 +184,7 @@ namespace tffuzzing {
         while (!got_last && tries < 10) {
           getline(mutations_restore, last_line);
           if (last_line.length() > 0) {
-            char *line_end;
-            last_mutation = std::strtoll(last_line.c_str(), &line_end, 10);
+            last_mutation = std::stoll(last_line);
             got_last = true;
           } else {
             std::cout << "Error while reading " << mutations_restore_filename << " (got " << last_line << ") ..." << std::endl;
@@ -297,8 +296,6 @@ namespace tffuzzing {
     }
 
    file << "\n--------------------------------------\n";
-   file << tensorflow::SummarizeNodeDef(get_fuzzed_context()->op_kernel().def());
-   file << "\n--------------------------------------\n";
   }
 
   void Fuzzer::restore_last_mutation(long long last_mutation, std::string& fname)
@@ -335,10 +332,9 @@ namespace tffuzzing {
       std::string last_line;
       getline(num_crashes_file, last_line);
       if (last_line.length() > 0) {
-        char *line_end;
-        last_crash = std::strtoll(last_line.c_str(), &line_end, 10);
+        last_crash = std::stoll(last_line);
       } else {
-        /* std::cout << "Error while reading file with number of crashes..." << std::flush; */
+        std::cout << "Error while reading file with number of crashes..." << std::flush;
       }
     } else {
       last_crash = 0;
