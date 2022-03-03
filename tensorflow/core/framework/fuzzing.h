@@ -70,6 +70,7 @@ namespace tffuzzing {
 
     extern bool already_fuzzing;
     extern const std::string results_dir;
+    extern std::string op_name;
     extern std::string attrs;
 
     bool was_fuzzed(const std::string& fname);
