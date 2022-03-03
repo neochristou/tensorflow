@@ -4,7 +4,7 @@
 namespace tffuzzing {
 
   bool already_fuzzing = false;
-  char* results_dir = "/media/tf-fuzzing/results";
+  const std::string results_dir = "/media/tf-fuzzing/results";
 
   static std::fstream mutations_file;
   static std::fstream mutations_restore;
@@ -18,7 +18,7 @@ namespace tffuzzing {
   static uint64_t start_time;
   static uint64_t end_time;
 
-  void create_file(const char *filename, std::fstream &file, std::ios_base::openmode fflags)
+  void create_file(const std::string& filename, std::fstream &file, std::ios_base::openmode fflags)
   {
       std::ofstream file_stream(filename);
       if (file.is_open()) {
@@ -32,33 +32,31 @@ namespace tffuzzing {
       }
   }
 
-  bool was_fuzzed(std::string fname) {
-    // printf("Fuzzed %s\n", fname.c_str());
-    struct stat stat_buffer;
-    char stat_filename[FILENAME_SZ] = {};
-    char unknown_filename[FILENAME_SZ] = {};
-    int done_status;
-    int unknown_status;
+  bool was_fuzzed(const std::string& fname) {
+    struct stat stat_buffer = {};
+    std::string stat_filename;
+    std::string unknown_filename;
+    int done_status = 0;
+    int unknown_status = 0;
 
-    snprintf(stat_filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, fname.c_str());
-    snprintf(unknown_filename, FILENAME_SZ, "%s/%s.unknown", results_dir, fname.c_str());
+    stat_filename = results_dir + "/" + fname + ".done";
+    unknown_filename = results_dir + "/" + fname + ".unknown";
 
     // Also return true if it aborted because of an unknown type
-    done_status = stat(stat_filename, &stat_buffer) == 0;
-    unknown_status = stat(unknown_filename, &stat_buffer) == 0;
+    done_status = stat(stat_filename.c_str(), &stat_buffer) == 0;
+    unknown_status = stat(unknown_filename.c_str(), &stat_buffer) == 0;
 
     return done_status | unknown_status;
   }
 
-  Fuzzer::Fuzzer(char *fname, tensorflow::OpKernelContext* ctx)
+  Fuzzer::Fuzzer(const std::string& fname, tensorflow::OpKernelContext* ctx)
   {
 
-      /* std::cout << "Initializing fuzzer..." << std::endl; */
+      /* tensorflow::LogAllRegisteredKernels(); */
 
       cur_fname = fname;
 
       num_args = ctx->num_inputs();
-      /* std::cout << "Copying original inputs" << std::endl; */
 
       original_ctx = new tensorflow::OpKernelContext(ctx->get_params());
 
@@ -70,24 +68,23 @@ namespace tffuzzing {
 
       bool restore = false;
       long long last_mutation = -1;
-      struct stat stat_buffer;
+      struct stat stat_buffer = {};
 
       glob_t glob_result = {0};
-      int glob_ret;
-      pid_t mypid;
+      int glob_ret = {};
+      pid_t mypid = 0;
       char *existing_pid;
 
       /* std::cout << "Initializing filename buffers..." << std::endl; */
 
-      char mutfile_pattern[FILENAME_SZ] = {};
-      char mutfile_prefix[FILENAME_SZ] = {};
-      char proc_filename[FILENAME_SZ] = {};
-      char mut_filename[FILENAME_SZ] = {};
-      char time_filename[FILENAME_SZ] = {};
-      char except_filename[FILENAME_SZ] = {};
-      /* char start_filename[FILENAME_SZ] = {}; */
+      std::string mutfile_pattern;
+      std::string mutfile_prefix;
+      std::string proc_filename;
+      std::string mut_filename;
+      std::string time_filename;
+      std::string except_filename;
+      std::string total_filename;
 
-      char total_filename[FILENAME_SZ] = {};
       std::fstream total_file;
 
       /* std::cout << "Filename buffers initialized"  << std::endl; */
@@ -99,50 +96,39 @@ namespace tffuzzing {
 
       /* std::cout << "Writing to filename buffers" << std::endl; */
 
-      snprintf(mutfile_pattern, FILENAME_SZ, "%s/%s_mutations.log.*", results_dir, fname);
-      snprintf(mutfile_prefix, FILENAME_SZ, "%s/%s_mutations.log", results_dir, fname);
-      snprintf(mut_filename, FILENAME_SZ, "%s/%s_mutations.log.%d", results_dir, fname, mypid);
-      snprintf(time_filename, FILENAME_SZ, "%s/%s.time.%d", results_dir, fname, mypid);
-      snprintf(except_filename, FILENAME_SZ, "%s/%s.failed.%d", results_dir, fname, mypid);
-      /* snprintf(start_filename, FILENAME_SZ, "%s/%s.start.%d", results_dir, fname, mypid); */
-      snprintf(total_filename, FILENAME_SZ, "%s/totals.txt", results_dir);
+      mutfile_pattern = results_dir + "/" + cur_fname + "_mutations.log.*";
+      mutfile_prefix = results_dir + "/" + cur_fname + "_mutations.log";
+      mut_filename = results_dir + "/" + cur_fname + "_mutations.log." + std::to_string(mypid);
+      time_filename = results_dir + "/" + cur_fname + ".time." + std::to_string(mypid);
+      except_filename = results_dir + "/" + cur_fname + ".failed." + std::to_string(mypid);
+      total_filename = results_dir + "/totals.txt";
 
       std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
-
-      // Create time file if it doesn't exist
-      ///if (stat(time_filename, &stat_buffer) != 0){
-      //  fflags |= std::ios::trunc;
-      //}
 
       create_file(time_filename, time_file, fflags);
       create_file(except_filename, except_file, fflags);
 
-      //fflags |= std::ios::trunc;
-
       mutations_logger_filename = mut_filename;
 
-      /* std::cout << "Mutation filename written" << std::endl; */
-
       for (int r = 0; r < MUTFILE_TRIES; r++){
-        glob_ret = glob(mutfile_pattern, 0, NULL, &glob_result);
+        glob_ret = glob(mutfile_pattern.c_str(), 0, NULL, &glob_result);
         if (glob_ret != GLOB_NOMATCH && !restore) {
 
           // A lot of empty mutation files, probably deadlock or bug, stop
           // fuzzing this kernel
           if (glob_result.gl_pathc > 5) {
             mark_fuzzing_done();
-            printf("%s has a lot of empty mutation files, skip\n", fname);
+            std::cout << cur_fname << " has a lot of empty mutation files, skipping" << std::endl;
             return;
           }
 
           // A mutation file for the same function exists
-          /* std::cout << "Found mutation file for " << fname << std::endl << std::flush; */
           for(size_t i = 0; i < glob_result.gl_pathc && !restore; ++i) {
 
-            existing_pid = glob_result.gl_pathv[i] + strlen(mutfile_prefix) + 1;
-            snprintf(proc_filename, FILENAME_SZ, "/proc/%s", existing_pid);
+            existing_pid = glob_result.gl_pathv[i] + mutfile_prefix.length() + 1;
+            proc_filename = "/proc/" + std::string(existing_pid);
 
-            if (stat(proc_filename, &stat_buffer) == 0){
+            if (stat(proc_filename.c_str(), &stat_buffer) == 0){
               // The mutations file belongs to a running process, skip
               /* printf("%s belongs to a running process, skipping\n", glob_result.gl_pathv[i]); */
               total_mutations = 0;
@@ -152,29 +138,20 @@ namespace tffuzzing {
             } else {
               // The mutations file doesn't belong to any running process, something crashed
               mutations_restore_filename = glob_result.gl_pathv[i];
-              /* printf("%s crashed, will restore from %s\n", fname, mutations_restore_filename.c_str()); */
-
-              // Open the file here such that other threads that are also
-              // looking to fuzz this function right now don't
-              /* mutations_file.open(mutations_logger_filename, fflags); */
-
+              std::cout << "crashed, will restore from " << mutations_restore_filename << std::endl;
               restore = true;
             }
           }
         }
-        /* else { */
-        /* std::cout << "No mutation file found for " << fname << std::endl << std::flush; */
-        /* } */
         globfree(&glob_result);
       }
 
-      printf("Fuzzing function %s\n", fname);
+      std::cout << "Fuzzing function " << cur_fname << std::endl;
 
       // Disable buffering else program might crash before writing to logger
-      /* if (!restore) */
       // Force creation of the file immediately
-      create_file(mutations_logger_filename.c_str(), mutations_file, fflags);
-      mutations_file.rdbuf()->pubsetbuf(0, 0);
+      create_file(mutations_logger_filename, mutations_file, fflags);
+      mutations_file.rdbuf()->pubsetbuf(nullptr, 0);
 
       for (int i = 0; i < num_args; i++) {
         indices.push_back(0);
@@ -211,18 +188,13 @@ namespace tffuzzing {
             last_mutation = std::strtoll(last_line.c_str(), &line_end, 10);
             got_last = true;
           } else {
-            printf("Error: reading %s (got %s)...\n", mutations_restore_filename.c_str(), last_line.c_str());
+            std::cout << "Error while reading " << mutations_restore_filename << " (got " << last_line << ") ..." << std::endl;
             tries++;
           }
         }
-        // Mutation file is empty, abort
-        /* if (!(last_line.length() > 0)) { */
-        /*   abort(); */
-        /* } */
-        /* mutations_restore.close(); */
 
         if (last_mutation > 0) {
-          restore_last_mutation(last_mutation, fname);
+          restore_last_mutation(last_mutation, cur_fname);
           // Delete the file since we already logged the crash
           if (std::remove(mutations_restore_filename.c_str()) != 0) {
             /* std::cout << "Couldn't remove " << mutations_restore_filename << std::flush; */
@@ -236,13 +208,9 @@ namespace tffuzzing {
 
   Fuzzer::~Fuzzer() {
 
-    /* mutations_file.close(); */
-
   }
 
   tensorflow::TensorValue Fuzzer::get_next_mut(tensorflow::DataType ttype, int idx) {
-
-    /* std::cout << "get_next_mut()" << std::endl; */
 
     tensorflow::Tensor *tensor;
 
@@ -311,6 +279,7 @@ namespace tffuzzing {
     tensorflow::DataType ttype;
     tensorflow::TensorValue tensor_val;
 
+    file << "Attributes: " << tensorflow::SummarizeAttrs(original_ctx->op_kernel().def()) << std::endl;
     for (int idx = 0; idx < num_args; idx++) {
       ttype = tensor_types.at(idx);
       tensor_val = get_next_mut(ttype, idx);
@@ -328,9 +297,11 @@ namespace tffuzzing {
     }
 
    file << "\n--------------------------------------\n";
+   file << tensorflow::SummarizeNodeDef(get_fuzzed_context()->op_kernel().def());
+   file << "\n--------------------------------------\n";
   }
 
-  void Fuzzer::restore_last_mutation(long long last_mutation, char *fname)
+  void Fuzzer::restore_last_mutation(long long last_mutation, std::string& fname)
   {
 
     tensorflow::TensorValue tensor_val;
@@ -344,23 +315,22 @@ namespace tffuzzing {
       return;
     }
 
-    printf("Restoring from mutation %lld\n", last_mutation);
+    std::cout << "Restoring from mutation " << last_mutation << std::endl;
 
-    char crashes_filename[FILENAME_SZ] = {};
-    char crashes_num_filename[FILENAME_SZ] = {};
-    char logbuf[LOGBUFSZ] = {};
-    long last_crash; // Used to bound number of crashes
-    struct stat stat_buffer;
+    std::string crashes_filename;
+    std::string crashes_num_filename;
+    long long last_crash = 0; // Used to bound number of crashes
+    struct stat stat_buffer = {};
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
 
-    snprintf(crashes_filename, FILENAME_SZ, "%s/%s_crashes.log", results_dir, fname);
+    crashes_filename = results_dir + "/" + fname + "_crashes.log";
     crashes_logger_filename = crashes_filename;
-    crashes_file.rdbuf()->pubsetbuf(0, 0);
+    crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
     crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
 
-    snprintf(crashes_num_filename, FILENAME_SZ, "%s/%s_crashes_num.log", results_dir, fname);
+    crashes_num_filename = results_dir + "/" + fname + "_crashes_num.log";
 
-    if (stat(crashes_num_filename, &stat_buffer) == 0){
+    if (stat(crashes_num_filename.c_str(), &stat_buffer) == 0){
       num_crashes_file.open(crashes_num_filename, fflags);
       std::string last_line;
       getline(num_crashes_file, last_line);
@@ -377,10 +347,8 @@ namespace tffuzzing {
     }
     last_crash++;
 
-    snprintf(logbuf, LOGBUFSZ, "%ld\n", last_crash);
-
     num_crashes_file.seekp(0, std::ios::beg);
-    num_crashes_file.write(logbuf, LOGBUFSZ);
+    num_crashes_file << last_crash;
     num_crashes_file.flush();
     /* num_crashes_file.close(); */
 
@@ -394,12 +362,14 @@ namespace tffuzzing {
     /* crashes_file.close(); */
 
     if (last_crash >= CRASHES_BOUND) {
-      printf("Function %s crashed %d times, skipping rest of fuzzing\n", fname, CRASHES_BOUND);
+      std::cout << "Function " << fname << " crashed " << CRASHES_BOUND << " times, skipping rest of fuzzing" << std::endl;
       std::fstream run_file;
-      char run_filename[FILENAME_SZ];
-      snprintf(run_filename, FILENAME_SZ, "%s/%s.run", results_dir, fname);
+      std::string run_filename;
       std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
+
+      run_filename = results_dir + "/" + fname + ".run";
       create_file(run_filename, run_file, fflags);
+
       run_file << total_mutations << std::flush;
       run_file.close();
       mark_fuzzing_done();
@@ -407,7 +377,7 @@ namespace tffuzzing {
     }
 
     next_mutations_indices(true);
-    printf("Mutations left after restoration: %llu\n", total_mutations);
+    std::cout << "Mutations left after restoration: " << total_mutations << std::endl;
   }
 
   void Fuzzer::calculate_total_mutations() {
@@ -506,17 +476,17 @@ namespace tffuzzing {
     if (total_mutations <= NMUT_LOWER_BOUND) {
       num_mut_skip = 1;
     } else {
-      nmut_fuzz = total_mutations / 100 * NMUT_PERCENT;
-      if (nmut_fuzz > NMUT_UPPER_BOUND) {
-        nmut_fuzz = NMUT_UPPER_BOUND;
+
+      if (nmut_fuzz > NMUT_UPPER_BOUND_MID) {
+        nmut_fuzz = NMUT_UPPER_BOUND_MID;
       }
       num_mut_skip = total_mutations / nmut_fuzz;
     }
 
     all_mutations = total_mutations;
-    printf("Total mutations: %llu\n", total_mutations);
-    printf("Will run with (at least): %llu mutations\n", nmut_fuzz);
-    printf("Step size: %lu\n", num_mut_skip);
+    std::cout << "Total mutations: " << total_mutations << std::endl;
+    std::cout << "Will run with (at least): " << total_mutations << " mutations"<< std::endl;
+    std::cout << "Step size: " << num_mut_skip << std::endl;
 
     // To avoid off by one on first mutation
     total_mutations += num_mut_skip;
@@ -599,7 +569,7 @@ namespace tffuzzing {
     tensorflow::tstring rand_string;
 
     // Random generators
-    std::mt19937 rngenerator(123);
+    std::mt19937 rngenerator(RNG_SEED);
     std::uniform_int_distribution<> dims_distr(0, LARGE_TENSOR_DIMS_FUZZ);
     std::uniform_int_distribution<> int_distr(0, int_mutations.size() - 1);
     std::uniform_int_distribution<> long_distr(0, long_mutations.size() - 1);
@@ -876,12 +846,12 @@ namespace tffuzzing {
 
   void Fuzzer::mark_unknown_type(tensorflow::DataType ttype)
   {
-    char filename[FILENAME_SZ] = {};
+    std::string filename;
 
     std::cout << "\033[1;31mUnknown type:\033[0m " << ttype << std::endl << std::flush;
 
     // Indicates a type that isn't handled in the fuzzer
-    snprintf(filename, FILENAME_SZ, "%s/%s.unknown", results_dir, cur_fname.c_str());
+    filename = results_dir + "/" + cur_fname + ".unknown";
 
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
     unknown_type_file.open(filename, fflags);
@@ -894,13 +864,10 @@ namespace tffuzzing {
   void Fuzzer::mark_fuzzing_done()
   {
 
-    /* std::cout << "mark_fuzzing_done()" << std::endl; */
-
-    char filename[FILENAME_SZ] = {};
+    std::string filename;
 
     // This file indicates to the fuzzer that this kernel has been already fuzzed
-    snprintf(filename, FILENAME_SZ, "%s/%s_mutations.done", results_dir, cur_fname.c_str());
-
+    filename = results_dir + "/" + cur_fname + ".done";
     std::ofstream output(filename);
 
     // Set mutations to zero to stop fuzzing
@@ -945,10 +912,8 @@ namespace tffuzzing {
     }
 
     if (log) {
-      char logbuf[LOGBUFSZ] = {};
-      snprintf(logbuf, LOGBUFSZ, "%llu", total_mutations);
       mutations_file.seekp(0, std::ios::beg);
-      mutations_file.write(logbuf, LOGBUFSZ);
+      mutations_file << total_mutations;
       mutations_file.flush();
     }
 
@@ -992,30 +957,21 @@ namespace tffuzzing {
   void Fuzzer::mut_start_time()
   {
     struct timespec ts;
-    struct timespec ts_real;
-    uint64_t real_time;
-    char logbuf[BUFSZ] = {};
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
     start_time = ((uint64_t)ts.tv_sec) * NS_PER_SEC + ts.tv_nsec;
 
-    /* clock_gettime(CLOCK_REALTIME, &ts_real); */
-    /* real_time = ((uint64_t)ts_real.tv_sec) * 1000 * 1000 * 1000 + ts_real.tv_nsec; */
-    /* snprintf(logbuf, BUFSZ, "%llu:%lu", total_mutations, real_time); */
-    /* start_file.seekp(0, std::ios::beg); */
-    /* start_file.write(logbuf, BUFSZ); */
-    /* start_file.flush(); */
-    /* start_file.close(); */
   }
 
   void Fuzzer::mut_end_time(tensorflow::OpKernelContext *fuzz_ctx)
   {
 
-    struct timespec ts;
-    struct stat stat_buffer;
-    char duration_filename[FILENAME_SZ] = {};
+    struct timespec ts = {};
+    struct stat stat_buffer = {};
+    std::string duration_filename;
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
     std::fstream duration_file;
+
     clock_gettime(CLOCK_MONOTONIC, &ts);
     end_time = ((uint64_t)ts.tv_sec) * NS_PER_SEC + ts.tv_nsec;
 
@@ -1043,8 +999,8 @@ namespace tffuzzing {
       total_mutations += (num_mut_skip * 2);
       next_mutations_indices(false);
 
-      snprintf(duration_filename, sizeof(duration_filename), "%s/%s.duration", results_dir, cur_fname);
-      if (stat(duration_filename, &stat_buffer) != 0) {
+      duration_filename = results_dir + "/" + cur_fname + ".duration";
+      if (stat(duration_filename.c_str(), &stat_buffer) != 0) {
         fflags |= std::ios::trunc;
         create_file(duration_filename, duration_file, fflags);
       } else {

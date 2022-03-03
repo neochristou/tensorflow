@@ -23,19 +23,20 @@
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/node_def_util.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/core/status.h"
 
-#define NMUT_UPPER_BOUND 1000000
+#define NMUT_UPPER_BOUND_MID 1000000
 #define NMUT_LOWER_BOUND 500000
-#define NMUT_PERCENT 50
 #define CRASHES_BOUND 1
 #define MUTFILE_TRIES 5
 #define NS_PER_SEC (1000 * 1000 * 1000)
 #define TIME_THRESH_SECS 30
+#define RNG_SEED 123
 
 #define MEDIUM_INT_FUZZ 0x20000000
 #define MEDIUM_INT_NEG_FUZZ -0x20000000
@@ -68,10 +69,10 @@
 namespace tffuzzing {
 
     extern bool already_fuzzing;
-    extern char* results_dir;
+    extern const std::string results_dir;
 
-    bool was_fuzzed(std::string fname);
-    void create_file(const char *filename, std::fstream &file, std::ios_base::openmode fflags);
+    bool was_fuzzed(const std::string& fname);
+    void create_file(const std::string& filename, std::fstream &file, std::ios_base::openmode fflags);
 
     class Fuzzer {
     private:
@@ -133,7 +134,7 @@ namespace tffuzzing {
         void calculate_total_mutations();
         void next_mutations_indices(bool log);
         inline void inc_mutations_indices(bool log);
-        void restore_last_mutation(long long last_mutation, char *fname);
+        void restore_last_mutation(long long last_mutation, std::string& fname);
         void log_current_mutation(std::fstream &file);
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
@@ -144,7 +145,7 @@ namespace tffuzzing {
 
     public:
 
-        Fuzzer(char *fname, tensorflow::OpKernelContext* ctx);
+        Fuzzer(const std::string& fname, tensorflow::OpKernelContext* ctx);
         ~Fuzzer();
 
         bool has_more_mutations(bool reset);
