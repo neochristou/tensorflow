@@ -70,6 +70,7 @@ namespace tffuzzing {
 
     extern bool already_fuzzing;
     extern const std::string results_dir;
+    extern std::string attrs;
 
     bool was_fuzzed(const std::string& fname);
     void create_file(const std::string& filename, std::fstream &file, std::ios_base::openmode fflags);

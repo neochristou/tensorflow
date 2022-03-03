@@ -5,6 +5,7 @@ namespace tffuzzing {
 
   bool already_fuzzing = false;
   const std::string results_dir = "/media/tf-fuzzing/results";
+  std::string attrs;
 
   static std::fstream mutations_file;
   static std::fstream mutations_restore;
@@ -13,7 +14,6 @@ namespace tffuzzing {
   static std::fstream unknown_type_file;
   static std::fstream time_file;
   static std::fstream except_file;
-  /* static std::fstream start_file; */
 
   static uint64_t start_time;
   static uint64_t end_time;
@@ -55,6 +55,7 @@ namespace tffuzzing {
       /* tensorflow::LogAllRegisteredKernels(); */
 
       cur_fname = fname;
+      attrs = tensorflow::SummarizeAttrs(ctx->op_kernel().def());
 
       num_args = ctx->num_inputs();
 
@@ -278,7 +279,9 @@ namespace tffuzzing {
     tensorflow::DataType ttype;
     tensorflow::TensorValue tensor_val;
 
-    file << "Attributes: " << tensorflow::SummarizeAttrs(original_ctx->op_kernel().def()) << std::endl;
+    file << "Attributes: ";
+    file << attrs;
+    file << std::endl;
     for (int idx = 0; idx < num_args; idx++) {
       ttype = tensor_types.at(idx);
       tensor_val = get_next_mut(ttype, idx);
