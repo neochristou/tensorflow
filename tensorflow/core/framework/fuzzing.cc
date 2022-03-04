@@ -4,7 +4,7 @@
 namespace tffuzzing {
 
   bool already_fuzzing = false;
-  const std::string results_dir = "/media/tf-fuzzing/results";
+  const char *results_dir = "/media/tf-fuzzing/results";
   std::string attrs;
   std::string op_name;
 
@@ -40,8 +40,8 @@ namespace tffuzzing {
     int done_status = 0;
     int unknown_status = 0;
 
-    stat_filename = results_dir + "/" + fname + ".done";
-    unknown_filename = results_dir + "/" + fname + ".unknown";
+    stat_filename = std::string(results_dir) + "/" + fname + ".done";
+    unknown_filename = std::string(results_dir) + "/" + fname + ".unknown";
 
     // Also return true if it aborted because of an unknown type
     done_status = stat(stat_filename.c_str(), &stat_buffer) == 0;
@@ -57,7 +57,6 @@ namespace tffuzzing {
 
       cur_fname = fname;
       op_name = ctx->op_kernel().def().name();
-      /* std::cout << op_name << std::endl << std::flush; */
       attrs = tensorflow::SummarizeAttrs(ctx->op_kernel().def());
 
       num_args = ctx->num_inputs();
@@ -100,12 +99,12 @@ namespace tffuzzing {
 
       /* std::cout << "Writing to filename buffers" << std::endl; */
 
-      mutfile_pattern = results_dir + "/" + cur_fname + "_mutations.log.*";
-      mutfile_prefix = results_dir + "/" + cur_fname + "_mutations.log";
-      mut_filename = results_dir + "/" + cur_fname + "_mutations.log." + std::to_string(mypid);
-      time_filename = results_dir + "/" + cur_fname + ".time." + std::to_string(mypid);
-      except_filename = results_dir + "/" + cur_fname + ".failed." + std::to_string(mypid);
-      total_filename = results_dir + "/totals.txt";
+      mutfile_pattern = std::string(results_dir) + "/" + cur_fname + "_mutations.log.*";
+      mutfile_prefix = std::string(results_dir) + "/" + cur_fname + "_mutations.log";
+      mut_filename = std::string(results_dir) + "/" + cur_fname + "_mutations.log." + std::to_string(mypid);
+      time_filename = std::string(results_dir) + "/" + cur_fname + ".time." + std::to_string(mypid);
+      except_filename = std::string(results_dir) + "/" + cur_fname + ".failed." + std::to_string(mypid);
+      total_filename = std::string(results_dir) + "/totals.txt";
 
       std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
 
@@ -325,12 +324,12 @@ namespace tffuzzing {
     struct stat stat_buffer = {};
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
 
-    crashes_filename = results_dir + "/" + fname + "_crashes.log";
+    crashes_filename = std::string(results_dir) + "/" + fname + "_crashes.log";
     crashes_logger_filename = crashes_filename;
     crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
     crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
 
-    crashes_num_filename = results_dir + "/" + fname + "_crashes_num.log";
+    crashes_num_filename = std::string(results_dir) + "/" + fname + "_crashes_num.log";
 
     if (stat(crashes_num_filename.c_str(), &stat_buffer) == 0){
       num_crashes_file.open(crashes_num_filename, fflags);
@@ -368,7 +367,7 @@ namespace tffuzzing {
       std::string run_filename;
       std::ios_base::openmode fflags = std::ios::out | std::ios::in | std::ios::trunc;
 
-      run_filename = results_dir + "/" + fname + ".run";
+      run_filename = std::string(results_dir) + "/" + fname + ".run";
       create_file(run_filename, run_file, fflags);
 
       run_file << total_mutations << std::flush;
@@ -852,7 +851,7 @@ namespace tffuzzing {
     std::cout << "\033[1;31mUnknown type:\033[0m " << ttype << std::endl << std::flush;
 
     // Indicates a type that isn't handled in the fuzzer
-    filename = results_dir + "/" + cur_fname + ".unknown";
+    filename = std::string(results_dir) + "/" + cur_fname + ".unknown";
 
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
     unknown_type_file.open(filename, fflags);
@@ -868,7 +867,7 @@ namespace tffuzzing {
     std::string filename;
 
     // This file indicates to the fuzzer that this kernel has been already fuzzed
-    filename = results_dir + "/" + cur_fname + ".done";
+    filename = std::string(results_dir) + "/" + cur_fname + ".done";
     std::ofstream output(filename);
 
     // Set mutations to zero to stop fuzzing
@@ -1000,7 +999,7 @@ namespace tffuzzing {
       total_mutations += (num_mut_skip * 2);
       next_mutations_indices(false);
 
-      duration_filename = results_dir + "/" + cur_fname + ".duration";
+      duration_filename = std::string(results_dir) + "/" + cur_fname + ".duration";
       if (stat(duration_filename.c_str(), &stat_buffer) != 0) {
         fflags |= std::ios::trunc;
         create_file(duration_filename, duration_file, fflags);
