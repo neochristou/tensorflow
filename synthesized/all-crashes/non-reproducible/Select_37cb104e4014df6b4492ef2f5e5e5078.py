@@ -1,8 +1,0 @@
-# 2022-02-15 18:04:15.547362: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.Traceback (most recent call last):  File "/media/ivysyn/tensorflow/synthesized/all-crashes/all/Select_37cb104e4014df6b4492ef2f5e5e5078.py", line 3, in <module>    condition = tf.constant(0, shape=[], dtype=tf.bool)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/constant_op.py", line 271, in constant    return _constant_impl(value, dtype, shape, name, verify_shape=False,  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/constant_op.py", line 283, in _constant_impl    return _constant_eager_impl(ctx, value, dtype, shape, verify_shape)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/constant_op.py", line 308, in _constant_eager_impl    t = convert_to_eager_tensor(value, ctx, dtype)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/constant_op.py", line 106, in convert_to_eager_tensor    return ops.EagerTensor(value, ctx.device_name, dtype)TypeError: Cannot convert 0 to EagerTensor of dtype bool
-
-import tensorflow as tf
-
-condition = tf.constant(0, shape=[], dtype=tf.bool)
-x = tf.constant("[]", shape=[0], dtype=tf.string)
-y = tf.constant("[]", shape=[0], dtype=tf.string)
-tf.raw_ops.Select(condition=condition, x=x, y=y)

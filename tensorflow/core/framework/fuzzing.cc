@@ -57,6 +57,7 @@ namespace tffuzzing {
 
       cur_fname = fname;
       op_name = ctx->op_kernel().def().name();
+      /* std::cout << op_name << std::endl << std::flush; */
       attrs = tensorflow::SummarizeAttrs(ctx->op_kernel().def());
 
       num_args = ctx->num_inputs();
@@ -141,7 +142,7 @@ namespace tffuzzing {
             } else {
               // The mutations file doesn't belong to any running process, something crashed
               mutations_restore_filename = glob_result.gl_pathv[i];
-              std::cout << "crashed, will restore from " << mutations_restore_filename << std::endl;
+              std::cout << cur_fname << "crashed, will restore from " << mutations_restore_filename << std::endl;
               restore = true;
             }
           }

@@ -8,9 +8,14 @@ import os
 from tensorflow import raw_ops
 
 tf_path = "/media/ivysyn/tensorflow/"
-CRASHFILES_PATH = tf_path + "crashes/"
+#CRASHFILES_PATH = tf_path + "crashes/"
+CRASHFILES_PATH = "/media/tf-fuzzing/results/"
 REPRODUCE_PATH_BASE = tf_path + "synthesized/"
 CRASH_DELIM = '--------------------------------------\n'
+
+
+def get_tensor_type(dtype):
+    return dtype.replace('DT_', 'tf.').lower()
 
 
 def get_tf_type(ttype):
@@ -23,8 +28,17 @@ def get_tf_type(ttype):
     return ttype
 
 
-def get_function_param_names(kernel_name):
-    raw_op_fn = eval(f"raw_ops.{kernel_name}")
+def get_op_name(logged_name, kernel_name):
+    op_name = logged_name.split('/')[-1]
+    try:
+        eval(f"raw_ops.{op_name}")
+        return op_name
+    except AttributeError:
+        return kernel_name[:-2]
+
+
+def get_function_param_names(op_name):
+    raw_op_fn = eval(f"raw_ops.{op_name}")
     params = inspect.signature(raw_op_fn).parameters.values()
     param_names = [param.name for param in params]
     return param_names
@@ -52,7 +66,6 @@ def parse_crash_argument(arg):
     # This usually means unknown type (e.g., 'Resource' or 'Variant')
     # which is not printed as expected
     if len(attrs) < 3:
-        # print(attrs)
         return None
 
     tensor_type = attrs[1].replace(' shape', '').strip(' ')
@@ -63,11 +76,63 @@ def parse_crash_argument(arg):
     return tensor_type, tensor_shape, tensor_values
 
 
-def synthesize_args(crashing_args, param_names):
-    fuzz_tensors = []
+def split_attrs(attrs):
+
+    if len(attrs) == 0:
+        return []
+
+    parsed_attrs = []
+    attrs = attrs.split(',')
+
+    idx = 0
+    for attr in attrs:
+
+        if '=' in attr:
+            parsed_attrs.append(attr)
+            idx += 1
+        else:
+            parsed_attrs[idx - 1] += attr
+
+    return parsed_attrs
+
+
+def parse_attrs(attrs):
+
+    attrs = split_attrs(attrs)
+    attrs_dict = {}
+
+    for attr in attrs:
+        attr = attr.split('=')
+        attr_name = attr[0]
+        attr_value = attr[1]
+
+        if attr_name in ('dtype', 'index_type', 'output_dtype'):
+            attr_value = get_tensor_type(attr_value)
+
+        if attr_name in ('dtypes',):
+            attr_values = attr_value[1:-1].split(' ')
+            attr_value = '[' + ','.join(get_tensor_type(x)
+                                        for x in attr_values) + ']'
+
+        attrs_dict[attr_name] = attr_value
+
+    return attrs_dict
+
+
+def synthesize_args(crashing_args, param_names, attrs):
+
+    input_args = []
+
+    # Create attrs, if any
+    for param_name in param_names:
+        if param_name in attrs:
+            attr_str = f"{param_name} = {attrs[param_name]}"
+            input_args.append(attr_str)
+
+    param_names = [x for x in param_names if x not in attrs]
+
     for idx, arg in enumerate(crashing_args):
-        # Sometimes native function (maybe) has more parameters than python function
-        # If this is the case, just take the first crashing parameters
+
         if idx >= len(param_names):
             break
 
@@ -90,9 +155,9 @@ def synthesize_args(crashing_args, param_names):
             value = '"' + value + '"'
 
         fuzz_tensor = f"{param_name} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
-        fuzz_tensors.append(fuzz_tensor)
+        input_args.append(fuzz_tensor)
 
-    return fuzz_tensors
+    return input_args
 
 
 def synthesize_file(crash, kernel_name):
@@ -100,45 +165,47 @@ def synthesize_file(crash, kernel_name):
     synth_file.append("import tensorflow as tf\n")
 
     crashing_args = crash.split('\n')
+    op_name = get_op_name(crashing_args[0], kernel_name)
+    attrs = parse_attrs(crashing_args[1])
+
+    crashing_args = crashing_args[2:]
+
     try:
-        param_names = get_function_param_names(kernel_name)
-    except AttributeError as e:
+        param_names = get_function_param_names(op_name)
+    except AttributeError:
         # No raw op for this
-        # print(f"No raw op found for {kernel_name}, skipping")
-        return -1
+        print(f"No raw op found for {kernel_name}, skipping")
+        return -1, ''
 
-    fuzz_tensors = synthesize_args(crashing_args, param_names)
+    input_args = synthesize_args(crashing_args, param_names, attrs)
 
-    if fuzz_tensors is None:
+    if input_args is None:
         # Contains bad type
         # print(f"Bad type in {kernel_name}, skipping")
-        return -2
+        return -2, ''
 
-    synth_file.extend(fuzz_tensors)
+    synth_file.extend(input_args)
 
     kwargs = ["{}={}".format(param_names[idx], param_names[idx])
-              for idx in range(len(fuzz_tensors))]
+              for idx in range(len(input_args))]
 
     synth_file.append(f"tf.raw_ops.{kernel_name}({', '.join(kwargs)})")
 
-    # print('\n'.join(synth_file))
-    return '\n'.join(synth_file)
+    return '\n'.join(synth_file), op_name
 
 
 def get_kernel_name(filename):
     crash_filename = filename.split('/')[-1]
     kernel_name = crash_filename.replace(
         CRASHFILES_PATH, '').replace('_crashes.log', '')
-    if kernel_name.endswith('Op'):
-        kernel_name = kernel_name.replace('Op', '')
     return kernel_name
 
 
-def save_synth_file(synth_file, kernel_name, reproduce_path):
+def save_synth_file(synth_file, op_name, reproduce_path):
     # Get the hash of the synthesized file to make sure we only
     # have unique reproduced files
     filehash = hashlib.md5(synth_file.encode()).hexdigest()
-    out_filename = reproduce_path + kernel_name + '_' + filehash + '.py'
+    out_filename = reproduce_path + op_name + '_' + filehash + '.py'
 
     # No duplicates
     if not os.path.isfile(out_filename):
@@ -197,7 +264,7 @@ def main():
                 continue
 
             # print(kernel_name)
-            synth_file = synthesize_file(crash, kernel_name)
+            synth_file, op_name = synthesize_file(crash, kernel_name)
 
             if synth_file is None:
                 continue
@@ -209,7 +276,7 @@ def main():
                 continue
 
             successful.add(kernel_name)
-            save_synth_file(synth_file, kernel_name, reproduce_path)
+            save_synth_file(synth_file, op_name, reproduce_path)
 
     no_raw_op = list([x for x in no_raw_op if x not in successful])
     bad_type = list([x for x in bad_type if x not in successful])

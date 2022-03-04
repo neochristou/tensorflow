@@ -8,7 +8,7 @@ from multiprocessing import Lock, Manager, Pool, Process
 
 TF_BASE = "/media/ivysyn/tensorflow/"
 NUM_PARALLEL_PROCESSES = 4
-MAX_RESTARTS = 15
+MAX_RESTARTS = 10
 TIME_LIMIT = 900
 PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
@@ -93,6 +93,8 @@ def proc_finished(results):
 
         if test not in restart_count:
             restart_count[test] = 0
+
+        restart_count[test] += 1
 
         if restart_count[test] <= MAX_RESTARTS:
             logging.debug(
