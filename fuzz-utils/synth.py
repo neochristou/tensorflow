@@ -15,6 +15,10 @@ CRASH_DELIM = '--------------------------------------\n'
 
 
 def get_tensor_type(dtype):
+    if dtype == 'DT_FLOAT':
+        return 'tf.float32'
+    if dtype == 'DT_DOUBLE':
+        return 'tf.float64'
     return dtype.replace('DT_', 'tf.').lower()
 
 
@@ -57,10 +61,14 @@ def handle_value_edge_cases(value):
     if value.count('.') > 1:
         value = '.' + value.split('.')[1]
 
+    if value[0] == '0' and '.' not in value and len(value) > 1:
+        value = value[1:]
+
     return value
 
 
 def parse_crash_argument(arg):
+
     attrs = arg.split(':')
 
     # This usually means unknown type (e.g., 'Resource' or 'Variant')
@@ -70,8 +78,10 @@ def parse_crash_argument(arg):
 
     tensor_type = attrs[1].replace(' shape', '').strip(' ')
     tensor_shape = attrs[2].replace(' values', '').strip(' ')
+
     tensor_values = attrs[3].strip('>').replace(
         '[', '').replace(']', '').split(' ')
+
     tensor_values = list(filter(None, tensor_values))
     return tensor_type, tensor_shape, tensor_values
 
@@ -82,7 +92,7 @@ def split_attrs(attrs):
         return []
 
     parsed_attrs = []
-    attrs = attrs.split(',')
+    attrs = attrs.split(', ')
 
     idx = 0
     for attr in attrs:
@@ -91,7 +101,7 @@ def split_attrs(attrs):
             parsed_attrs.append(attr)
             idx += 1
         else:
-            parsed_attrs[idx - 1] += attr
+            parsed_attrs[idx - 1] += ', ' + attr
 
     return parsed_attrs
 
@@ -106,13 +116,18 @@ def parse_attrs(attrs):
         attr_name = attr[0]
         attr_value = attr[1]
 
-        if attr_name in ('dtype', 'index_type', 'output_dtype'):
+        if attr_name in ('dtype', 'index_type', 'output_dtype', 'out_type', 'Tsplits'):
             attr_value = get_tensor_type(attr_value)
 
         if attr_name in ('dtypes',):
-            attr_values = attr_value[1:-1].split(' ')
-            attr_value = '[' + ','.join(get_tensor_type(x)
-                                        for x in attr_values) + ']'
+            attr_values = attr_value[1:-1].split(', ')
+            attr_value = '[' + ', '.join(get_tensor_type(x)
+                                         for x in attr_values) + ']'
+
+        if attr_value == 'true':
+            attr_value = 'True'
+        if attr_value == 'false':
+            attr_value = 'False'
 
         attrs_dict[attr_name] = attr_value
 
@@ -137,6 +152,10 @@ def synthesize_args(crashing_args, param_names, attrs):
             break
 
         param_name = param_names[idx]
+
+        if param_name == 'name':
+            break
+
         crash_args = parse_crash_argument(arg)
 
         # Will return none if it finds an arg in an unexpected format
@@ -146,13 +165,23 @@ def synthesize_args(crashing_args, param_names, attrs):
         tensor_type, tensor_shape, tensor_values = crash_args
 
         if len(tensor_values) > 0:
-            value = tensor_values[0]
-            value = handle_value_edge_cases(value)
+            if tensor_shape == '[2]':
+                print(tensor_values)
+                value = '[' + ','.join(tensor_values) + ']'
+            else:
+                value = tensor_values[0]
+                value = handle_value_edge_cases(value)
         else:
             value = '[]'
 
         if tensor_type == 'string':
             value = '"' + value + '"'
+
+        if tensor_type == 'bool':
+            if value == '0':
+                value = 'False'
+            else:
+                value = 'True'
 
         fuzz_tensor = f"{param_name} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
         input_args.append(fuzz_tensor)
@@ -161,7 +190,10 @@ def synthesize_args(crashing_args, param_names, attrs):
 
 
 def synthesize_file(crash, kernel_name):
+
     synth_file = []
+    synth_file.append("# " + kernel_name + "\n")
+
     synth_file.append("import tensorflow as tf\n")
 
     crashing_args = crash.split('\n')
@@ -169,6 +201,8 @@ def synthesize_file(crash, kernel_name):
     attrs = parse_attrs(crashing_args[1])
 
     crashing_args = crashing_args[2:]
+    if len(crashing_args) == 0:
+        return -3, ''
 
     try:
         param_names = get_function_param_names(op_name)
@@ -219,6 +253,7 @@ def main():
     successful = set()
     all_kernels = set()
     no_raw_op = set()
+    empty_crash_logs = set()
     bad_type = set()
     other_errors = set()
 
@@ -273,6 +308,9 @@ def main():
                 continue
             if synth_file == -2:
                 bad_type.add(kernel_name)
+                continue
+            if synth_file == -3:
+                empty_crash_logs.add(kernel_name)
                 continue
 
             successful.add(kernel_name)

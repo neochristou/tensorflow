@@ -1,0 +1,10 @@
+# 2022-03-04 18:44:29.151128: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.Traceback (most recent call last):  File "/media/ivysyn/tensorflow/synthesized/all-crashes/all/BoostedTreesMakeQuantileSummaries_d05507afa840c3185531b483b61bbe00.py", line 8, in <module>    tf.raw_ops.BoostedTreesMakeQuantileSummaries(float_values=float_values, example_weights=example_weights, epsilon=epsilon)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py", line 404, in wrapper    return f(**kwargs)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/ops/gen_boosted_trees_ops.py", line 1142, in boosted_trees_make_quantile_summaries    _ops.raise_from_not_ok_status(e, name)  File "/media/anaconda3/envs/ivysyn/lib/python3.9/site-packages/tensorflow/python/framework/ops.py", line 6941, in raise_from_not_ok_status    six.raise_from(core._status_to_exception(e.code, message), None)  File "<string>", line 3, in raise_fromtensorflow.python.framework.errors_impl.InvalidArgumentError: Weights should be a single value or same size as features. [Op:BoostedTreesMakeQuantileSummaries]
+
+# BoostedTreesMakeQuantileSummariesOp
+
+import tensorflow as tf
+
+float_values = tf.constant(1.2, shape=[6], dtype=tf.float32)
+example_weights = tf.constant(1.2, shape=[6], dtype=tf.float32)
+epsilon = tf.constant(1.2, shape=[6], dtype=tf.float32)
+tf.raw_ops.BoostedTreesMakeQuantileSummaries(float_values=float_values, example_weights=example_weights, epsilon=epsilon)

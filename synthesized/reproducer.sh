@@ -21,6 +21,13 @@ do_clean()
 do_reproduce()
 {
     synth_dir=$1
+
+    [[ -d "$synth_dir/reproducible" ]] || mkdir -p "$synth_dir/reproducible"
+    [[ -d "$synth_dir/non-reproducible" ]] || mkdir -p "$synth_dir/non-reproducible"
+
+    for sd in $subdirs; do
+        [[ -d "$synth_dir/reproducible/$sd" ]] || mkdir -p "$synth_dir/reproducible/$sd"
+    done
     FILES=$(ls -1 -d $PWD/$synth_dir/all/*.py)
     for f in $FILES; do
         echo $f
