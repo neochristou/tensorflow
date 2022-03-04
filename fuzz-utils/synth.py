@@ -189,7 +189,7 @@ def synthesize_file(crash, kernel_name):
     kwargs = ["{}={}".format(param_names[idx], param_names[idx])
               for idx in range(len(input_args))]
 
-    synth_file.append(f"tf.raw_ops.{kernel_name}({', '.join(kwargs)})")
+    synth_file.append(f"tf.raw_ops.{op_name}({', '.join(kwargs)})")
 
     return '\n'.join(synth_file), op_name
 
