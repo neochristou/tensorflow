@@ -78,7 +78,8 @@ def parse_crash_argument(arg):
 
     tensor_type = attrs[1].replace(" shape", "").strip(" ")
     tensor_shape = attrs[2].replace(" values", "").strip(" ")
-    tensor_values = attrs[3].strip(">").replace("[", "").replace("]", "").split(" ")
+    tensor_values = attrs[3].strip(">").replace(
+        "[", "").replace("]", "").split(" ")
 
     tensor_values = list(filter(None, tensor_values))
     return tensor_type, tensor_shape, tensor_values
@@ -119,7 +120,8 @@ def parse_attrs(attrs):
 
         if attr_name in ("dtypes",):
             attr_values = attr_value[1:-1].split(", ")
-            attr_value = "[" + ", ".join(get_tensor_type(x) for x in attr_values) + "]"
+            attr_value = "[" + ", ".join(get_tensor_type(x)
+                                         for x in attr_values) + "]"
 
         if attr_value == "true":
             attr_value = "True"
@@ -163,7 +165,6 @@ def synthesize_args(crashing_args, param_names, attrs):
 
         if len(tensor_values) > 0:
             if tensor_shape == "[2]":
-                print(tensor_values)
                 value = "[" + ",".join(tensor_values) + "]"
             else:
                 value = tensor_values[0]
@@ -194,7 +195,9 @@ def synthesize_file(crash, kernel_name, op_name):
     synth_file.append("import tensorflow as tf\n")
 
     crashing_args = crash.split("\n")
-    # op_name = get_op_name(crashing_args[0], kernel_name)
+    if op_name is None:
+        op_name = get_op_name(crashing_args[0], kernel_name)
+
     attrs = parse_attrs(crashing_args[1])
 
     crashing_args = crashing_args[2:]
@@ -217,7 +220,8 @@ def synthesize_file(crash, kernel_name, op_name):
 
     synth_file.extend(input_args)
 
-    kwargs = ["{}={}".format(param_names[idx], param_names[idx]) for idx in range(len(input_args))]
+    kwargs = ["{}={}".format(param_names[idx], param_names[idx])
+              for idx in range(len(input_args))]
 
     synth_file.append(f"tf.raw_ops.{op_name}({', '.join(kwargs)})")
 
@@ -226,7 +230,8 @@ def synthesize_file(crash, kernel_name, op_name):
 
 def get_kernel_name(filename):
     crash_filename = filename.split("/")[-1]
-    kernel_name = crash_filename.replace(CRASHFILES_PATH, "").replace("_crashes.log", "")
+    kernel_name = crash_filename.replace(
+        CRASHFILES_PATH, "").replace("_crashes.log", "")
     return kernel_name
 
 
@@ -252,8 +257,10 @@ def main():
     bad_type = set()
     other_errors = set()
 
-    args_parser = argparse.ArgumentParser(description="Parse and transform Pytorch native files")
-    args_parser.add_argument("--perf", dest="perf", action="store_true", default=False, help="Synth performance logs")
+    args_parser = argparse.ArgumentParser(
+        description="Parse and transform Pytorch native files")
+    args_parser.add_argument("--perf", dest="perf", action="store_true",
+                             default=False, help="Synth performance logs")
 
     args = args_parser.parse_args()
 
@@ -282,7 +289,8 @@ def main():
 
         with open(crash_filename, "r") as crash_file:
             try:
-                crashes = list(filter(None, crash_file.read().split(CRASH_DELIM)))
+                crashes = list(
+                    filter(None, crash_file.read().split(CRASH_DELIM)))
             except UnicodeDecodeError:
                 other_errors.add(kernel_name)
                 continue
@@ -296,8 +304,10 @@ def main():
                 print("Skipping empty crash for", kernel_name)
                 continue
 
-            # print(kernel_name)
-            op_name = kernel_regs[kernel_name]
+            if kernel_name in kernel_regs:
+                op_name = kernel_regs[kernel_name]
+            else:
+                op_name = None
             synth_file, op_name = synthesize_file(crash, kernel_name, op_name)
 
             if synth_file is None:
