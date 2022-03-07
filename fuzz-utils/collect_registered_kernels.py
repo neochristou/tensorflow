@@ -9,17 +9,15 @@ OUT_FILE = TF_BASE + "fuzz-utils/kernel_regs.txt"
 def main():
 
     kernel_regs = {}
-    kernel_files = glob.glob(TF_KERNELS_PATH + "*.cc") + \
-        glob.glob(TF_KERNELS_PATH + "*.h")
+    kernel_files = glob.glob(TF_KERNELS_PATH + "**/*.cc", recursive=True) + glob.glob(
+        TF_KERNELS_PATH + "**/*.h", recursive=True
+    )
     for filename in kernel_files:
-        # print(filename)
         with open(filename, "r") as f:
             data = f.read().strip()
-            registrations = re.findall(
-                r'REGISTER_KERNEL_BUILDER\(.*?Name\("(.*?)"\).*?,(.*?)\)', data, flags=re.DOTALL)
+            registrations = re.findall(r'REGISTER_KERNEL_BUILDER\(.*?Name\("(.*?)"\).*?,(.*?)\)', data, flags=re.DOTALL)
             for reg in registrations:
-                parsed_reg = [re.sub("\<.*", "", x, flags=re.DOTALL)
-                              for x in reg]
+                parsed_reg = [re.sub("\<.*", "", x, flags=re.DOTALL) for x in reg]
                 parsed_reg = [re.sub("\s+", "", x) for x in parsed_reg]
                 parsed_reg = [re.sub("\\\\", "", x) for x in parsed_reg]
                 op_name = parsed_reg[0]
