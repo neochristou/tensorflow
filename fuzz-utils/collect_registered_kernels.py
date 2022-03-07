@@ -15,7 +15,9 @@ def main():
     for filename in kernel_files:
         with open(filename, "r") as f:
             data = f.read().strip()
-            registrations = re.findall(r'REGISTER_KERNEL_BUILDER\(.*?Name\("(.*?)"\).*?,(.*?)\)', data, flags=re.DOTALL)
+            registrations = re.findall(
+                r'REGISTER_KERNEL_BUILDER\(.*?Name\("(.*?)"\).*?\),(.*?)\)', data, flags=re.DOTALL
+            )
             for reg in registrations:
                 parsed_reg = [re.sub("\<.*", "", x, flags=re.DOTALL) for x in reg]
                 parsed_reg = [re.sub("\s+", "", x) for x in parsed_reg]

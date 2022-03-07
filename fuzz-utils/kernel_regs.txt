@@ -109,8 +109,8 @@ StringSplitV2Op StringSplitV2
 QuantizedResizeBilinearOp QuantizedResizeBilinear
 RangeOp Range
 LinSpaceOp LinSpace
-DT_INT32 StatelessMultinomial
-DT_INT64 StatelessMultinomial
+StatefulMultinomialOp Multinomial
+StatelessMultinomialOp StatelessMultinomial
 EncodeBase64Op EncodeBase64
 DecodeBase64Op DecodeBase64
 SparseReduceOp SparseReduceMax
@@ -279,7 +279,6 @@ NoOp QuantizedConcatV2
 TestGpuRadixSortKernel TestGpuRadixSort
 TestGpuInclusivePrefixSumKernel TestGpuInclusivePrefixSum
 TestGpuSegmentedReduceKernel TestGpuSegmentedSum
-"NHWC" Conv2DBackpropFilter
 SpaceToDepthOp SpaceToDepth
 DynamicPartitionOpGPU DynamicPartition
 PaddingFIFOQueueOp PaddingFIFOQueueV2
@@ -494,7 +493,6 @@ ResourceHandlesOp _VarHandlesOp
 ReadVariableOp ReadVariableOp
 ReadVariablesOp _ReadVariablesOp
 VarHandleOp VarHandleOp
-{DT_INT64,DT_COMPLEX64,DT_COMPLEX128,DT_HALF,DT_FLOAT,DT_DOUBLE,DT_BOOL,DT_VARIANT} _VarHandlesOp
 VariableShapeOp VariableShape
 DestroyResourceOp DestroyResourceOp
 AssignVariableOp AssignVariableOp
@@ -699,7 +697,7 @@ MklConvCustomBackpropFilterOp _MklNativeConv2DBackpropFilterWithBias
 MklSoftmaxOp _MklSoftmax
 MklAvgPoolingOp _MklQuantizedAvgPool
 MklAvgPoolingGradOp _MklNativeAvgPoolGrad
-{DT_INT32,DT_INT64} _MklReshape
+MklReshapeOp _MklReshape
 MklFusedMatMulOp _MklNativeFusedMatMul
 TensorDatasetOp TensorDataset
 BatchDatasetOp BatchDatasetV2
