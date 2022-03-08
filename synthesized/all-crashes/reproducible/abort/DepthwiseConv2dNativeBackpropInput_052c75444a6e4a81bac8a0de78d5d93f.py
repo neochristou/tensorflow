@@ -1,4 +1,4 @@
-# Signal -6;2022-03-04 18:44:37.542454: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-03-04 18:44:37.544363: F tensorflow/core/framework/tensor_shape.cc:405] Check failed: 0 <= new_num_elements (0 vs. -1)
+# Signal -6;2022-03-07 18:53:03.574530: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-03-07 18:53:03.576947: F tensorflow/core/framework/tensor_shape.cc:405] Check failed: 0 <= new_num_elements (0 vs. -1)
 
 # DepthwiseConv2dNativeBackpropInputOp
 

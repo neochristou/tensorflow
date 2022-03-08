@@ -9,4 +9,4 @@ container = ""
 shared_name = "MapStagingArea"
 key = tf.constant(-1879048192, shape=[], dtype=tf.int64)
 indices = tf.constant([0,1], shape=[2], dtype=tf.int32)
-tf.raw_ops.MapUnstage(key=key, indices=indices, dtypes=dtypes, capacity=capacity, memory_limit=memory_limit, container=container, shared_name=shared_name)
+tf.raw_ops.OrderedMapUnstage(key=key, indices=indices, dtypes=dtypes, capacity=capacity, memory_limit=memory_limit, container=container, shared_name=shared_name)

@@ -10,4 +10,4 @@ shared_name = "MapStagingArea"
 key = tf.constant(-1250999896764, shape=[], dtype=tf.int64)
 indices = tf.constant(0, shape=[1], dtype=tf.int32)
 values = tf.constant(0, shape=[1], dtype=tf.int32)
-tf.raw_ops.MapStage(key=key, indices=indices, values=values, dtypes=dtypes, capacity=capacity, memory_limit=memory_limit, container=container, shared_name=shared_name)
+tf.raw_ops.OrderedMapStage(key=key, indices=indices, values=values, dtypes=dtypes, capacity=capacity, memory_limit=memory_limit, container=container, shared_name=shared_name)
