@@ -4,9 +4,10 @@ import signal
 import subprocess
 import time
 from glob import glob
-from multiprocessing import Lock, Manager, Pool, Process
+from multiprocessing import Manager, Pool
 
 TF_BASE = "/media/ivysyn/tensorflow/"
+RESULTS_PATH = "/media/tf-fuzzing/results/"
 NUM_PARALLEL_PROCESSES = 4
 MAX_RESTARTS = 10
 TIME_LIMIT = 900
@@ -14,13 +15,12 @@ PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
-BAZEL_TEST_ARGS = ['--test_output=all',
-                   '--cache_test_results=no', '--runs_per_test=20', '--flaky_test_attempts=10']
+BAZEL_TEST_ARGS = ["--test_output=all", "--cache_test_results=no", "--runs_per_test=20", "--flaky_test_attempts=10"]
 
 EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
-    '/media/ivysyn/tensorflow/tensorflow/python/eager/remote_cluster_test.py',
-    '/media/ivysyn/tensorflow/tensorflow/python/keras/saving/save_weights_test.py'
+    "/media/ivysyn/tensorflow/tensorflow/python/eager/remote_cluster_test.py",
+    "/media/ivysyn/tensorflow/tensorflow/python/keras/saving/save_weights_test.py",
 ]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
@@ -48,28 +48,31 @@ def execute(test):
     if PYTHON_TEST_FOLDER in os.path.realpath(test):
         args = ["python3", test]
     elif CC_TEST_FOLDER in os.path.realpath(test):
-        bazel_test = '//tensorflow/core/kernels:' + test
+        bazel_test = "//tensorflow/core/kernels:" + test
         args = ["bazel", "test", bazel_test] + BAZEL_TEST_ARGS
 
     retcode = 0
 
     start_time = time.time()
     try:
-        completed = subprocess.run(args,
-                                   # stdout=subprocess.DEVNULL,
-                                   stderr=subprocess.DEVNULL,
-                                   timeout=TIME_LIMIT)
-        retcode = completed.returncode
+        proc = subprocess.Popen(
+            args,
+            # stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        pid = proc.pid
+        proc.wait(timeout=TIME_LIMIT)
+        retcode = proc.returncode
     except subprocess.TimeoutExpired as e:
         logging.debug(f"Timeout expired for {test}")
         retcode = -9
     finally:
         end_time = time.time() - start_time
-        return (test, end_time, retcode)
+        return (test, end_time, retcode, pid)
 
 
 def log_test_duration(dur, test):
-    f = open(TEST_DURATION_FILE, 'a+')
+    f = open(TEST_DURATION_FILE, "a+")
     mins = int(dur) / 60
     f.write(test + " " + str(mins) + "\n")
     f.close()
@@ -79,12 +82,20 @@ def proc_finished(results):
 
     global restart_count
 
-    test, running_time, exitcode = results
+    test, running_time, exitcode, pid = results
 
     log_test_duration(running_time, test)
 
     if exitcode == -signal.SIGABRT:
         aborts_set.add(test)
+
+    if exitcode == -signal.SIGKILL:
+
+        killed_mutfile = glob.glob(RESULTS_PATH + f"*_mutations.log.{pid}")[0]
+        killed_filename = killed_mutfile.replace("_mutations.log", ".killed")
+        os.remove(killed_mutfile)
+        with open(killed_filename, "w"):
+            pass
 
     # If the test crashed, re-queue it so that it runs again
     if exitcode < 0:
@@ -97,8 +108,7 @@ def proc_finished(results):
         restart_count[test] += 1
 
         if restart_count[test] <= MAX_RESTARTS:
-            logging.debug(
-                f"Test {test} crashed with exit code {exitcode}, requeueing")
+            logging.debug(f"Test {test} crashed with exit code {exitcode}, requeueing")
             tests_to_run.append(test)
     else:
         done_tests.add(test)
@@ -118,9 +128,7 @@ if __name__ == "__main__":
         while len(tests_to_run) > 0:
 
             test_to_run = tests_to_run.pop()
-            p = pool.apply_async(execute, args=(test_to_run,),
-                                 callback=proc_finished,
-                                 error_callback=proc_finished)
+            p = pool.apply_async(execute, args=(test_to_run,), callback=proc_finished, error_callback=proc_finished)
 
             # logging.info(f"Total crashes: {len(crashes_set)}")
             # logging.info(f"Of which are aborts: {len(aborts_set)}")

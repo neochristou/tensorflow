@@ -91,21 +91,21 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   }
 
   // Skip gradops for now
-  if (OpName.endswith("GradOp")) {
-    llvm::outs() << "Skipping " << OpName << " (GradOp)\n";
-    return;
-  }
+  /* if (OpName.endswith("GradOp")) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (GradOp)\n"; */
+  /*   return; */
+  /* } */
 
   // Skip SummaryOps
-  if (OpName.contains("SummaryOp")) {
-    llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
-    return;
-  }
+  /* if (OpName.contains("SummaryOp")) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n"; */
+  /*   return; */
+  /* } */
 
-  if (OpName.startswith("BoostedTreesCreate")) {
-    llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n";
-    return;
-  }
+  /* if (OpName.startswith("BoostedTreesCreate")) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n"; */
+  /*   return; */
+  /* } */
 
   Stmt *ComputeBody = ComputeDecl->getBody();
 
