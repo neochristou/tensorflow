@@ -33,6 +33,9 @@ std::string get_source_text(SourceRange range, const SourceManager& sm)
 //-----------------------------------------------------------------------------
 void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
+  char FilledBody[0x1000];
+  char NewFname[0x100];
+
   const char *FuzzBodyTemplate = R""""({
 
     if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("%1$s")) {
@@ -57,6 +60,8 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
       }
 
   })"""";
+
+  llvm::outs() << "Match\n";
 
   // ASTContext is used to retrieve the source location
   ASTContext *Ctx = Result.Context;
@@ -97,10 +102,10 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   /* } */
 
   // Skip SummaryOps
-  /* if (OpName.contains("SummaryOp")) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n"; */
-  /*   return; */
-  /* } */
+  if (OpName.contains("SummaryOp")) {
+    llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
+    return;
+  }
 
   /* if (OpName.startswith("BoostedTreesCreate")) { */
   /*   llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n"; */
@@ -144,8 +149,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  char FilledBody[0x1000];
-  char NewFname[0x100];
   memset(FilledBody, 0, 0x1000);
   memset(NewFname, 0, 0x100);
   sprintf(FilledBody, FuzzBodyTemplate, OpName.str().c_str(), CtxParamName.str().c_str());

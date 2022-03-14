@@ -15,7 +15,8 @@ PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 # ABRT_FILE = "/media/tf-fuzzing/aborted.txt"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
-BAZEL_TEST_ARGS = ["--test_output=all", "--cache_test_results=no", "--runs_per_test=20", "--flaky_test_attempts=10"]
+BAZEL_TEST_ARGS = ["--test_output=all", "--cache_test_results=no",
+                   "--runs_per_test=20", "--flaky_test_attempts=10"]
 
 EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
@@ -91,7 +92,7 @@ def proc_finished(results):
 
     if exitcode == -signal.SIGKILL:
 
-        killed_mutfile = glob.glob(RESULTS_PATH + f"*_mutations.log.{pid}")[0]
+        killed_mutfile = glob(RESULTS_PATH + f"*_mutations.log.{pid}")[0]
         killed_filename = killed_mutfile.replace("_mutations.log", ".killed")
         os.remove(killed_mutfile)
         with open(killed_filename, "w"):
@@ -108,7 +109,8 @@ def proc_finished(results):
         restart_count[test] += 1
 
         if restart_count[test] <= MAX_RESTARTS:
-            logging.debug(f"Test {test} crashed with exit code {exitcode}, requeueing")
+            logging.debug(
+                f"Test {test} crashed with exit code {exitcode}, requeueing")
             tests_to_run.append(test)
     else:
         done_tests.add(test)
@@ -128,7 +130,8 @@ if __name__ == "__main__":
         while len(tests_to_run) > 0:
 
             test_to_run = tests_to_run.pop()
-            p = pool.apply_async(execute, args=(test_to_run,), callback=proc_finished, error_callback=proc_finished)
+            p = pool.apply_async(execute, args=(
+                test_to_run,), callback=proc_finished, error_callback=proc_finished)
 
             # logging.info(f"Total crashes: {len(crashes_set)}")
             # logging.info(f"Of which are aborts: {len(aborts_set)}")
