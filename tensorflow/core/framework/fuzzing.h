@@ -136,9 +136,9 @@ namespace tffuzzing {
         void initialize_tensor_pools();
         void calculate_total_mutations();
         void next_mutations_indices(bool log);
+        void increase_num_crashes();
         inline void inc_mutations_indices(bool log);
-        void restore_last_mutation(long long last_mutation, std::string& fname);
-        void resume_last_mutation(long long last_mutation);
+        void restore_last_mutation(long long last_mutation, bool log_crash);
         void log_current_mutation(std::fstream &file);
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
