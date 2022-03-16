@@ -33,15 +33,6 @@ def get_tf_type(ttype):
     return ttype
 
 
-def get_op_name(logged_name, kernel_name):
-    op_name = logged_name.split("/")[-1]
-    try:
-        eval(f"raw_ops.{op_name}")
-        return op_name
-    except AttributeError:
-        return kernel_name[:-2]
-
-
 def get_function_param_names(op_name):
     raw_op_fn = eval(f"raw_ops.{op_name}")
     params = inspect.signature(raw_op_fn).parameters.values()
@@ -196,11 +187,12 @@ def synthesize_file(crash, kernel_name, op_name):
 
     crashing_args = crash.split("\n")
     if op_name is None:
-        op_name = get_op_name(crashing_args[0], kernel_name)
+        print(f"No op name registered for {kernel_name}")
+        return -1, ""
 
-    attrs = parse_attrs(crashing_args[1])
+    attrs = parse_attrs(crashing_args[0])
 
-    crashing_args = crashing_args[2:]
+    crashing_args = crashing_args[1:]
     if len(crashing_args) == 0:
         return -3, ""
 

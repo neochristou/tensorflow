@@ -26,9 +26,11 @@ EXCLUDE_TESTS = [
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
 print(f"Python tests: {len(tests_to_run) - len(EXCLUDE_TESTS)}")
-cc_tests = glob(CC_TEST_FOLDER + "*_test")
-print(f"CPP tests: {len(cc_tests)}")
-tests_to_run += cc_tests
+
+# cc_tests = glob(CC_TEST_FOLDER + "*_test")
+# print(f"CPP tests: {len(cc_tests)}")
+# tests_to_run += cc_tests
+
 for t in EXCLUDE_TESTS:
     tests_to_run.remove(t)
 
@@ -36,8 +38,6 @@ TOTAL_TESTS = len(tests_to_run)
 
 done_tests = set()
 crashes_set = set()
-aborts_set = set()
-killed_set = set()
 
 restart_count = {}
 
@@ -45,11 +45,13 @@ restart_count = {}
 def execute(test):
 
     args = []
+    test_path = os.path.abspath(test)
 
-    if PYTHON_TEST_FOLDER in os.path.realpath(test):
+    if PYTHON_TEST_FOLDER in test_path:
         args = ["python3", test]
-    elif CC_TEST_FOLDER in os.path.realpath(test):
-        bazel_test = "//tensorflow/core/kernels:" + test
+    elif CC_TEST_FOLDER in test_path:
+        test_name = os.path.basename(test).replace('_test', '')
+        bazel_test = "//tensorflow/core/kernels:" + test_name
         args = ["bazel", "test", bazel_test] + BAZEL_TEST_ARGS
 
     retcode = 0
@@ -64,9 +66,12 @@ def execute(test):
         pid = proc.pid
         proc.wait(timeout=TIME_LIMIT)
         retcode = proc.returncode
-    except subprocess.TimeoutExpired as e:
-        logging.debug(f"Timeout expired for {test}")
-        retcode = -9
+    except subprocess.TimeoutExpired:
+        logging.debug(f"Timeout expired for {test}, killing")
+        proc.kill()
+        retcode = -signal.SIGKILL
+    except Exception as e:
+        print(e)
     finally:
         end_time = time.time() - start_time
         return (test, end_time, retcode, pid)
@@ -87,16 +92,19 @@ def proc_finished(results):
 
     log_test_duration(running_time, test)
 
-    if exitcode == -signal.SIGABRT:
-        aborts_set.add(test)
-
     if exitcode == -signal.SIGKILL:
 
-        killed_mutfile = glob(RESULTS_PATH + f"*_mutations.log.{pid}")[0]
-        killed_filename = killed_mutfile.replace("_mutations.log", ".killed")
-        os.remove(killed_mutfile)
-        with open(killed_filename, "w"):
-            pass
+        killed_mutfile = glob(RESULTS_PATH + f"*_mutations.log.{pid}")
+
+        print(f"Process {pid} was killed, mutation file: {killed_mutfile}")
+
+        if len(killed_mutfile) != 0:
+            killed_mutfile = killed_mutfile[0]
+            killed_filename = killed_mutfile.replace(
+                "_mutations.log", ".killed")
+            os.remove(killed_mutfile)
+            with open(killed_filename, "w"):
+                pass
 
     # If the test crashed, re-queue it so that it runs again
     if exitcode < 0:
@@ -134,8 +142,6 @@ if __name__ == "__main__":
                 test_to_run,), callback=proc_finished, error_callback=proc_finished)
 
             # logging.info(f"Total crashes: {len(crashes_set)}")
-            # logging.info(f"Of which are aborts: {len(aborts_set)}")
-            # logging.info(f"Of which were killed: {len(killed_set)}")
 
         time.sleep(10)
         finished = len(done_tests)
