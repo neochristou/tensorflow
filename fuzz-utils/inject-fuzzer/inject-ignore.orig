@@ -1,0 +1,12 @@
+/media/ivysyn/tensorflow/tensorflow/core/kernels/batch_kernels.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/isotonic_regression_op.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/fact_op.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/random_op.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/resource_variable_ops.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/broadcast_to_op.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/list_kernels.cc
+<<<<<<< HEAD
+=======
+/media/ivysyn/tensorflow/tensorflow/core/kernels/list_kernels.h
+>>>>>>> eb281627723d6167a4fef3978a0d1b2a33da73ae
+/media/ivysyn/tensorflow/tensorflow/core/kernels/tensor_array_ops.cc

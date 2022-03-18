@@ -1,5 +1,0 @@
-Tensor<type: float shape: [1,4,4,3] values: [[[1 0 0]]]...>
-Tensor<type: int32 shape: [13] values: 1879048192 1879048192 1879048192...>
-Tensor<type: float shape: [1,4,4,3] values: [[[1 0 0]]]...>
-
---------------------------------------

@@ -11,25 +11,30 @@ using namespace ast_matchers;
 
 // From https://www.py4u.net/discuss/94401
 
-std::string get_source_text_raw(clang::SourceRange range, const clang::SourceManager& sm) {
-  return clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions()).str();
+std::string get_source_text_raw(SourceRange range, const SourceManager& sm)
+{
+  return Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, LangOptions()).str();
 }
 
-std::string get_source_text(clang::SourceRange range, const clang::SourceManager& sm) {
-  clang::LangOptions lo;
+std::string get_source_text(SourceRange range, const SourceManager& sm)
+{
+  LangOptions lo;
 
   // NOTE: sm.getSpellingLoc() used in case the range corresponds to a macro/preprocessed source.
   auto start_loc = sm.getSpellingLoc(range.getBegin());
   auto last_token_loc = sm.getSpellingLoc(range.getEnd());
-  auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
-  auto printable_range = clang::SourceRange{start_loc, end_loc};
+  auto end_loc = Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
+  auto printable_range = SourceRange{start_loc, end_loc};
   return get_source_text_raw(printable_range, sm);
 }
 
 //-----------------------------------------------------------------------------
 // InjectFuzzer - implementation
 //-----------------------------------------------------------------------------
-void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
+void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
+
+  char FilledBody[0x1000];
+  char NewFname[0x100];
 
   const char *FuzzBodyTemplate = R""""({
 
@@ -56,13 +61,14 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
   })"""";
 
-  // ASTContext is used to retrieve the source location
   ASTContext *Ctx = Result.Context;
 
   const FunctionDecl *ComputeDecl =
-    Result.Nodes.getNodeAs<clang::FunctionDecl>("computecall");
+    Result.Nodes.getNodeAs<clang::FunctionDecl>("computedecl");
 
-  assert(ComputeDecl);
+  if (!ComputeDecl) {
+    return;
+  }
 
   const CXXRecordDecl* ParentClass;
   const auto Parents = Ctx->getParents(*ComputeDecl);
@@ -87,10 +93,10 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
   }
 
   // Skip gradops for now
-  if (OpName.endswith("GradOp")) {
-    llvm::outs() << "Skipping " << OpName << " (GradOp)\n";
-    return;
-  }
+  /* if (OpName.endswith("GradOp")) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (GradOp)\n"; */
+  /*   return; */
+  /* } */
 
   // Skip SummaryOps
   if (OpName.contains("SummaryOp")) {
@@ -98,10 +104,10 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  if (OpName.startswith("BoostedTreesCreate")) {
-    llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n";
-    return;
-  }
+  /* if (OpName.startswith("BoostedTreesCreate")) { */
+  /*   llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n"; */
+  /*   return; */
+  /* } */
 
   Stmt *ComputeBody = ComputeDecl->getBody();
 
@@ -140,8 +146,6 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  char FilledBody[0x1000];
-  char NewFname[0x100];
   memset(FilledBody, 0, 0x1000);
   memset(NewFname, 0, 0x100);
   sprintf(FilledBody, FuzzBodyTemplate, OpName.str().c_str(), CtxParamName.str().c_str());
@@ -157,25 +161,24 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
 }
 
-void InjectFuzzerMatcher::onEndOfTranslationUnit() {
+void ComputeDeclMatcher::onEndOfTranslationUnit() {
   // Replace in place
-  /* InjectFuzzerRewriter.overwriteChangedFiles(); */
+  InjectFuzzerRewriter.overwriteChangedFiles();
 
   // Output to stdout
-  InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID())
-      .write(llvm::outs());
-
+  /* InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID()) */
+  /*     .write(llvm::outs()); */
 }
 
-InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : InjectFuzzerHandler(R) {
-  DeclarationMatcher CallSiteMatcher =
-    functionDecl(hasName("Compute"))
-    .bind("computecall");
+InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : ComputeDeclHandler(R) {
 
+  DeclarationMatcher ComputeDeclMatcher =
+    functionDecl(hasName("Compute"))
+    .bind("computedecl");
 
   // InjectFuzzer is the callback that will run when the ASTMatcher finds the pattern
   // above.
-  Finder.addMatcher(CallSiteMatcher, &InjectFuzzerHandler);
+  Finder.addMatcher(ComputeDeclMatcher, &ComputeDeclHandler);
 }
 
 //-----------------------------------------------------------------------------

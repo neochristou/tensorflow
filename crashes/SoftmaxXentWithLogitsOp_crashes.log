@@ -1,0 +1,4 @@
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [8,3] values: [1 2 5]...>
+
+--------------------------------------

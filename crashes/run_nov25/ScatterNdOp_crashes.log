@@ -1,5 +1,0 @@
-Tensor<type: double shape: [0] values: >
-Tensor<type: float shape: [0] values: >
-Tensor<type: int32 shape: [6,1] values: [2][4][3]...>
-
---------------------------------------

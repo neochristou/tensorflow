@@ -1,0 +1,8 @@
+Tensor<type: float shape: [3,2,4,2] values: [[[-3.5e+35 -3.5e+35][-3.5e+35...]]]...>
+Tensor<type: float shape: [3,2,4,2] values: [[[-0.196384236 -0.169964299][-0.168409035...]]]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [2] values: 1 1>
+Tensor<type: float shape: [2] values: 1 1>
+Tensor<type: float shape: [3,2,4,2] values: [[[-0.196384236 -0.169964299][-0.168409035...]]]...>
+
+--------------------------------------

@@ -1,9 +1,0 @@
-Tensor<type: int64 shape: [2,2] values: [0 0][1...]...>
-Tensor<type: double shape: [0] values: >
-Tensor<type: int64 shape: [0] values: >
-Tensor<type: int64 shape: [2,2] values: [-1879048192 -1879048192][-1879048192...]...>
-Tensor<type: int32 shape: [2] values: 1 2>
-Tensor<type: int64 shape: [2,2] values: [0 0][1...]...>
-Tensor<type: int32 shape: [2] values: 1 2>
-
---------------------------------------

@@ -1,5 +1,0 @@
-Tensor<type: string shape: [] values: foo>
-Tensor<type: bool shape: [] values: 1>
-Tensor<type: string shape: [0] values: >
-
---------------------------------------

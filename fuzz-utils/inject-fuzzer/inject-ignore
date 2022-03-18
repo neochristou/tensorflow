@@ -5,4 +5,5 @@
 /media/ivysyn/tensorflow/tensorflow/core/kernels/resource_variable_ops.cc
 /media/ivysyn/tensorflow/tensorflow/core/kernels/broadcast_to_op.cc
 /media/ivysyn/tensorflow/tensorflow/core/kernels/list_kernels.cc
+/media/ivysyn/tensorflow/tensorflow/core/kernels/list_kernels.h
 /media/ivysyn/tensorflow/tensorflow/core/kernels/tensor_array_ops.cc

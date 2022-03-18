@@ -1,8 +1,0 @@
-Tensor<type: string shape: [2] values: foo bar>
-Tensor<type: double shape: [0] values: >
-
---------------------------------------
-Tensor<type: string shape: [0] values: >
-Tensor<type: double shape: [0] values: >
-
---------------------------------------
