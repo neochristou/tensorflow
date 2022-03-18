@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TF_KERNELS_PATH="/media/mlfuzz/tensorflow/tensorflow/core/kernels"
+TF_KERNELS_PATH="/media/ivysyn/tensorflow/tensorflow/core/kernels"
 INCLUDE_OP_STRING="#include \"tensorflow/core/framework/op_kernel.h\""
 INCLUDE_EIGEN_STRING="#define EIGEN_USE"
 
@@ -16,12 +16,14 @@ for filename in $filenames; do
     if [[ ! $includeopline ]]; then
         includeopline=$(grep -n "$INCLUDE_EIGEN_STRING" "$filename")
     fi
+    # Edge case
+    [[ `basename $filename` == "eigen_benchmark_cpu_test.cc" ]] && ((includeopline+=2))
     # If no proper spot found, don't include the header and skip
     if [[ $includeopline ]]; then
         includelineno=$(echo "$includeopline" | cut -f 1 -d ':' | head -1)
         sed  -i "$(($includelineno + 1)) i #include \"tensorflow/core/framework/fuzzing.h\"" $filename
     fi
-    bin/inject-fuzzer $filename --
+    bin/inject-fuzzer $filename -- 2> /dev/null
 done
 
 # Manually inject fuzzing header in some common header files

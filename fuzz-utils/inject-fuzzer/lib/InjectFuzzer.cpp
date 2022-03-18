@@ -12,7 +12,7 @@ using namespace ast_matchers;
 // From https://www.py4u.net/discuss/94401
 
 std::string get_source_text_raw(clang::SourceRange range, const clang::SourceManager& sm) {
-  return clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions());
+  return clang::Lexer::getSourceText(clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions()).str();
 }
 
 std::string get_source_text(clang::SourceRange range, const clang::SourceManager& sm) {
@@ -30,7 +30,6 @@ std::string get_source_text(clang::SourceRange range, const clang::SourceManager
 // InjectFuzzer - implementation
 //-----------------------------------------------------------------------------
 void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
-  llvm::outs() << "Test\n";
 
   const char *FuzzBodyTemplate = R""""({
 
@@ -160,11 +159,11 @@ void InjectFuzzerMatcher::run(const MatchFinder::MatchResult &Result) {
 
 void InjectFuzzerMatcher::onEndOfTranslationUnit() {
   // Replace in place
-  InjectFuzzerRewriter.overwriteChangedFiles();
+  /* InjectFuzzerRewriter.overwriteChangedFiles(); */
 
   // Output to stdout
-  /* InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID()) */
-  /*     .write(llvm::outs()); */
+  InjectFuzzerRewriter.getEditBuffer(InjectFuzzerRewriter.getSourceMgr().getMainFileID())
+      .write(llvm::outs());
 
 }
 
@@ -184,13 +183,11 @@ InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : InjectFuzzerHand
 //-----------------------------------------------------------------------------
 class InjectFuzzerPluginAction : public PluginASTAction {
   public:
-    // Our plugin can alter behavior based on the command line options
     bool ParseArgs(const CompilerInstance &,
                    const std::vector<std::string> &) override {
       return true;
     }
 
-    // Returns our ASTConsumer per translation unit.
     std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                    StringRef file) override {
       RewriterForInjectFuzzer.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
