@@ -1,0 +1,8 @@
+T=DT_DOUBLE, _XlaHasReferenceVars=false, scale_after_normalization=true, variance_epsilon=0.001, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: double shape: [5,13,5,2] values: [[[-1.5e+300 -1.5e+300][-1.5e+300...]]]...>
+Tensor<type: double shape: [5] values: 0.81185869772053976 0.87496164495589812 0.68841325238594331...>
+Tensor<type: double shape: [5] values: 0.81185869772053976 0.87496164495589812 0.68841325238594331...>
+Tensor<type: double shape: [5] values: 0.81185869772053976 0.87496164495589812 0.68841325238594331...>
+Tensor<type: double shape: [3,5,4,5] values: [[[0.417022004702574 0.7203244934421581 0.00011437481734488664...]]]...>
+
+--------------------------------------

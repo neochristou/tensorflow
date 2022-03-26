@@ -1,4 +1,4 @@
-# Signal -6;2022-03-07 18:57:16.442780: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-03-07 18:57:16.445155: F tensorflow/core/framework/tensor.cc:681] Check failed: 1 == NumElements() (1 vs. 12)Must have a one element tensor
+# Signal -6;2022-03-26 16:58:36.933074: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F FMATo enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.2022-03-26 16:58:36.936744: F tensorflow/core/framework/tensor.cc:681] Check failed: 1 == NumElements() (1 vs. 12)Must have a one element tensor
 
 # UnsortedSegmentJoinOp
 

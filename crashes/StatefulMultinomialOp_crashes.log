@@ -1,0 +1,5 @@
+T=DT_FLOAT, output_dtype=DT_INT64, seed=10, seed2=15
+Tensor<type: float shape: [1,2] values: [-3.5e+35 -3.5e+35]>
+Tensor<type: int32 shape: [] values: 1879048192>
+
+--------------------------------------

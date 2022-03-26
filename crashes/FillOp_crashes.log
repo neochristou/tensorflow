@@ -1,0 +1,5 @@
+T=DT_FLOAT, index_type=DT_INT32
+Tensor<type: int32 shape: [] values: 536870912>
+Tensor<type: float shape: [] values: -3.5e+35>
+
+--------------------------------------

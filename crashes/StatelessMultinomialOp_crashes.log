@@ -1,0 +1,6 @@
+T=DT_FLOAT, Tseed=DT_INT64, _XlaHasReferenceVars=false, output_dtype=DT_INT64, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [1,2] values: [-3.5e+35 -3.5e+35]>
+Tensor<type: int32 shape: [] values: 1879048192>
+Tensor<type: int64 shape: [2] values: 2489719881 3666025645>
+
+--------------------------------------

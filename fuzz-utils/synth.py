@@ -245,7 +245,7 @@ def main():
     all_kernels = set()
     no_raw_op = set()
     empty_crash_logs = set()
-    bad_type = set()
+    resource_arg = set()
     other_errors = set()
 
     args_parser = argparse.ArgumentParser(
@@ -262,7 +262,7 @@ def main():
 
     reproduce_path = REPRODUCE_PATH_BASE + "all-crashes/all/"
 
-    for crash_filename in glob.glob(CRASHFILES_PATH + ext):
+    for crash_filename in glob.glob(CRASHFILES_PATH + '*_crashes.log'):
 
         # Ignore empty files
         if os.path.getsize(crash_filename) == 0:
@@ -281,16 +281,20 @@ def main():
         all_kernels.add(kernel_name)
 
         for crash in crashes:
-            crash = crash.strip()
+            crash = crash.rstrip()
 
             if len(crash) == 0:
                 print("Skipping empty crash for", kernel_name)
                 continue
 
+            if kernel_name.endswith("Base"):
+                kernel_name = kernel_name.replace("Base", "")
+
             if kernel_name in kernel_regs:
                 op_name = kernel_regs[kernel_name]
             else:
                 op_name = None
+
             synth_file, op_name = synthesize_file(crash, kernel_name, op_name)
 
             if synth_file is None:
@@ -299,7 +303,7 @@ def main():
                 no_raw_op.add(kernel_name)
                 continue
             if synth_file == -2:
-                bad_type.add(kernel_name)
+                resource_arg.add(kernel_name)
                 continue
             if synth_file == -3:
                 empty_crash_logs.add(kernel_name)
@@ -309,13 +313,13 @@ def main():
             save_synth_file(synth_file, op_name, reproduce_path)
 
     no_raw_op = list([x for x in no_raw_op if x not in successful])
-    bad_type = list([x for x in bad_type if x not in successful])
+    resource_arg = list([x for x in resource_arg if x not in successful])
     print("No raw op:")
     print("\n".join(no_raw_op))
-    print("Bad Type:")
-    print("\n".join(bad_type))
+    print("Resource arg:")
+    print("\n".join(resource_arg))
     print(f"Total no raw op: {len(no_raw_op)}")
-    print(f"Total bad Type: {len(bad_type)}")
+    print(f"Total bad Type: {len(resource_arg)}")
     print(f"Total other errors: {len(other_errors)}")
     print(f"Total successful: {len(successful)}")
     print(f"Total crash files: {len(all_kernels)}")

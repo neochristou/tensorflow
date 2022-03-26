@@ -1,0 +1,6 @@
+T=DT_FLOAT, Targmax=DT_INT64, include_batch_in_index=false, ksize=[1, 2, 2, 1], padding="VALID", strides=[1, 1, 1, 1]
+Tensor<type: float shape: [2,2,2,1] values: [[[11][12]][[13]]]...>
+Tensor<type: float shape: [2,3,3,1] values: [[[1][1][1]]]...>
+Tensor<type: int64 shape: [2,2,2,1] values: [[[0][1]][[3]]]...>
+
+--------------------------------------

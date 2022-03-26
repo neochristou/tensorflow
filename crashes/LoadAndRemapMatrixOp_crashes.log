@@ -1,0 +1,8 @@
+_XlaHasReferenceVars=false, max_rows_in_memory=-1, num_cols=2, num_rows=3, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: /tmp/warm_starting_util_test17v8kamv/tmpp6j7eed2/model-0>
+Tensor<type: string shape: [] values: /tmp/warm_starting_util_test17v8kamv/tmpp6j7eed2/model-0>
+Tensor<type: int64 shape: [] values: 0>
+Tensor<type: int64 shape: [3] values: 3 2 1>
+Tensor<type: float shape: [0,1] values: >
+
+--------------------------------------

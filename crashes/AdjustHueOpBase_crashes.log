@@ -1,0 +1,5 @@
+T=DT_FLOAT
+Tensor<type: float shape: [2,2,3] values: [[0 0.0196078438 0.0509803966]]...>
+Tensor<type: float shape: [] values: -3.5e+35>
+
+--------------------------------------

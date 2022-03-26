@@ -1,0 +1,6 @@
+T=DT_FLOAT
+Tensor<type: int64 shape: [3] values: 53 65 127>
+Tensor<type: float shape: [218650] values: 0.554979503 0.225623384 0.902773082...>
+Tensor<type: int64 shape: [3] values: 53 65 127>
+
+--------------------------------------

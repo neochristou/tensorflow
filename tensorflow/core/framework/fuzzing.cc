@@ -481,7 +481,7 @@ namespace tffuzzing {
 
     all_mutations = total_mutations;
     std::cout << "Total mutations: " << total_mutations << std::endl;
-    std::cout << "Will run with (at least): " << total_mutations << " mutations"<< std::endl;
+    std::cout << "Will run with (at least): " << nmut_fuzz << " mutations"<< std::endl;
     std::cout << "Step size: " << num_mut_skip << std::endl;
 
     // To avoid off by one on first mutation

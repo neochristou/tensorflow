@@ -1,0 +1,7 @@
+OUTPUT_RAGGED_RANK=2, PARAMS_RAGGED_RANK=2, Tindices=DT_INT64, Tsplits=DT_INT64, Tvalues=DT_INT32, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [5] values: 0 2 3...>
+Tensor<type: int64 shape: [] values: 1879048192>
+Tensor<type: int32 shape: [7] values: -1879048192 -1879048192 -1879048192...>
+Tensor<type: int64 shape: [] values: -8608480567731124087>
+
+--------------------------------------
