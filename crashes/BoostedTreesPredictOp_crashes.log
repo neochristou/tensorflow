@@ -1,5 +1,0 @@
-Resource
-Tensor<type: int32 shape: [3] values: 13 1 3>
-Tensor<type: int32 shape: [] values: 0>
-
---------------------------------------

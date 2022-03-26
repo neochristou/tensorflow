@@ -8,7 +8,7 @@ from multiprocessing import Manager, Pool
 
 TF_BASE = "/media/ivysyn/tensorflow/"
 NUM_PARALLEL_PROCESSES = 4
-MAX_RESTARTS = 15
+MAX_RESTARTS = 10
 TIME_LIMIT = 900
 PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
@@ -25,9 +25,9 @@ EXCLUDE_TESTS = [
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
 print(f"Python tests: {len(tests_to_run) - len(EXCLUDE_TESTS)}")
 
-# cc_tests = glob(CC_TEST_FOLDER + "*_test")
-# print(f"CPP tests: {len(cc_tests)}")
-# tests_to_run += cc_tests
+cc_tests = glob(CC_TEST_FOLDER + "*_test")
+print(f"CPP tests: {len(cc_tests)}")
+tests_to_run += cc_tests
 
 for t in EXCLUDE_TESTS:
     tests_to_run.remove(t)
@@ -89,20 +89,6 @@ def proc_finished(results):
     test, running_time, exitcode, pid = results
 
     log_test_duration(running_time, test)
-
-    if exitcode == -signal.SIGKILL:
-
-        killed_mutfile = glob(RESULTS_PATH + f"*_mutations.log.{pid}")
-
-        print(f"Process {pid} was killed, mutation file: {killed_mutfile}")
-
-        if len(killed_mutfile) != 0:
-            killed_mutfile = killed_mutfile[0]
-            killed_filename = killed_mutfile.replace(
-                "_mutations.log", ".killed")
-            os.remove(killed_mutfile)
-            with open(killed_filename, "w"):
-                pass
 
     # If the test crashed, re-queue it so that it runs again
     if exitcode < 0:

@@ -4,7 +4,6 @@ import hashlib
 import inspect
 import os
 
-# import tensorflow as tf
 from tensorflow import raw_ops
 
 TF_PATH = "/media/ivysyn/tensorflow/"
@@ -251,8 +250,6 @@ def main():
 
     args_parser = argparse.ArgumentParser(
         description="Parse and transform Pytorch native files")
-    args_parser.add_argument("--perf", dest="perf", action="store_true",
-                             default=False, help="Synth performance logs")
 
     args = args_parser.parse_args()
 
@@ -263,13 +260,7 @@ def main():
             kernel_name, op_name = reg.split(" ")
             kernel_regs[kernel_name] = op_name
 
-    ext = ".duration" if args.perf else "*_crashes.log"
-    reproduce_path = REPRODUCE_PATH_BASE
-    if args.perf:
-        reproduce_path += "performance/"
-    else:
-        reproduce_path += "all-crashes/"
-    reproduce_path += "all/"
+    reproduce_path = REPRODUCE_PATH_BASE + "all-crashes/all/"
 
     for crash_filename in glob.glob(CRASHFILES_PATH + ext):
 

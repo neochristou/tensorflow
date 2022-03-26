@@ -1,7 +1,0 @@
-Tensor<type: string shape: [] values: /tmp/linear_operator_block_diag_test9q0iq5mi/tmpcelbabkv/variables/variables_temp/part-00000-of-00001>
-Tensor<type: string shape: [2] values:  >
-Tensor<type: string shape: [2] values:  >
-Tensor<type: complex128 shape: [0,2] values: >
-Tensor<type: string shape: [] values: /tmp/linear_operator_block_diag_test9q0iq5mi/tmpcelbabkv/variables/variables_temp/part-00000-of-00001>
-
---------------------------------------

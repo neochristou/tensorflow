@@ -92,11 +92,10 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  // Skip gradops for now
-  /* if (OpName.endswith("GradOp")) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (GradOp)\n"; */
-  /*   return; */
-  /* } */
+  if (OpName.endswith("GradOp")) {
+    llvm::outs() << "Skipping " << OpName << " (GradOp)\n";
+    return;
+  }
 
   // Skip SummaryOps
   if (OpName.contains("SummaryOp")) {
@@ -104,10 +103,10 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  /* if (OpName.startswith("BoostedTreesCreate")) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n"; */
-  /*   return; */
-  /* } */
+  if (OpName.startswith("BoostedTreesCreate")) {
+    llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n";
+    return;
+  }
 
   Stmt *ComputeBody = ComputeDecl->getBody();
 
@@ -133,11 +132,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     llvm::outs() << "Skipping " << OpName << " (ResourceMgr)\n";
     return;
   }
-
-  /* if (ComputeText.find(std::string("PhiloxRandom")) != std::string::npos) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (PhiloxRandom)\n"; */
-  /*   return; */
-  /* } */
 
   if (ComputeText.find(std::string("mutex")) != std::string::npos ||
       ComputeText.find(std::string("Mutex")) != std::string::npos
