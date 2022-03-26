@@ -54,7 +54,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
         tffuzzing::already_fuzzing = false;
         do_%1$s(%2$s);
-
       } else {
         do_%1$s(%2$s);
       }

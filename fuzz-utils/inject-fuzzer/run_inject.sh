@@ -34,7 +34,7 @@ inject_header() {
 main()
 {
     for filename in $filenames; do
-        echo $filename
+        # echo $filename
         bin/inject-fuzzer --extra-arg-before='-xc++' $filename -- 2> /dev/null | grep 'Successfully' && inject_header $filename # && echo $filename
 
     done

@@ -91,7 +91,8 @@ def split_attrs(attrs):
             parsed_attrs.append(attr)
             idx += 1
         else:
-            parsed_attrs[idx - 1] += ", " + attr
+            if len(parsed_attrs) > 0:
+                parsed_attrs[idx - 1] += ", " + attr
 
     return parsed_attrs
 

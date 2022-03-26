@@ -8,8 +8,9 @@ from multiprocessing import Manager, Pool
 
 TF_BASE = "/media/ivysyn/tensorflow/"
 NUM_PARALLEL_PROCESSES = 4
-MAX_RESTARTS = 15
+MAX_RESTARTS = 10
 TIME_LIMIT = 900
+RESULTS_PATH = "/media/tf-fuzzing/results/"
 PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
@@ -20,6 +21,7 @@ EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
     "/media/ivysyn/tensorflow/tensorflow/python/eager/remote_cluster_test.py",
     "/media/ivysyn/tensorflow/tensorflow/python/keras/saving/save_weights_test.py",
+    "/media/ivysyn/tensorflow/tensorflow/python/kernel_tests/while_v2_test.py",
 ]
 
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
@@ -58,7 +60,7 @@ def execute(test):
     try:
         proc = subprocess.Popen(
             args,
-            # stdout=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
         pid = proc.pid
@@ -100,6 +102,7 @@ def proc_finished(results):
             killed_mutfile = killed_mutfile[0]
             killed_filename = killed_mutfile.replace(
                 "_mutations.log", ".killed")
+            killed_filename = '.'.join(killed_filename.split('.')[:-1])
             os.remove(killed_mutfile)
             with open(killed_filename, "w"):
                 pass
