@@ -78,7 +78,7 @@ namespace tffuzzing {
     std::fstream total_file;
     std::ios_base::openmode fflags;
 
-    bool restore = false, resume = false;
+    bool restore = false, do_resume = false;
     long long last_mutation = -1;
     struct stat stat_buffer = {};
 
@@ -157,7 +157,7 @@ namespace tffuzzing {
             restore = true;
 
             if (was_killed(cur_fname)) {
-              resume = true;
+              do_resume = true;
             }
 
           }
@@ -166,7 +166,7 @@ namespace tffuzzing {
       globfree(&glob_result);
     }
 
-    if (resume) {
+    if (do_resume) {
       std::cout << mypid << ": " << cur_fname << " was killed, will resume from " << mutations_restore_filename << std::endl;
     } else if (restore) {
       std::cout << mypid << ": " << cur_fname << " crashed, will restore from " << mutations_restore_filename << std::endl;
@@ -215,11 +215,9 @@ namespace tffuzzing {
         }
       }
 
-      log_crash = !resume;
-
       if (last_mutation > 0) {
 
-        restore_last_mutation(last_mutation, log_crash);
+        restore_last_mutation(last_mutation, do_resume);
         // Delete the file since we already logged the crash
         if (std::remove(mutations_restore_filename.c_str()) != 0) {
           /* std::cout << "Couldn't remove " << mutations_restore_filename << std::flush; */
@@ -303,43 +301,40 @@ namespace tffuzzing {
   {
     tensorflow::DataType ttype;
     tensorflow::TensorValue tensor_val;
+    std::string out_str;
 
     /* file << op_name << std::endl; */
-    file << attrs << std::endl;
+    out_str += attrs + "\n";
     for (int idx = 0; idx < num_args; idx++) {
       ttype = tensor_types.at(idx);
       tensor_val = get_next_mut(ttype, idx);
       ttype = tensor_val.tensor->dtype();
       switch (ttype) {
         default:
-          file << tensor_val.tensor->DebugString() << "\n";
+          out_str += tensor_val.tensor->DebugString() + "\n";
           /* case tensorflow::DataType::DT_VARIANT: */
           /* file << "Variant" << std::endl << std::flush; */
           break;
         case tensorflow::DataType::DT_RESOURCE:
-          file << "Resource" << std::endl << std::flush;
+          out_str += "Resource\n";
           break;
       }
     }
 
-    file << "\n--------------------------------------\n";
+    out_str += "\n--------------------------------------\n";
+    file << out_str << std::flush;
   }
 
   void Fuzzer::increase_num_crashes()
   {
-    std::string crashes_filename;
-    std::string crashes_num_filename;
-    long long last_crash = 0; // Used to bound number of crashes
+
+    long long num_crashes = 0; // Used to bound number of crashes
     struct stat stat_buffer = {};
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
+    std::string crashes_num_filename;
     std::fstream run_file;
     std::string run_filename;
     std::string last_line;
-
-    crashes_filename = std::string(results_dir) + "/" + cur_fname + "_crashes.log";
-    crashes_logger_filename = crashes_filename;
-    crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
-    crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
 
     crashes_num_filename = std::string(results_dir) + "/" + cur_fname + "_crashes_num.log";
 
@@ -347,23 +342,23 @@ namespace tffuzzing {
       num_crashes_file.open(crashes_num_filename, fflags);
       getline(num_crashes_file, last_line);
       if (last_line.length() > 0) {
-        last_crash = std::stoll(last_line);
+        num_crashes = std::stoll(last_line);
       } else {
         std::cout << "Error while reading file with number of crashes..." << std::flush;
       }
     } else {
-      last_crash = 0;
+      num_crashes = 0;
       fflags |= std::ios::trunc;
       create_file(crashes_num_filename, num_crashes_file,  fflags);
     }
-    last_crash++;
+    num_crashes++;
 
     num_crashes_file.seekp(0, std::ios::beg);
-    num_crashes_file << last_crash;
+    num_crashes_file << num_crashes;
     num_crashes_file.flush();
     /* num_crashes_file.close(); */
 
-    if (last_crash >= CRASHES_BOUND) {
+    if (num_crashes >= CRASHES_BOUND) {
       std::cout << "Function " << cur_fname << " crashed " << CRASHES_BOUND << " times, skipping rest of fuzzing" << std::endl;
 
       run_filename = std::string(results_dir) + "/" + cur_fname + ".run";
@@ -378,8 +373,14 @@ namespace tffuzzing {
 
   }
 
-  void Fuzzer::restore_last_mutation(long long last_mutation, bool log_crash)
+  void Fuzzer::restore_last_mutation(long long last_mutation, bool do_resume)
   {
+
+    std::string crashes_filename;
+
+    crashes_filename = std::string(results_dir) + "/" + cur_fname + "_crashes.log";
+    crashes_logger_filename = crashes_filename;
+    crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
 
     // Handle the case where mutations were already done for this test
     // by just giving back one mutation so that the test doesn't crash
@@ -392,14 +393,17 @@ namespace tffuzzing {
 
     while (total_mutations != last_mutation) {
       if (total_mutations < last_mutation) {
-        std::cout << "\033[1;31mError: didn't match last mutation, aborting\033[0m " << cur_fname << std::endl << std::flush;
-        total_mutations = 0;
+        std::cout << "\033[1;31mError: didn't match last mutation, aborting\n\033[0m " << cur_fname << std::endl << std::flush;
+        mark_fuzzing_done();
         return;
       }
       next_mutations_indices(false);
     }
 
-    if (log_crash) {
+    crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
+
+    /* If we weren't killed, also log the crash */
+    if (!do_resume) {
       log_current_mutation(crashes_file);
     }
 
