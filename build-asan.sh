@@ -1,0 +1,1 @@
+ CC=$(which clang) bazel --output_user_root=/mnt/tf-build/ build --config asan --action_env=LD_PRELOAD=$(clang --print-file-name libclang_rt.asan-x86_64.so) --action_env=ASAN_OPTIONS=detect_leaks=0:detect_odr_violation=0 //tensorflow/tools/pip_package:build_pip_package --verbose_failures -j 5

@@ -74,6 +74,7 @@ namespace tffuzzing {
     extern std::string attrs;
 
     bool was_fuzzed(const std::string& fname);
+    bool was_killed(const std::string& fname);
     void create_file(const std::string& filename, std::fstream &file, std::ios_base::openmode fflags);
 
     class Fuzzer {
@@ -135,8 +136,9 @@ namespace tffuzzing {
         void initialize_tensor_pools();
         void calculate_total_mutations();
         void next_mutations_indices(bool log);
+        void increase_num_crashes();
         inline void inc_mutations_indices(bool log);
-        void restore_last_mutation(long long last_mutation, std::string& fname);
+        void restore_last_mutation(long long last_mutation, bool do_resume);
         void log_current_mutation(std::fstream &file);
         void mark_fuzzing_done();
         void mark_unknown_type(tensorflow::DataType ttype);
