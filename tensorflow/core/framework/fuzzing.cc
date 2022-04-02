@@ -335,6 +335,8 @@ namespace tffuzzing {
     std::fstream run_file;
     std::string run_filename;
     std::string last_line;
+    char logbuf[LOGBUFSZ];
+    memset(logbuf, 0, LOGBUFSZ);
 
     crashes_num_filename = std::string(results_dir) + "/" + cur_fname + "_crashes_num.log";
 
@@ -364,13 +366,14 @@ namespace tffuzzing {
       run_filename = std::string(results_dir) + "/" + cur_fname + ".run";
       create_file(run_filename, run_file, fflags);
 
-      run_file << total_mutations << std::flush;
+      sprintf(logbuf, "%llu", total_mutations);
+      run_file.write(logbuf, LOGBUFSZ);
+      run_file << std::flush;
       run_file.close();
       mark_fuzzing_done();
-      return;
     }
 
-
+    return;
   }
 
   void Fuzzer::restore_last_mutation(long long last_mutation, bool do_resume)
@@ -925,6 +928,9 @@ namespace tffuzzing {
   // Skips ahead num_mut_skip mutations to bound the total mutations
   void Fuzzer::next_mutations_indices(bool log){
 
+    char logbuf[LOGBUFSZ];
+    memset(logbuf, 0, LOGBUFSZ);
+
     total_mutations -= num_mut_skip;
 
     if (total_mutations <= 0) {
@@ -941,7 +947,8 @@ namespace tffuzzing {
 
     if (log) {
       mutations_file.seekp(0, std::ios::beg);
-      mutations_file << total_mutations;
+      sprintf(logbuf, "%llu", total_mutations);
+      mutations_file.write(logbuf, LOGBUFSZ);
       mutations_file.flush();
     }
 
@@ -999,6 +1006,8 @@ namespace tffuzzing {
     std::string duration_filename;
     std::ios_base::openmode fflags = std::ios::out | std::ios::in;
     std::fstream duration_file;
+    char logbuf[LOGBUFSZ];
+    memset(logbuf, 0, LOGBUFSZ);
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
     end_time = ((uint64_t)ts.tv_sec) * NS_PER_SEC + ts.tv_nsec;
@@ -1006,10 +1015,13 @@ namespace tffuzzing {
     uint64_t duration = end_time - start_time;
     uint64_t duration_secs = duration / (NS_PER_SEC);
 
+    sprintf(logbuf, "%llu", total_mutations);
     if (fuzz_ctx->status() == tensorflow::Status::OK()) {
-      time_file << total_mutations << ":" << duration << std::endl << std::flush;
+      time_file.write(logbuf, LOGBUFSZ);
+      time_file << ":" << duration << std::endl << std::flush;
     } else {
-      except_file << total_mutations << ":" << duration << std::endl << std::flush;
+      except_file.write(logbuf, LOGBUFSZ);
+      except_file << ":" << duration << std::endl << std::flush;
     }
 
 
