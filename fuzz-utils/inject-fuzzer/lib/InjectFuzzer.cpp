@@ -5,27 +5,33 @@
 #include "clang/Frontend/FrontendPluginRegistry.h"
 #include "llvm/Support/raw_ostream.h"
 
+const std::string KERNEL_DIR = "/media/ivysyn/tensorflow/tensorflow/core/kernels/";
+
 using namespace clang;
 using namespace ast_matchers;
 
-
-// From https://www.py4u.net/discuss/94401
-
-std::string get_source_text_raw(SourceRange range, const SourceManager& sm)
+std::string get_source_filename(const SourceManager& SrcMgr, SourceLocation SrcLoc)
 {
-  return Lexer::getSourceText(CharSourceRange::getCharRange(range), sm, LangOptions()).str();
+  const FileEntry* Entry = SrcMgr.getFileEntryForID(SrcMgr.getFileID(SrcLoc));
+  return Entry->getName().str();
 }
 
-std::string get_source_text(SourceRange range, const SourceManager& sm)
+// From https://www.py4u.net/discuss/94401
+std::string get_source_text_raw(SourceRange range, const SourceManager& SrcMgr)
+{
+  return Lexer::getSourceText(CharSourceRange::getCharRange(range), SrcMgr, LangOptions()).str();
+}
+
+std::string get_source_text(SourceRange range, const SourceManager& SrcMgr)
 {
   LangOptions lo;
 
-  // NOTE: sm.getSpellingLoc() used in case the range corresponds to a macro/preprocessed source.
-  auto start_loc = sm.getSpellingLoc(range.getBegin());
-  auto last_token_loc = sm.getSpellingLoc(range.getEnd());
-  auto end_loc = Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
+  // NOTE: SrcMgr.getSpellingLoc() used in case the range corresponds to a macro/preprocessed source.
+  auto start_loc = SrcMgr.getSpellingLoc(range.getBegin());
+  auto last_token_loc = SrcMgr.getSpellingLoc(range.getEnd());
+  auto end_loc = Lexer::getLocForEndOfToken(last_token_loc, 0, SrcMgr, lo);
   auto printable_range = SourceRange{start_loc, end_loc};
-  return get_source_text_raw(printable_range, sm);
+  return get_source_text_raw(printable_range, SrcMgr);
 }
 
 //-----------------------------------------------------------------------------
@@ -60,9 +66,14 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   // ASTContext is used to retrieve the source location
   ASTContext *Ctx = Result.Context;
+  const SourceManager &SrcMgr = InjectFuzzerRewriter.getSourceMgr();
 
   const FunctionDecl *ComputeDecl =
-    Result.Nodes.getNodeAs<clang::FunctionDecl>("computedecl");
+    Result.Nodes.getNodeAs<FunctionDecl>("computedecl");
+
+  std::string SourceFile = get_source_filename(SrcMgr, ComputeDecl->getLocation());
+
+  /* llvm::outs() << "Filename: " << SourceFile << "\n"; */
 
   if (!ComputeDecl) {
     return;
@@ -80,8 +91,43 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
+  /* llvm::outs() << "OpName: " << OpName << "\n"; */
+
+  if (SourceFile == KERNEL_DIR + "batch_kernels.cc") {
+    llvm::outs() << "Skipping " << OpName << " (batch kernel)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "isotonic_regression_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (isotonic regression)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "fact_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (fact op)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "random_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (random op)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "resource_variable_ops.cc") {
+    llvm::outs() << "Skipping " << OpName << " (resource variable)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "list_kernels.cc") {
+    llvm::outs() << "Skipping " << OpName << " (list kernel)\n";
+  }
+
+  if (SourceFile == KERNEL_DIR + "tensor_array_ops.cc") {
+    llvm::outs() << "Skipping " << OpName << " (tensor array)\n";
+  }
+
   if (ComputeDecl->getNumParams() > 1) {
     llvm::outs() << "Skipping " << OpName << " (>1 params)\n";
+    return;
+  }
+
+  if (ComputeDecl->getNumParams() == 0) {
+    llvm::outs() << "Skipping " << OpName << " (no params)\n";
     return;
   }
 
@@ -89,12 +135,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     llvm::outs() << "Skipping " << OpName << " (static)\n";
     return;
   }
-
-  // Skip gradops for now
-  /* if (OpName.endswith("GradOp")) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (GradOp)\n"; */
-  /*   return; */
-  /* } */
 
   // Skip SummaryOps
   /* if (OpName.contains("SummaryOp")) { */
@@ -108,6 +148,8 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   /* } */
 
   Stmt *ComputeBody = ComputeDecl->getBody();
+
+  /* llvm::outs() << "Got body \n"; */
 
   if (!ComputeBody) {
     llvm::outs() << "Skipping " << OpName << " (no body)\n";
@@ -125,7 +167,7 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   FullSourceLoc ComputeBodyStartLoc = Ctx->getFullLoc(ComputeBody->getBeginLoc());
   SourceRange ComputeSR = ComputeBody->getSourceRange();
 
-  std::string ComputeText = get_source_text(ComputeSR, InjectFuzzerRewriter.getSourceMgr());
+  std::string ComputeText = get_source_text(ComputeSR, SrcMgr);
 
   if (ComputeText.find(std::string("ResourceMgr")) != std::string::npos) {
     llvm::outs() << "Skipping " << OpName << " (ResourceMgr)\n";
