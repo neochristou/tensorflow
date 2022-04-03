@@ -95,7 +95,7 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
-  if (OpName == "OpKernel" || OpName == "AsyncOpKernel") {
+  if (OpName == "OpKernel" || OpName == "AsyncOpKernel" || OpName == "UnaryElementWiseOp") {
     return;
   }
 
