@@ -3,7 +3,7 @@ skipped_reasons = {}
 
 def get_all_kernels(lines):
     allk_lines = [x for x in lines if x.startswith("Found Compute")]
-    allk_names = [x.split(" ")[-2] for x in allk_lines]
+    allk_names = [x.split(" ")[-3] for x in allk_lines]
     allk_names = set(allk_names)
     return allk_names
 

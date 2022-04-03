@@ -8,7 +8,7 @@ INCLUDE_EIGEN_STRING="#define EIGEN_USE"
 
 filenames=$(/usr/bin/fdfind -t f '.*\.cc$|.*\.h' $TF_KERNELS_PATH)
 filenames+=('reshape_op.h')
-extra_header_files=("cwise_ops_common.h" "cwise_ops_gpu_common.cu.h" "function_ops.h" "data/experimental/compute_batch_size_op.cc" "shape_ops.h" "conditional_accumulator_base.h" "tensor_to_hash_bucket_op.h" "example_parsing_ops.cc" "string_to_hash_bucket_op.h")
+extra_header_files=("cwise_ops_common.h" "cwise_ops_gpu_common.cu.h" "function_ops.h" "data/experimental/compute_batch_size_op.cc" "shape_ops.h" "conditional_accumulator_base.h" "tensor_to_hash_bucket_op.h" "example_parsing_ops.cc" "string_to_hash_bucket_op.h" "data/experimental/compression_ops.h")
 
 inject_header() {
     filename=$1

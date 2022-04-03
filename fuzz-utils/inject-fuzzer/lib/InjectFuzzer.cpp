@@ -83,6 +83,7 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
+  bool IsDef = ComputeDecl->isThisDeclarationADefinition();
   const CXXRecordDecl* ParentClass = ComputeDecl->getParent();
 
   if (!ParentClass) {
@@ -92,15 +93,11 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
-  if (!ComputeDecl->isThisDeclarationADefinition()) {
-    llvm::outs() << "Declaration only " << OpName << "File " << InputFilename << "\n";
-  }
-
   if (OpName == "OpKernel" || OpName == "AsyncOpKernel" || OpName == "UnaryElementWiseOp") {
     return;
   }
 
-  llvm::outs() << "Found Compute() call in " << OpName << "File " << InputFilename << "\n";
+  llvm::outs() << "Found Compute() call in " << OpName << " File " << InputFilename << "\n";
 
   if (ComputeDecl->getNumParams() > 1) {
     llvm::outs() << "Skipping " << OpName << " (>1 params)\n";
@@ -117,21 +114,42 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  Stmt *ComputeBody = ComputeDecl->getBody();
+  StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
+  FullSourceLoc ComputeStartLoc = Ctx->getFullLoc(ComputeDecl->getBeginLoc());
 
-  if (!ComputeBody) {
-    llvm::outs() << "Skipping " << OpName << " (no body)\n";
+  std::string ComputeDeclText = get_source_text(SourceRange(ComputeDecl->getBeginLoc(), ComputeDecl->getEndLoc()), SrcMgr);
+  std::string DoCallPrefix = "";
+
+  if (ComputeDeclText.find("::Compute(") != std::string::npos) {
+    if (ComputeDeclText.find(OpName.str() + "::Compute(") == std::string::npos) {
+      llvm::outs() << "Skipping " << OpName << " (template)\n";
+      return;
+    }
+    DoCallPrefix = OpName.str() + "::";
+  }
+
+  memset(NewFname, 0, 0x100);
+  sprintf(NewFname, "void %sdo_%s(OpKernelContext *%s)", DoCallPrefix.c_str(), OpName.str().c_str(), CtxParamName.str().c_str());
+
+  if (!IsDef) {
+    /* Insert the declartion for the wrapped function */
+    llvm::outs() << "Declaration only " << OpName << "File " << InputFilename << "\n";
+    InjectFuzzerRewriter.InsertTextAfter(ComputeStartLoc, (Twine(NewFname) + ";\n\t").str());
     return;
   }
 
-  StringRef CtxParamName = ComputeDecl->parameters()[0]->getName();
+  Stmt *ComputeBody = ComputeDecl->getBody();
+
+  if (!ComputeBody && IsDef) {
+    llvm::outs() << "Skipping " << OpName << " (no body)\n";
+    return;
+  }
 
   if (CtxParamName.empty()) {
     llvm::outs() << "Skipping " << OpName << " (no param name)\n";
     return;
   }
 
-  FullSourceLoc ComputeStartLoc = Ctx->getFullLoc(ComputeDecl->getBeginLoc());
   FullSourceLoc ComputeBodyStartLoc = Ctx->getFullLoc(ComputeBody->getBeginLoc());
   SourceRange ComputeSR = ComputeBody->getSourceRange();
 
@@ -139,6 +157,11 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   if (ComputeText.find(std::string("ResourceMgr")) != std::string::npos) {
     llvm::outs() << "Skipping " << OpName << " (ResourceMgr)\n";
+    return;
+  }
+
+  if (ComputeText.find(std::string("ResourceHandle")) != std::string::npos) {
+    llvm::outs() << "Skipping " << OpName << " (ResourceHandle)\n";
     return;
   }
 
@@ -195,9 +218,7 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   }
 
   memset(FilledBody, 0, 0x1000);
-  memset(NewFname, 0, 0x100);
   sprintf(FilledBody, FuzzBodyTemplate, OpName.str().c_str(), CtxParamName.str().c_str());
-  sprintf(NewFname, "void do_%s(OpKernelContext *%s)", OpName.str().c_str(), CtxParamName.str().c_str());
   std::string FilledBodyStr(FilledBody);
 
   InjectFuzzerRewriter.InsertText(ComputeStartLoc, (Twine(NewFname) + ComputeText + "\n\n").str());
