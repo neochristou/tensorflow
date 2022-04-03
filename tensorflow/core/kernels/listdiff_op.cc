@@ -18,6 +18,7 @@ limitations under the License.
 #include <utility>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -33,7 +34,7 @@ class ListDiffOp : public OpKernel {
     OP_REQUIRES_OK(context, context->MatchSignature({dt, dt}, {dt, dtidx}));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ListDiffOp(OpKernelContext *context){
     const Tensor& x = context->input(0);
     const Tensor& y = context->input(1);
 
@@ -88,6 +89,30 @@ class ListDiffOp : public OpKernel {
         p++;
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ListDiffOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ListDiffOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ListDiffOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ListDiffOp(context);
+      } else {
+        do_ListDiffOp(context);
+      }
+
   }
 };
 

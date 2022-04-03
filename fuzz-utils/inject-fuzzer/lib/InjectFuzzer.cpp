@@ -74,7 +74,10 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   std::string SourceFile = get_source_filename(SrcMgr, ComputeDecl->getLocation());
 
-  /* llvm::outs() << "Filename: " << SourceFile << "\n"; */
+  if (SourceFile != InputFilename) {
+    /* llvm::outs() << SourceFile << " " << InputFilename << "\n"; */
+    return;
+  }
 
   if (!ComputeDecl) {
     return;
@@ -92,35 +95,11 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
-  /* llvm::outs() << "OpName: " << OpName << "\n"; */
-
-  if (SourceFile == KERNEL_DIR + "batch_kernels.cc") {
-    llvm::outs() << "Skipping " << OpName << " (batch kernel)\n";
+  if (OpName == "OpKernel" || OpName == "AsyncOpKernel") {
+    return;
   }
 
-  if (SourceFile == KERNEL_DIR + "isotonic_regression_op.cc") {
-    llvm::outs() << "Skipping " << OpName << " (isotonic regression)\n";
-  }
-
-  if (SourceFile == KERNEL_DIR + "fact_op.cc") {
-    llvm::outs() << "Skipping " << OpName << " (fact op)\n";
-  }
-
-  if (SourceFile == KERNEL_DIR + "random_op.cc") {
-    llvm::outs() << "Skipping " << OpName << " (random op)\n";
-  }
-
-  if (SourceFile == KERNEL_DIR + "resource_variable_ops.cc") {
-    llvm::outs() << "Skipping " << OpName << " (resource variable)\n";
-  }
-
-  if (SourceFile == KERNEL_DIR + "list_kernels.cc") {
-    llvm::outs() << "Skipping " << OpName << " (list kernel)\n";
-  }
-
-  if (SourceFile == KERNEL_DIR + "tensor_array_ops.cc") {
-    llvm::outs() << "Skipping " << OpName << " (tensor array)\n";
-  }
+  llvm::outs() << "Found Compute() call in " << OpName << "\n";
 
   if (ComputeDecl->getNumParams() > 1) {
     llvm::outs() << "Skipping " << OpName << " (>1 params)\n";
@@ -137,20 +116,12 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  // Skip SummaryOps
   if (OpName.contains("SummaryOp")) {
     llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
     return;
   }
 
-  /* if (OpName.startswith("BoostedTreesCreate")) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (BoostedTreesCreate)\n"; */
-  /*   return; */
-  /* } */
-
   Stmt *ComputeBody = ComputeDecl->getBody();
-
-  /* llvm::outs() << "Got body \n"; */
 
   if (!ComputeBody) {
     llvm::outs() << "Skipping " << OpName << " (no body)\n";
@@ -175,15 +146,50 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  /* if (ComputeText.find(std::string("PhiloxRandom")) != std::string::npos) { */
-  /*   llvm::outs() << "Skipping " << OpName << " (PhiloxRandom)\n"; */
-  /*   return; */
-  /* } */
-
   if (ComputeText.find(std::string("mutex")) != std::string::npos ||
       ComputeText.find(std::string("Mutex")) != std::string::npos
       ) {
     llvm::outs() << "Skipping " << OpName << " (mutex)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "batch_kernels.cc") {
+    llvm::outs() << "Skipping " << OpName << " (batch kernel)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "isotonic_regression_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (isotonic regression)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "fact_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (fact op)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "random_op.cc") {
+    llvm::outs() << "Skipping " << OpName << " (random op)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "resource_variable_ops.cc") {
+    llvm::outs() << "Skipping " << OpName << " (resource variable)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "list_kernels.cc") {
+    llvm::outs() << "Skipping " << OpName << " (list kernel)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "list_kernels.h") {
+    llvm::outs() << "Skipping " << OpName << " (list kernel)\n";
+    return;
+  }
+
+  if (SourceFile == KERNEL_DIR + "tensor_array_ops.cc") {
+    llvm::outs() << "Skipping " << OpName << " (tensor array)\n";
     return;
   }
 
@@ -211,7 +217,7 @@ void ComputeDeclMatcher::onEndOfTranslationUnit() {
   /*     .write(llvm::outs()); */
 }
 
-InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : ComputeDeclHandler(R) {
+InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R, std::string &InpF) : ComputeDeclHandler(R, InpF) {
 
   DeclarationMatcher ComputeDeclMatcher =
     functionDecl(hasName("Compute"))
@@ -227,15 +233,17 @@ InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R) : ComputeDeclHandl
 //-----------------------------------------------------------------------------
 class InjectFuzzerPluginAction : public PluginASTAction {
   public:
+
     bool ParseArgs(const CompilerInstance &,
-                   const std::vector<std::string> &) override {
+                   const std::vector<std::string> &Args) override {
       return true;
     }
 
     std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                    StringRef file) override {
+      std::string InpF = file.str();
       RewriterForInjectFuzzer.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-      return std::make_unique<InjectFuzzerASTConsumer>(RewriterForInjectFuzzer);
+      return std::make_unique<InjectFuzzerASTConsumer>(RewriterForInjectFuzzer, InpF);
     }
 
   private:

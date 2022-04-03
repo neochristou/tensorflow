@@ -20,6 +20,7 @@ limitations under the License.
 #include "tensorflow/core/kernels/aggregate_ops.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/op_requires.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -38,7 +39,7 @@ class AddNOp : public OpKernel {
  public:
   explicit AddNOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_AddNOp(OpKernelContext *ctx){
     if (!ctx->ValidateInputsAreSameShape(this)) return;
 
     const Tensor& input0 = ctx->input(0);
@@ -146,6 +147,30 @@ class AddNOp : public OpKernel {
 
 #undef I
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AddNOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AddNOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AddNOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AddNOp(ctx);
+      } else {
+        do_AddNOp(ctx);
+      }
+
+  }
 };
 
 template <typename Device>
@@ -153,7 +178,7 @@ class AddNOp<Device, Variant> : public OpKernel {
  public:
   explicit AddNOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_AddNOp(OpKernelContext *ctx){
     if (!ctx->ValidateInputsAreSameShape(this)) return;
 
     const Tensor& input0 = ctx->input(0);
@@ -217,6 +242,30 @@ class AddNOp<Device, Variant> : public OpKernel {
     Tensor out(cpu_allocator(), DT_VARIANT, TensorShape({}));
     out.scalar<Variant>()() = std::move(temp[0]);
     ctx->set_output(0, out);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AddNOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AddNOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AddNOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AddNOp(ctx);
+      } else {
+        do_AddNOp(ctx);
+      }
+
   }
 
  private:

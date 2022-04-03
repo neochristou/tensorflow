@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -27,7 +28,7 @@ class SparseAddGradOp : public OpKernel {
  public:
   explicit SparseAddGradOp(OpKernelConstruction *ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext *ctx) override {
+  void do_SparseAddGradOp(OpKernelContext *ctx){
     // Gradient for op: SparseAdd(a, b) == sum.
     const Tensor *backprop_val_grad, *a_indices, *b_indices, *sum_indices;
     OP_REQUIRES_OK(ctx, ctx->input("backprop_val_grad", &backprop_val_grad));
@@ -125,6 +126,30 @@ class SparseAddGradOp : public OpKernel {
       if (b_idx_geq) ++k;
     }
 #undef COMPARE
+  }
+
+void Compute(OpKernelContext *ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseAddGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseAddGradOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseAddGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseAddGradOp(ctx);
+      } else {
+        do_SparseAddGradOp(ctx);
+      }
+
   }
 };
 

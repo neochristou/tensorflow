@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/core/common_runtime/device.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -112,7 +113,7 @@ class EditDistanceOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("normalize", &normalize_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_EditDistanceOp(OpKernelContext *ctx){
     const Tensor* hypothesis_indices;
     const Tensor* hypothesis_values;
     const Tensor* hypothesis_shape;
@@ -274,6 +275,30 @@ class EditDistanceOp : public OpKernel {
       output_t(loc) = (normalize_) ? 1.0 : truth_seq.size();
       ++truth_iter;
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EditDistanceOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EditDistanceOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EditDistanceOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EditDistanceOp(ctx);
+      } else {
+        do_EditDistanceOp(ctx);
+      }
+
   }
 
  private:

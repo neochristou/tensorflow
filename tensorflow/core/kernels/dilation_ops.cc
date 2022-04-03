@@ -27,6 +27,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -118,7 +119,7 @@ class DilationOp : public OpKernel {
     ParseAttributes(context, &strides_, &rates_, &padding_);
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DilationOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& filter = context->input(1);
 
@@ -151,6 +152,30 @@ class DilationOp : public OpKernel {
         context->eigen_device<Device>(), input.tensor<T, 4>(),
         filter.tensor<T, 3>(), stride_rows, stride_cols, rate_rows, rate_cols,
         pad_top, pad_left, output->tensor<T, 4>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DilationOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DilationOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DilationOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DilationOp(context);
+      } else {
+        do_DilationOp(context);
+      }
+
   }
 
   std::vector<int32> strides_;
@@ -217,7 +242,7 @@ class DilationBackpropInputOp : public OpKernel {
     ParseAttributes(context, &strides_, &rates_, &padding_);
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DilationBackpropInputOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& filter = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -259,6 +284,30 @@ class DilationBackpropInputOp : public OpKernel {
         filter.tensor<T, 3>(), out_backprop.tensor<T, 4>(), stride_rows,
         stride_cols, rate_rows, rate_cols, pad_top, pad_left,
         in_backprop->tensor<T, 4>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DilationBackpropInputOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DilationBackpropInputOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DilationBackpropInputOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DilationBackpropInputOp(context);
+      } else {
+        do_DilationBackpropInputOp(context);
+      }
+
   }
 
   std::vector<int32> strides_;
@@ -340,7 +389,7 @@ class DilationBackpropFilterOp : public OpKernel {
     ParseAttributes(context, &strides_, &rates_, &padding_);
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DilationBackpropFilterOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& filter = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -382,6 +431,30 @@ class DilationBackpropFilterOp : public OpKernel {
         filter.tensor<T, 3>(), out_backprop.tensor<T, 4>(), stride_rows,
         stride_cols, rate_rows, rate_cols, pad_top, pad_left,
         filter_backprop->tensor<T, 3>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DilationBackpropFilterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DilationBackpropFilterOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DilationBackpropFilterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DilationBackpropFilterOp(context);
+      } else {
+        do_DilationBackpropFilterOp(context);
+      }
+
   }
 
   std::vector<int32> strides_;

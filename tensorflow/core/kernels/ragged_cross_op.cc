@@ -18,6 +18,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -321,7 +322,7 @@ class RaggedCrossOp : public OpKernel {
                 errors::InvalidArgument("Invalid length for input_order"));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_RaggedCrossOp(OpKernelContext *context){
     OpInputList ragged_values_list;
     OpInputList ragged_splits_list;
     OpInputList sparse_indices_list;
@@ -370,6 +371,30 @@ class RaggedCrossOp : public OpKernel {
     auto thread_pool =
         context->device()->tensorflow_cpu_worker_threads()->workers;
     thread_pool->ParallelFor(batch_size, cost_per_batch, do_work);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedCrossOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedCrossOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RaggedCrossOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RaggedCrossOp(context);
+      } else {
+        do_RaggedCrossOp(context);
+      }
+
   }
 
  private:

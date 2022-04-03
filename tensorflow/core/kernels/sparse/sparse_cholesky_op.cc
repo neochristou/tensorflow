@@ -28,6 +28,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/sparse/kernels.h"
@@ -76,7 +77,7 @@ class CSRSparseCholeskyCPUOp : public OpKernel {
  public:
   explicit CSRSparseCholeskyCPUOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* ctx) final {
+  void do_CSRSparseCholeskyCPUOp(OpKernelContext *ctx){
     // Extract inputs and validate shapes and types.
     const CSRSparseMatrix* input_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &input_matrix));
@@ -225,6 +226,30 @@ class CSRSparseCholeskyCPUOp : public OpKernel {
                                   cpu_alloc));
     output_csr_matrix_tensor->scalar<Variant>()() =
         std::move(output_csr_matrix);
+  }
+
+void Compute(OpKernelContext* ctx) final {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSparseCholeskyCPUOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSparseCholeskyCPUOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRSparseCholeskyCPUOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRSparseCholeskyCPUOp(ctx);
+      } else {
+        do_CSRSparseCholeskyCPUOp(ctx);
+      }
+
   }
 
  private:

@@ -19,6 +19,7 @@ limitations under the License.
 
 #include "third_party/eigen3/Eigen/Core"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/kernels/boosted_trees/boosted_trees.pb.h"
@@ -49,7 +50,7 @@ class BoostedTreesCalculateBestGainsPerFeatureOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_features", &num_features_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesCalculateBestGainsPerFeatureOp(OpKernelContext *context){
     // node_id_range
     const Tensor* node_id_range_t;
     OP_REQUIRES_OK(context, context->input("node_id_range", &node_id_range_t));
@@ -232,6 +233,30 @@ class BoostedTreesCalculateBestGainsPerFeatureOp : public OpKernel {
     }  // for f
   }
 
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesCalculateBestGainsPerFeatureOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesCalculateBestGainsPerFeatureOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesCalculateBestGainsPerFeatureOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesCalculateBestGainsPerFeatureOp(context);
+      } else {
+        do_BoostedTreesCalculateBestGainsPerFeatureOp(context);
+      }
+
+  }
+
  private:
   int max_splits_;
   int num_features_;
@@ -252,7 +277,7 @@ class BoostedTreesCalculateBestFeatureSplitOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("split_type", &split_type_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesCalculateBestFeatureSplitOp(OpKernelContext *context){
     // node_id_range
     const Tensor* node_id_range_t;
     OP_REQUIRES_OK(context, context->input("node_id_range", &node_id_range_t));
@@ -441,6 +466,30 @@ class BoostedTreesCalculateBestFeatureSplitOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesCalculateBestFeatureSplitOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesCalculateBestFeatureSplitOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesCalculateBestFeatureSplitOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesCalculateBestFeatureSplitOp(context);
+      } else {
+        do_BoostedTreesCalculateBestFeatureSplitOp(context);
+      }
+
+  }
+
  private:
   // TODO(crawles): Simplify inequality path just like equality b/138329196
   // Currently this is not simplify-able due to numerical instability in math
@@ -591,7 +640,7 @@ class BoostedTreesCalculateBestFeatureSplitV2 : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_features", &num_features_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesCalculateBestFeatureSplitV2(OpKernelContext *context){
     // node_id_range
     const Tensor* node_id_range_t;
     OP_REQUIRES_OK(context, context->input("node_id_range", &node_id_range_t));
@@ -835,6 +884,30 @@ class BoostedTreesCalculateBestFeatureSplitV2 : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesCalculateBestFeatureSplitV2")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesCalculateBestFeatureSplitV2", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesCalculateBestFeatureSplitV2(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesCalculateBestFeatureSplitV2(context);
+      } else {
+        do_BoostedTreesCalculateBestFeatureSplitV2(context);
+      }
+
+  }
+
  private:
   // TODO(crawles): Simplify inequality path just like equality b/138329196
   // Currently this is not simplify-able due to numerical instability in math
@@ -992,7 +1065,7 @@ class BoostedTreesSparseCalculateBestFeatureSplitOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("split_type", &split_type_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesSparseCalculateBestFeatureSplitOp(OpKernelContext *context){
     // node_id_range
     const Tensor* node_id_range_t;
     OP_REQUIRES_OK(context, context->input("node_id_range", &node_id_range_t));
@@ -1148,6 +1221,30 @@ class BoostedTreesSparseCalculateBestFeatureSplitOp : public OpKernel {
       output_right_node_contribs_matrix(i, 0) = output_right_node_contribs[i];
       output_split_types_vec(i) = output_split_types[i];
     }
+  }
+
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesSparseCalculateBestFeatureSplitOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesSparseCalculateBestFeatureSplitOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesSparseCalculateBestFeatureSplitOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesSparseCalculateBestFeatureSplitOp(context);
+      } else {
+        do_BoostedTreesSparseCalculateBestFeatureSplitOp(context);
+      }
+
   }
 
  protected:
@@ -1360,7 +1457,7 @@ class BoostedTreesAggregateStatsOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_buckets", &num_buckets_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesAggregateStatsOp(OpKernelContext *context){
     // node_ids.
     const Tensor* node_ids_t;
     OP_REQUIRES_OK(context, context->input("node_ids", &node_ids_t));
@@ -1423,6 +1520,30 @@ class BoostedTreesAggregateStatsOp : public OpKernel {
                                 &output_stats_summary_t));
     output_stats_summary_t->tensor<float, 4>() =
         temp_stats_double.template cast<float>();
+  }
+
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesAggregateStatsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesAggregateStatsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesAggregateStatsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesAggregateStatsOp(context);
+      } else {
+        do_BoostedTreesAggregateStatsOp(context);
+      }
+
   }
 
  private:
@@ -1565,7 +1686,7 @@ class BoostedTreesSparseAggregateStatsOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_buckets", &num_buckets_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesSparseAggregateStatsOp(OpKernelContext *context){
     // node_ids.
     const Tensor* node_ids_t;
     OP_REQUIRES_OK(context, context->input("node_ids", &node_ids_t));
@@ -1682,6 +1803,30 @@ class BoostedTreesSparseAggregateStatsOp : public OpKernel {
     summary_shape(1) = feature_dims;
     summary_shape(2) = num_buckets_ + 1;
     summary_shape(3) = stats_dims;
+  }
+
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesSparseAggregateStatsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesSparseAggregateStatsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesSparseAggregateStatsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesSparseAggregateStatsOp(context);
+      } else {
+        do_BoostedTreesSparseAggregateStatsOp(context);
+      }
+
   }
 
  private:

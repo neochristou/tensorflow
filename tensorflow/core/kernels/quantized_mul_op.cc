@@ -23,6 +23,7 @@ limitations under the License.
 #endif
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/meta_support.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
@@ -281,7 +282,7 @@ class QuantizedMulOp : public OpKernel {
  public:
   explicit QuantizedMulOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedMulOp(OpKernelContext *context){
     const Tensor& x = context->input(0);
     const Tensor& y = context->input(1);
     auto& min_x_tensor = context->input(2);
@@ -396,6 +397,30 @@ class QuantizedMulOp : public OpKernel {
     Tensor* z_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &z_max));
     z_max->flat<float>()(0) = max_z_value;
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedMulOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedMulOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedMulOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedMulOp(context);
+      } else {
+        do_QuantizedMulOp(context);
+      }
+
   }
 };
 

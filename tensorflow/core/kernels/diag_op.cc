@@ -26,6 +26,7 @@ limitations under the License.
 #include <algorithm>
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -44,7 +45,7 @@ class DiagOp : public OpKernel {
  public:
   explicit DiagOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_DiagOp(OpKernelContext *context){
     const Tensor& diagonal = context->input(0);
     const int num_dims = diagonal.dims();
     OP_REQUIRES(
@@ -66,6 +67,30 @@ class DiagOp : public OpKernel {
                  output_tensor->flat<T>().data());
     OP_REQUIRES_OK(context, s);
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DiagOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DiagOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DiagOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DiagOp(context);
+      } else {
+        do_DiagOp(context);
+      }
+
+  }
 };
 
 // Extract the diagonal tensor with the diagonal set to the input tensor.
@@ -74,7 +99,7 @@ class DiagPartOp : public OpKernel {
  public:
   explicit DiagPartOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_DiagPartOp(OpKernelContext *context){
     const Tensor& tensor = context->input(0);
     const int num_dims = tensor.dims();
     const int out_dims = num_dims / 2;
@@ -101,6 +126,30 @@ class DiagPartOp : public OpKernel {
     Status s = diagPartFunc(context, out_shape.num_elements(),
                             tensor.flat<T>().data(), output->flat<T>().data());
     OP_REQUIRES_OK(context, s);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DiagPartOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DiagPartOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DiagPartOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DiagPartOp(context);
+      } else {
+        do_DiagPartOp(context);
+      }
+
   }
 };
 

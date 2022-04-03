@@ -16,6 +16,7 @@ limitations under the License.
 #include <iostream>
 #include "absl/strings/str_split.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/core/status.h"
 #include "tensorflow/core/lib/strings/str_util.h"
 #include "tensorflow/core/platform/logging.h"
@@ -38,7 +39,7 @@ class StringFormatOp : public OpKernel {
                     num_placeholders, " vs. ", ctx->num_inputs())));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StringFormatOp(OpKernelContext *ctx){
     Tensor* formatted_string = nullptr;
     OP_REQUIRES_OK(ctx,
                    ctx->allocate_output(0, TensorShape({}), &formatted_string));
@@ -51,6 +52,30 @@ class StringFormatOp : public OpKernel {
     }
 
     formatted_string->scalar<tstring>()() = std::move(msg);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringFormatOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringFormatOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StringFormatOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StringFormatOp(ctx);
+      } else {
+        do_StringFormatOp(ctx);
+      }
+
   }
 
  private:

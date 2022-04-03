@@ -16,6 +16,7 @@ limitations under the License.
 #include <string>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -73,7 +74,7 @@ class FingerprintOp : public OpKernel {
                                         DataTypeString(dtype)));
   }
 
-  void Compute(tensorflow::OpKernelContext* context) override {
+  void do_FingerprintOp(OpKernelContext *context){
     const Tensor& method_tensor = context->input(1);
     OP_REQUIRES(context, TensorShapeUtils::IsScalar(method_tensor.shape()),
                 errors::InvalidArgument("`method` should be a scalar string: ",
@@ -129,6 +130,30 @@ class FingerprintOp : public OpKernel {
           {dim0, dim1 * DataTypeSize(input.dtype())});
       FarmhashFingerprint64(data, output->matrix<uint8>());
     }
+  }
+
+void Compute(tensorflow::OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FingerprintOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FingerprintOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FingerprintOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FingerprintOp(context);
+      } else {
+        do_FingerprintOp(context);
+      }
+
   }
 
  private:

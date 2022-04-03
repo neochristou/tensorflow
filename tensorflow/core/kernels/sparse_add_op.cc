@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/op_requires.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -28,7 +29,7 @@ class SparseAddOp : public OpKernel {
  public:
   explicit SparseAddOp(OpKernelConstruction *ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext *ctx) override {
+  void do_SparseAddOp(OpKernelContext *ctx){
     // (0) validations
     const Tensor *a_indices, *b_indices, *a_values_t, *b_values_t, *a_shape,
         *b_shape, *thresh_t;
@@ -175,6 +176,30 @@ class SparseAddOp : public OpKernel {
       std::copy_n(out_values.begin(), sum_nnz, &out_values_flat(0));
     }
     ctx->set_output(2, *a_shape);
+  }
+
+void Compute(OpKernelContext *ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseAddOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseAddOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseAddOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseAddOp(ctx);
+      } else {
+        do_SparseAddOp(ctx);
+      }
+
   }
 };
 

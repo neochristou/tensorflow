@@ -22,6 +22,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -45,7 +46,7 @@ class ResizeNearestNeighborOp : public OpKernel {
         context, context->GetAttr("half_pixel_centers", &half_pixel_centers_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ResizeNearestNeighborOp(OpKernelContext *context){
     ImageResizerState st(align_corners_, half_pixel_centers_);
     st.ValidateAndCreateOutput(context);
 
@@ -96,6 +97,30 @@ class ResizeNearestNeighborOp : public OpKernel {
       context->SetStatus(
           errors::Internal("Failed launching ResizeNearestNeighbor"));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ResizeNearestNeighborOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ResizeNearestNeighborOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ResizeNearestNeighborOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ResizeNearestNeighborOp(context);
+      } else {
+        do_ResizeNearestNeighborOp(context);
+      }
+
   }
 
  private:
@@ -219,7 +244,7 @@ class ResizeNearestNeighborOpGrad : public OpKernel {
         context, context->GetAttr("half_pixel_centers", &half_pixel_centers_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ResizeNearestNeighborOpGrad(OpKernelContext *context){
     // Grab and validate the input:
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() == 4,
@@ -301,6 +326,30 @@ class ResizeNearestNeighborOpGrad : public OpKernel {
       context->SetStatus(
           errors::Internal("Failed launching ResizeNearestNeighborGrad"));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ResizeNearestNeighborOpGrad")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ResizeNearestNeighborOpGrad", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ResizeNearestNeighborOpGrad(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ResizeNearestNeighborOpGrad(context);
+      } else {
+        do_ResizeNearestNeighborOpGrad(context);
+      }
+
   }
 
  private:

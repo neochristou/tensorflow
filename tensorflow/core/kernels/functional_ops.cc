@@ -22,6 +22,7 @@ limitations under the License.
 #endif
 #include "tensorflow/core/framework/function.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/lib/core/errors.h"
@@ -376,7 +377,7 @@ class WhileOp : public AsyncOpKernel {
     }
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_WhileOp(OpKernelContext *ctx){
     // Use the non-callback-based implementation when the synchronous Compute()
     // method is invoked, because the caller is explicitly donating a thread.
     Status s = DoComputeSync(ctx);
@@ -387,6 +388,30 @@ class WhileOp : public AsyncOpKernel {
     if (TF_PREDICT_FALSE(!s.ok())) {
       ctx->SetStatus(s);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("WhileOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("WhileOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_WhileOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_WhileOp(ctx);
+      } else {
+        do_WhileOp(ctx);
+      }
+
   }
 
  private:
@@ -703,12 +728,36 @@ REGISTER_KERNEL_BUILDER(Name("StatelessWhile").Device(DEVICE_GPU), WhileOp);
 class ToBoolOp : public OpKernel {
  public:
   explicit ToBoolOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
-  void Compute(OpKernelContext* ctx) override {
+  void do_ToBoolOp(OpKernelContext *ctx){
     bool b;
     OP_REQUIRES_OK(ctx, ToBool({ctx->input(0)}, &b));
     Tensor* out;
     OP_REQUIRES_OK(ctx, ctx->allocate_output(0, TensorShape({}), &out));
     out->scalar<bool>()() = b;
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ToBoolOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ToBoolOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ToBoolOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ToBoolOp(ctx);
+      } else {
+        do_ToBoolOp(ctx);
+      }
+
   }
 };
 
@@ -882,8 +931,32 @@ class FakeParamOp : public OpKernel {
     OP_REQUIRES_OK(context, context->allocate_temp(dtype, shape, &value_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FakeParamOp(OpKernelContext *context){
     context->set_output(0, value_);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeParamOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeParamOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FakeParamOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FakeParamOp(context);
+      } else {
+        do_FakeParamOp(context);
+      }
+
   }
 
  private:
@@ -900,7 +973,7 @@ class DeviceIndexOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("device_names", &device_names_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_DeviceIndexOp(OpKernelContext *ctx){
     Tensor* device_name_t;
     OP_REQUIRES_OK(ctx,
                    ctx->allocate_output(0, TensorShape({}), &device_name_t));
@@ -914,6 +987,30 @@ class DeviceIndexOp : public OpKernel {
       }
     }
     device_name_t->scalar<int32>()() = index;
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DeviceIndexOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DeviceIndexOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DeviceIndexOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DeviceIndexOp(ctx);
+      } else {
+        do_DeviceIndexOp(ctx);
+      }
+
   }
 
  private:

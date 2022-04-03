@@ -20,6 +20,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -52,7 +53,7 @@ class QuantizedAvgPoolingOp : public OpKernel {
                     "Pooling is not yet supported on the batch dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedAvgPoolingOp(OpKernelContext *context){
     const Tensor& tensor_in = context->input(0);
     PoolParameters params{context,
                           ksize_,
@@ -104,6 +105,30 @@ class QuantizedAvgPoolingOp : public OpKernel {
     output_max->flat<float>()(0) = max_input;
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedAvgPoolingOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedAvgPoolingOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedAvgPoolingOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedAvgPoolingOp(context);
+      } else {
+        do_QuantizedAvgPoolingOp(context);
+      }
+
+  }
+
  private:
   std::vector<int32> ksize_;
   std::vector<int32> stride_;
@@ -116,7 +141,7 @@ class QuantizedMaxPoolingOp : public MaxPoolingOp<Device, T> {
   explicit QuantizedMaxPoolingOp(OpKernelConstruction* context)
       : MaxPoolingOp<Device, T>(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedMaxPoolingOp(OpKernelContext *context){
     const float min_input = context->input(1).flat<float>()(0);
     const float max_input = context->input(2).flat<float>()(0);
     MaxPoolingOp<Device, T>::Compute(context);
@@ -126,6 +151,30 @@ class QuantizedMaxPoolingOp : public MaxPoolingOp<Device, T> {
     Tensor* output_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &output_max));
     output_max->flat<float>()(0) = max_input;
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedMaxPoolingOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedMaxPoolingOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedMaxPoolingOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedMaxPoolingOp(context);
+      } else {
+        do_QuantizedMaxPoolingOp(context);
+      }
+
   }
 };
 

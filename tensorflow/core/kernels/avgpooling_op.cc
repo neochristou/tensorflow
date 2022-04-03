@@ -25,6 +25,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -84,7 +85,7 @@ class AvgPoolingOp : public UnaryOp<T> {
     }
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_AvgPoolingOp(OpKernelContext *context){
     const Tensor& tensor_in = context->input(0);
     PoolParameters params{context,
                           ksize_,
@@ -109,6 +110,30 @@ class AvgPoolingOp : public UnaryOp<T> {
                                 0, params.forward_output_shape(), &output));
 
     SpatialAvgPool<Device, T>(context, output, tensor_in, params, padding_);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AvgPoolingOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AvgPoolingOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AvgPoolingOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AvgPoolingOp(context);
+      } else {
+        do_AvgPoolingOp(context);
+      }
+
   }
 
  private:
@@ -278,7 +303,7 @@ class AvgPoolingGradOp : public OpKernel {
                     "Pooling is not yet supported on the batch dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_AvgPoolingGradOp(OpKernelContext *context){
     const Tensor& tensor_in_shape = context->input(0);
     const Tensor& out_backprop = context->input(1);
     // For avgpooling, tensor_in_shape should have 1 dimension, and 4 elements.
@@ -390,6 +415,30 @@ class AvgPoolingGradOp : public OpKernel {
         window_rows * window_cols * depth_window * in_rows * in_rows * in_cols;
     Shard(worker_threads.num_threads, worker_threads.workers,
           out_backprop_batch, shard_cost, shard);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AvgPoolingGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AvgPoolingGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AvgPoolingGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AvgPoolingGradOp(context);
+      } else {
+        do_AvgPoolingGradOp(context);
+      }
+
   }
 
  private:

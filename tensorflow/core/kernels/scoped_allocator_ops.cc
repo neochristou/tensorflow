@@ -18,6 +18,7 @@ limitations under the License.
 #include "tensorflow/core/common_runtime/scoped_allocator_mgr.h"
 #include "tensorflow/core/framework/allocator.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -47,7 +48,7 @@ class ScopedAllocatorOp : public OpKernel {
                     " must be divisible by size of datatype ", dtype_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ScopedAllocatorOp(OpKernelContext *context){
     ScopedAllocatorMgr* sam = device_->GetScopedAllocatorMgr();
     if (!sam) {
       context->SetStatus(errors::Internal(
@@ -70,6 +71,30 @@ class ScopedAllocatorOp : public OpKernel {
     if (!s.ok()) {
       context->SetStatus(s);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScopedAllocatorOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScopedAllocatorOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ScopedAllocatorOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ScopedAllocatorOp(context);
+      } else {
+        do_ScopedAllocatorOp(context);
+      }
+
   }
 
  private:
@@ -102,7 +127,7 @@ class ScopedAllocatorConcatOp : public OpKernel {
     device_ = context->device();
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ScopedAllocatorConcatOp(OpKernelContext *context){
     const Tensor& backing_tensor = context->input(0);
     // Check that type matches.
     OP_REQUIRES(context, backing_tensor.dtype() == dtype_,
@@ -155,6 +180,30 @@ class ScopedAllocatorConcatOp : public OpKernel {
             << backing_buf;
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScopedAllocatorConcatOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScopedAllocatorConcatOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ScopedAllocatorConcatOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ScopedAllocatorConcatOp(context);
+      } else {
+        do_ScopedAllocatorConcatOp(context);
+      }
+
+  }
+
  private:
   TensorShape shape_;
   DataType dtype_;
@@ -181,7 +230,7 @@ class ScopedAllocatorSplitOp : public OpKernel {
     device_ = context->device();
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_ScopedAllocatorSplitOp(OpKernelContext *context){
     Tensor backing_copy(context->input(0));
     // Check that type matches.
     OP_REQUIRES(context, backing_copy.dtype() == dtype_,
@@ -217,6 +266,30 @@ class ScopedAllocatorSplitOp : public OpKernel {
           errors::InvalidArgument("Upper bound check fail for input ", i,
                                   " to node ", context->op_kernel().name()));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScopedAllocatorSplitOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScopedAllocatorSplitOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ScopedAllocatorSplitOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ScopedAllocatorSplitOp(context);
+      } else {
+        do_ScopedAllocatorSplitOp(context);
+      }
+
   }
 
  private:

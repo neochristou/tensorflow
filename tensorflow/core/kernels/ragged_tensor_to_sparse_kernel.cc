@@ -18,6 +18,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -33,7 +34,7 @@ class RaggedTensorToSparseOp : public OpKernel {
   using OpKernel::OpKernel;
   using ConstFlatSplits = typename TTypes<SPLITS_TYPE>::ConstFlat;
 
-  void Compute(OpKernelContext* context) override {
+  void do_RaggedTensorToSparseOp(OpKernelContext *context){
     // Read the `rt_nested_splits` input & convert to Eigen tensors.
     OpInputList rt_nested_splits_in;
     OP_REQUIRES_OK(
@@ -149,6 +150,30 @@ class RaggedTensorToSparseOp : public OpKernel {
       sparse_dense_shape(dim + rt_nested_splits_len) =
           rt_dense_values_in.dim_size(dim);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedTensorToSparseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedTensorToSparseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RaggedTensorToSparseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RaggedTensorToSparseOp(context);
+      } else {
+        do_RaggedTensorToSparseOp(context);
+      }
+
   }
 
  private:

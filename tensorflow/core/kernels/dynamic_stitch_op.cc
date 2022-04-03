@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/threadpool.h"
@@ -232,7 +233,7 @@ class DynamicStitchOpImplCPU : public DynamicStitchOpImplBase<T> {
       : DynamicStitchOpImplBase<T>(
             c, (Parallel ? "ParallelDynamicStitchOp" : "DynamicStitchOp")) {}
 
-  void Compute(OpKernelContext* c) override {
+  void do_DynamicStitchOpImplCPU(OpKernelContext *c){
     OpInputList indices_inputs;
     OpInputList data_inputs;
     int first_dim_size;
@@ -311,6 +312,30 @@ class DynamicStitchOpImplCPU : public DynamicStitchOpImplBase<T> {
         }
       }
     }
+  }
+
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DynamicStitchOpImplCPU")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DynamicStitchOpImplCPU", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DynamicStitchOpImplCPU(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DynamicStitchOpImplCPU(c);
+      } else {
+        do_DynamicStitchOpImplCPU(c);
+      }
+
   }
 };
 

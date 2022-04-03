@@ -25,6 +25,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -322,7 +323,7 @@ class DepthwiseConv2dNativeOp : public BinaryOp<T> {
 #endif
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DepthwiseConv2dNativeOp(OpKernelContext *context){
     // Input tensor is of the following dimensions:
     // [ batch, in_rows, in_cols, in_depth ]
     const Tensor& input = context->input(0);
@@ -468,6 +469,30 @@ class DepthwiseConv2dNativeOp : public BinaryOp<T> {
     auto output_ptr = output->template flat<T>().data();
     LaunchDepthwiseConvOp<Device, T>()(context, args, input_ptr, filter_ptr,
                                        output_ptr, data_format_);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DepthwiseConv2dNativeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DepthwiseConv2dNativeOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DepthwiseConv2dNativeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DepthwiseConv2dNativeOp(context);
+      } else {
+        do_DepthwiseConv2dNativeOp(context);
+      }
+
   }
 
  protected:

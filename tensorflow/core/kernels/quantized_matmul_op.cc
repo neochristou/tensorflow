@@ -20,6 +20,7 @@ limitations under the License.
 #define GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK
 #include "public/gemmlowp.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/meta_support.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
@@ -72,7 +73,7 @@ class QuantizedMatMulOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("transpose_b", &transpose_b_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedMatMulOp(OpKernelContext *context){
     const Tensor& a = context->input(0);
     const Tensor& b = context->input(1);
     const float min_a = context->input(2).flat<float>()(0);
@@ -184,6 +185,30 @@ class QuantizedMatMulOp : public OpKernel {
     Tensor* c_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &c_max));
     c_max->flat<float>()(0) = max_c_value;
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedMatMulOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedMatMulOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedMatMulOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedMatMulOp(context);
+      } else {
+        do_QuantizedMatMulOp(context);
+      }
+
   }
 
  private:

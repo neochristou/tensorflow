@@ -26,6 +26,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -44,7 +45,7 @@ class PadOp : public OpKernel {
  public:
   explicit PadOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_PadOp(OpKernelContext *context){
     const Tensor& in0 = context->input(0);
     const Tensor& in1 = context->input(1);
     const int dims = in0.dims();
@@ -129,6 +130,30 @@ class PadOp : public OpKernel {
                      context->allocate_output(0, output_shape, &output));
       OperateWithVariableRank(context, dims, in0, paddings, pad_value, output);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("PadOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("PadOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_PadOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_PadOp(context);
+      } else {
+        do_PadOp(context);
+      }
+
   }
 
  private:

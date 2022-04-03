@@ -19,6 +19,7 @@ limitations under the License.
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/platform/errors.h"
 
 namespace tensorflow {
@@ -52,7 +53,7 @@ class StringNGramsOp : public tensorflow::OpKernel {
     return std::max(0, ((length + 2 * pad_width) - ngram_width) + 1);
   }
 
-  void Compute(tensorflow::OpKernelContext* context) override {
+  void do_StringNGramsOp(OpKernelContext *context){
     for (int ngram_width : ngram_widths_) {
       OP_REQUIRES(
           context, ngram_width > 0,
@@ -158,6 +159,30 @@ class StringNGramsOp : public tensorflow::OpKernel {
         CreateNgrams(data_start, output_start, num_ngrams, ngram_width);
       }
     }
+  }
+
+void Compute(tensorflow::OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringNGramsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringNGramsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StringNGramsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StringNGramsOp(context);
+      } else {
+        do_StringNGramsOp(context);
+      }
+
   }
 
   void CreateNgrams(const tstring* data, tstring* output, int num_ngrams,

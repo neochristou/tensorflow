@@ -21,6 +21,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -190,7 +191,7 @@ class CTCGreedyDecoderOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("blank_index", &blank_index_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CTCGreedyDecoderOp(OpKernelContext *ctx){
     const Tensor* inputs;
     const Tensor* seq_len;
     Tensor* log_prob = nullptr;
@@ -265,6 +266,30 @@ class CTCGreedyDecoderOp : public OpKernel {
                  sequences, &decoded_indices, &decoded_values, &decoded_shape));
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CTCGreedyDecoderOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CTCGreedyDecoderOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CTCGreedyDecoderOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CTCGreedyDecoderOp(ctx);
+      } else {
+        do_CTCGreedyDecoderOp(ctx);
+      }
+
+  }
+
  private:
   CTCDecodeHelper decode_helper_;
   bool merge_repeated_;
@@ -295,7 +320,7 @@ class CTCBeamSearchDecoderOp : public OpKernel {
     decode_helper_.SetTopPaths(top_paths);
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CTCBeamSearchDecoderOp(OpKernelContext *ctx){
     const Tensor* inputs;
     const Tensor* seq_len;
     Tensor* log_prob = nullptr;
@@ -363,6 +388,30 @@ class CTCBeamSearchDecoderOp : public OpKernel {
     OP_REQUIRES_OK(ctx, decode_helper_.StoreAllDecodedSequences(
                             best_paths, &decoded_indices, &decoded_values,
                             &decoded_shape));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CTCBeamSearchDecoderOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CTCBeamSearchDecoderOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CTCBeamSearchDecoderOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CTCBeamSearchDecoderOp(ctx);
+      } else {
+        do_CTCBeamSearchDecoderOp(ctx);
+      }
+
   }
 
  private:

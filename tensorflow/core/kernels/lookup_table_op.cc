@@ -15,6 +15,7 @@ limitations under the License.
 
 #include "tensorflow/core/kernels/lookup_table_op.h"
 #define EIGEN_USE_THREADS
+#include "tensorflow/core/framework/fuzzing.h"
 
 #include <string>
 #include <type_traits>
@@ -906,7 +907,7 @@ class LookupTableFindOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableFindOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
@@ -928,6 +929,30 @@ class LookupTableFindOp : public LookupTableOpKernel {
 
     OP_REQUIRES_OK(ctx, table->Find(ctx, key, out, default_value));
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableFindOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableFindOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableFindOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableFindOp(ctx);
+      } else {
+        do_LookupTableFindOp(ctx);
+      }
+
+  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("LookupTableFind").Device(DEVICE_CPU),
@@ -940,7 +965,7 @@ class LookupTableInsertOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableInsertOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
@@ -963,6 +988,30 @@ class LookupTableInsertOp : public LookupTableOpKernel {
                                                memory_used_before);
     }
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableInsertOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableInsertOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableInsertOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableInsertOp(ctx);
+      } else {
+        do_LookupTableInsertOp(ctx);
+      }
+
+  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("LookupTableInsert").Device(DEVICE_CPU),
@@ -975,7 +1024,7 @@ class LookupTableRemoveOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableRemoveOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
@@ -996,6 +1045,30 @@ class LookupTableRemoveOp : public LookupTableOpKernel {
                                                memory_used_before);
     }
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableRemoveOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableRemoveOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableRemoveOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableRemoveOp(ctx);
+      } else {
+        do_LookupTableRemoveOp(ctx);
+      }
+
+  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("LookupTableRemoveV2").Device(DEVICE_CPU),
@@ -1006,7 +1079,7 @@ class LookupTableSizeOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableSizeOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
@@ -1014,6 +1087,30 @@ class LookupTableSizeOp : public LookupTableOpKernel {
     Tensor* out;
     OP_REQUIRES_OK(ctx, ctx->allocate_output("size", TensorShape({}), &out));
     out->flat<int64>().setConstant(table->size());
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableSizeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableSizeOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableSizeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableSizeOp(ctx);
+      } else {
+        do_LookupTableSizeOp(ctx);
+      }
+
   }
 };
 
@@ -1027,12 +1124,36 @@ class LookupTableExportOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableExportOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
 
     OP_REQUIRES_OK(ctx, table->ExportValues(ctx));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableExportOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableExportOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableExportOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableExportOp(ctx);
+      } else {
+        do_LookupTableExportOp(ctx);
+      }
+
   }
 };
 
@@ -1046,7 +1167,7 @@ class LookupTableImportOp : public LookupTableOpKernel {
  public:
   using LookupTableOpKernel::LookupTableOpKernel;
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LookupTableImportOp(OpKernelContext *ctx){
     lookup::LookupInterface* table;
     OP_REQUIRES_OK(ctx, GetTable(ctx, &table));
     core::ScopedUnref unref_me(table);
@@ -1068,6 +1189,30 @@ class LookupTableImportOp : public LookupTableOpKernel {
       ctx->record_persistent_memory_allocation(table->MemoryUsed() -
                                                memory_used_before);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LookupTableImportOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LookupTableImportOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LookupTableImportOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LookupTableImportOp(ctx);
+      } else {
+        do_LookupTableImportOp(ctx);
+      }
+
   }
 };
 

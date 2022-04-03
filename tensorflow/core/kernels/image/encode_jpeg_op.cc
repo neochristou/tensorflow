@@ -18,6 +18,7 @@ limitations under the License.
 #include <memory>
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -74,7 +75,7 @@ class EncodeJpegOp : public OpKernel {
     flags_.xmp_metadata = xmp_metadata_;  // StringPiece doesn't own data
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_EncodeJpegOp(OpKernelContext *context){
     const Tensor& image = context->input(0);
     OP_REQUIRES(context, image.dims() == 3,
                 errors::InvalidArgument("image must be 3-dimensional",
@@ -128,6 +129,30 @@ class EncodeJpegOp : public OpKernel {
                 errors::Internal("JPEG encoding failed"));
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EncodeJpegOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EncodeJpegOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EncodeJpegOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EncodeJpegOp(context);
+      } else {
+        do_EncodeJpegOp(context);
+      }
+
+  }
+
  private:
   string format_;
   string xmp_metadata_;  // Owns data referenced by flags_
@@ -140,7 +165,7 @@ class EncodeJpegVariableQualityOp : public OpKernel {
   explicit EncodeJpegVariableQualityOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_EncodeJpegVariableQualityOp(OpKernelContext *context){
     const Tensor& image = context->input(0);
     OP_REQUIRES(context, image.dims() == 3,
                 errors::InvalidArgument("image must be 3-dimensional",
@@ -192,6 +217,30 @@ class EncodeJpegVariableQualityOp : public OpKernel {
                 jpeg::Compress(image.flat<uint8>().data(), dim_size1, dim_size0,
                                adjusted_flags, &output->scalar<tstring>()()),
                 errors::Internal("JPEG encoding failed"));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EncodeJpegVariableQualityOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EncodeJpegVariableQualityOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EncodeJpegVariableQualityOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EncodeJpegVariableQualityOp(context);
+      } else {
+        do_EncodeJpegVariableQualityOp(context);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("EncodeJpegVariableQuality").Device(DEVICE_CPU),

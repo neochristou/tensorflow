@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/core/kernels/image/image_ops.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/platform/types.h"
@@ -145,8 +146,32 @@ class ImageProjectiveTransformV2 : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_ImageProjectiveTransformV2(OpKernelContext *ctx){
     DoImageProjectiveTransformOp<Device, T>(ctx, interpolation_, fill_mode_);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ImageProjectiveTransformV2")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ImageProjectiveTransformV2", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ImageProjectiveTransformV2(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ImageProjectiveTransformV2(ctx);
+      } else {
+        do_ImageProjectiveTransformV2(ctx);
+      }
+
   }
 };
 

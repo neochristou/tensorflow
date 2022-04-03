@@ -25,6 +25,7 @@ limitations under the License.
 #include "tensorflow/core/framework/allocator.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/sparse/kernels.h"
 #include "tensorflow/core/kernels/sparse/sparse_matrix.h"
@@ -63,7 +64,7 @@ class CSROrderingAMDCPUOp : public OpKernel {
  public:
   explicit CSROrderingAMDCPUOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* ctx) final {
+  void do_CSROrderingAMDCPUOp(OpKernelContext *ctx){
     // Extract the input CSRSparseMatrix.
     const CSRSparseMatrix* input_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &input_matrix));
@@ -122,6 +123,30 @@ class CSROrderingAMDCPUOp : public OpKernel {
             permutation_map = permutation_matrix.indices();
           }
         });
+  }
+
+void Compute(OpKernelContext* ctx) final {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSROrderingAMDCPUOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSROrderingAMDCPUOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSROrderingAMDCPUOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSROrderingAMDCPUOp(ctx);
+      } else {
+        do_CSROrderingAMDCPUOp(ctx);
+      }
+
   }
 };
 

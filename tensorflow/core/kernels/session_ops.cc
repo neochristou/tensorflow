@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/core/common_runtime/device.h"
 #include "tensorflow/core/framework/device_base.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -42,7 +43,7 @@ class GetSessionHandleOp : public OpKernel {
   explicit GetSessionHandleOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_GetSessionHandleOp(OpKernelContext *ctx){
     const Tensor& val = ctx->input(0);
     auto session_state = ctx->session_state();
     OP_REQUIRES(ctx, session_state != nullptr,
@@ -65,6 +66,30 @@ class GetSessionHandleOp : public OpKernel {
       // Legacy behavior in V1.
       handle->flat<tstring>().setConstant(tk.GetHandle(name()));
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GetSessionHandleOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GetSessionHandleOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_GetSessionHandleOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_GetSessionHandleOp(ctx);
+      } else {
+        do_GetSessionHandleOp(ctx);
+      }
+
   }
 
   TF_DISALLOW_COPY_AND_ASSIGN(GetSessionHandleOp);
@@ -96,7 +121,7 @@ class GetSessionTensorOp : public OpKernel {
   explicit GetSessionTensorOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_GetSessionTensorOp(OpKernelContext *ctx){
     const Tensor& handle = ctx->input(0);
     const string& name = handle.scalar<tstring>()();
     Tensor val;
@@ -106,6 +131,30 @@ class GetSessionTensorOp : public OpKernel {
                     "GetSessionTensor called on null session state"));
     OP_REQUIRES_OK(ctx, session_state->GetTensor(name, &val));
     ctx->set_output(0, val);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GetSessionTensorOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GetSessionTensorOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_GetSessionTensorOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_GetSessionTensorOp(ctx);
+      } else {
+        do_GetSessionTensorOp(ctx);
+      }
+
   }
 
   TF_DISALLOW_COPY_AND_ASSIGN(GetSessionTensorOp);
@@ -130,7 +179,7 @@ class DeleteSessionTensorOp : public OpKernel {
   explicit DeleteSessionTensorOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_DeleteSessionTensorOp(OpKernelContext *ctx){
     const Tensor& handle = ctx->input(0);
     const string& name = handle.scalar<tstring>()();
     auto session_state = ctx->session_state();
@@ -138,6 +187,30 @@ class DeleteSessionTensorOp : public OpKernel {
                 errors::FailedPrecondition(
                     "DeleteSessionTensor called on null session state"));
     OP_REQUIRES_OK(ctx, session_state->DeleteTensor(name));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DeleteSessionTensorOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DeleteSessionTensorOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DeleteSessionTensorOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DeleteSessionTensorOp(ctx);
+      } else {
+        do_DeleteSessionTensorOp(ctx);
+      }
+
   }
 
   TF_DISALLOW_COPY_AND_ASSIGN(DeleteSessionTensorOp);

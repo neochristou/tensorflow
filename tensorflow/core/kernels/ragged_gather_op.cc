@@ -18,6 +18,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -56,7 +57,7 @@ class RaggedGatherOpBase : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void Compute(OpKernelContext* context) override {
+  void do_RaggedGatherOpBase(OpKernelContext *context){
     // Get the input Tensors.
 
     OpInputList params_nested_splits_in;
@@ -94,6 +95,30 @@ class RaggedGatherOpBase : public OpKernel {
     OP_REQUIRES_OK(context,
                    WriteValues(params_dense_values_in, value_slices,
                                out_splits.size(), num_values, context));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedGatherOpBase")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedGatherOpBase", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RaggedGatherOpBase(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RaggedGatherOpBase(context);
+      } else {
+        do_RaggedGatherOpBase(context);
+      }
+
   }
 
  private:

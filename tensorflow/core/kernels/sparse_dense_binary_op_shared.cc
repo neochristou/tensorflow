@@ -37,6 +37,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -58,7 +59,7 @@ class SparseDenseBinaryOpShared : public OpKernel {
   explicit SparseDenseBinaryOpShared(OpKernelConstruction *ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext *ctx) override {
+  void do_SparseDenseBinaryOpShared(OpKernelContext *ctx){
     const Tensor *indices_t, *values_t, *shape_t, *dense_t;
     OP_REQUIRES_OK(ctx, ctx->input("sp_indices", &indices_t));
     OP_REQUIRES_OK(ctx, ctx->input("sp_values", &values_t));
@@ -173,6 +174,30 @@ class SparseDenseBinaryOpShared : public OpKernel {
     output_values->flat<T>().device(ctx->eigen_device<Device>()) =
         values_t->flat<T>().binaryExpr(dense_gathered_flat,
                                        typename Functor::func());
+  }
+
+void Compute(OpKernelContext *ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseDenseBinaryOpShared")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseDenseBinaryOpShared", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseDenseBinaryOpShared(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseDenseBinaryOpShared(ctx);
+      } else {
+        do_SparseDenseBinaryOpShared(ctx);
+      }
+
   }
 };
 

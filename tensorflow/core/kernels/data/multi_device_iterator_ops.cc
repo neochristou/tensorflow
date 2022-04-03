@@ -24,6 +24,7 @@ limitations under the License.
 #include "tensorflow/core/framework/function.h"
 #include "tensorflow/core/framework/function_handle_cache.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_op_kernel.h"
 #include "tensorflow/core/kernels/data/iterator_ops.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -550,7 +551,7 @@ class MultiDeviceIteratorInitOp : public OpKernel {
   explicit MultiDeviceIteratorInitOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MultiDeviceIteratorInitOp(OpKernelContext *ctx){
     const Tensor* tensor_max_buffer_size;
     OP_REQUIRES_OK(ctx, ctx->input("max_buffer_size", &tensor_max_buffer_size));
     int64 max_buffer_size = tensor_max_buffer_size->scalar<int64>()();
@@ -589,6 +590,30 @@ class MultiDeviceIteratorInitOp : public OpKernel {
     tensor_incarnation_id.scalar<int64>()() = incarnation_id;
     OP_REQUIRES_OK(ctx,
                    ctx->set_output("incarnation_id", tensor_incarnation_id));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MultiDeviceIteratorInitOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MultiDeviceIteratorInitOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MultiDeviceIteratorInitOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MultiDeviceIteratorInitOp(ctx);
+      } else {
+        do_MultiDeviceIteratorInitOp(ctx);
+      }
+
   }
 };
 
@@ -664,7 +689,7 @@ class MultiDeviceIteratorToStringHandleOp : public OpKernel {
   explicit MultiDeviceIteratorToStringHandleOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MultiDeviceIteratorToStringHandleOp(OpKernelContext *ctx){
     const Tensor& resource_handle_t = ctx->input(0);
     OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(resource_handle_t.shape()),
                 errors::InvalidArgument("resource_handle must be a scalar"));
@@ -680,6 +705,30 @@ class MultiDeviceIteratorToStringHandleOp : public OpKernel {
                    ctx->allocate_output(0, TensorShape({}), &string_handle_t));
     string_handle_t->scalar<tstring>()() =
         resource_handle_t.scalar<ResourceHandle>()().SerializeAsString();
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MultiDeviceIteratorToStringHandleOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MultiDeviceIteratorToStringHandleOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MultiDeviceIteratorToStringHandleOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MultiDeviceIteratorToStringHandleOp(ctx);
+      } else {
+        do_MultiDeviceIteratorToStringHandleOp(ctx);
+      }
+
   }
 };
 
@@ -701,7 +750,7 @@ class MultiDeviceIteratorFromStringHandleOp : public OpKernel {
                                 "are set, they must have the same length."));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MultiDeviceIteratorFromStringHandleOp(OpKernelContext *ctx){
     const Tensor& string_handle_t = ctx->input(0);
     OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(string_handle_t.shape()),
                 errors::InvalidArgument("string_handle must be a scalar"));
@@ -739,6 +788,30 @@ class MultiDeviceIteratorFromStringHandleOp : public OpKernel {
     resource_handle_t->scalar<ResourceHandle>()() = resource_handle;
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MultiDeviceIteratorFromStringHandleOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MultiDeviceIteratorFromStringHandleOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MultiDeviceIteratorFromStringHandleOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MultiDeviceIteratorFromStringHandleOp(ctx);
+      } else {
+        do_MultiDeviceIteratorFromStringHandleOp(ctx);
+      }
+
+  }
+
  private:
   DataTypeVector output_types_;
   std::vector<PartialTensorShape> output_shapes_;
@@ -753,12 +826,36 @@ class DeleteMultiDeviceIteratorOp : public OpKernel {
   explicit DeleteMultiDeviceIteratorOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_DeleteMultiDeviceIteratorOp(OpKernelContext *ctx){
     ResourceHandle handle = ctx->input(0).flat<ResourceHandle>()(0);
     // The iterator resource is guaranteed to exist because the variant tensor
     // wrapping the deleter is provided as an unused input to this op, which
     // guarantees that it has not run yet.
     OP_REQUIRES_OK(ctx, ctx->resource_manager()->Delete(handle));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DeleteMultiDeviceIteratorOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DeleteMultiDeviceIteratorOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DeleteMultiDeviceIteratorOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DeleteMultiDeviceIteratorOp(ctx);
+      } else {
+        do_DeleteMultiDeviceIteratorOp(ctx);
+      }
+
   }
 };
 

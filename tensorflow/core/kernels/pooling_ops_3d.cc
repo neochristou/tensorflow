@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -158,7 +159,7 @@ class Pooling3DOp : public UnaryOp<T> {
                     "Pooling is not yet supported on the depth dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Pooling3DOp(OpKernelContext *context){
     const Tensor& tensor_in = context->input(0);
 
     OP_REQUIRES(context, tensor_in.dims() == 5,
@@ -190,6 +191,30 @@ class Pooling3DOp : public UnaryOp<T> {
     LaunchPoolingOp<Device, T, Type>::launch(context, tensor_in, window, stride,
                                              padding, data_format_, padding_,
                                              output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Pooling3DOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Pooling3DOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Pooling3DOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Pooling3DOp(context);
+      } else {
+        do_Pooling3DOp(context);
+      }
+
   }
 
  private:
@@ -332,7 +357,7 @@ class MaxPooling3dGradOp : public OpKernel {
                     "Pooling is not yet supported on the depth dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_MaxPooling3dGradOp(OpKernelContext *context){
     const Tensor& tensor_in = context->input(0);
     const Tensor& tensor_out = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -364,6 +389,30 @@ class MaxPooling3dGradOp : public OpKernel {
     LaunchMaxPooling3dGradOp<Device, T>::launch(
         context, tensor_in, tensor_out, out_backprop, window, stride, out,
         padding, data_format_, input_backprop);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPooling3dGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPooling3dGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MaxPooling3dGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MaxPooling3dGradOp(context);
+      } else {
+        do_MaxPooling3dGradOp(context);
+      }
+
   }
 
  private:
@@ -499,7 +548,7 @@ class AvgPooling3dGradOp : public OpKernel {
                     "Pooling is not yet supported on the depth dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_AvgPooling3dGradOp(OpKernelContext *context){
     const Tensor& tensor_in_shape = context->input(0);
     const Tensor& out_backprop = context->input(1);
     OP_REQUIRES(
@@ -538,6 +587,30 @@ class AvgPooling3dGradOp : public OpKernel {
     LaunchAvgPooling3dGradOp<Device, T>::launch(
         context, output_shape, out_backprop, window, stride, out, padding,
         data_format_, output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AvgPooling3dGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AvgPooling3dGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AvgPooling3dGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AvgPooling3dGradOp(context);
+      } else {
+        do_AvgPooling3dGradOp(context);
+      }
+
   }
 
  private:
@@ -689,7 +762,7 @@ class MaxPooling3dGradGradOp : public OpKernel {
                                       "supported on the depth dimension."));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_MaxPooling3dGradGradOp(OpKernelContext *context){
     const Tensor& tensor_in = context->input(0);
     const Tensor& tensor_out = context->input(1);
     const Tensor& out_grad_backprop = context->input(2);
@@ -738,6 +811,30 @@ class MaxPooling3dGradGradOp : public OpKernel {
 
     LaunchMaxPooling3dGradGradOp<Device, T>::launch(
         context, params, tensor_in, tensor_out, out_grad_backprop, output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPooling3dGradGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPooling3dGradGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MaxPooling3dGradGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MaxPooling3dGradGradOp(context);
+      } else {
+        do_MaxPooling3dGradGradOp(context);
+      }
+
   }
 
  private:

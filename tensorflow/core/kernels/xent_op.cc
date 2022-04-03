@@ -21,6 +21,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -39,7 +40,7 @@ class SoftmaxXentWithLogitsOp : public OpKernel {
   explicit SoftmaxXentWithLogitsOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SoftmaxXentWithLogitsOp(OpKernelContext *context){
     const Tensor& logits_in = context->input(0);
     const Tensor& labels_in = context->input(1);
 
@@ -103,6 +104,30 @@ class SoftmaxXentWithLogitsOp : public OpKernel {
                 scratch.matrix<T>(), loss_out->vec<T>(), back_out->matrix<T>());
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SoftmaxXentWithLogitsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SoftmaxXentWithLogitsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SoftmaxXentWithLogitsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SoftmaxXentWithLogitsOp(context);
+      } else {
+        do_SoftmaxXentWithLogitsOp(context);
+      }
+
   }
 };
 

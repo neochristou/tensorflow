@@ -17,6 +17,7 @@ limitations under the License.
 #include <string>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -38,7 +39,7 @@ class BoostedTreesCreateEnsembleOp : public OpKernel {
   explicit BoostedTreesCreateEnsembleOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_BoostedTreesCreateEnsembleOp(OpKernelContext *context){
     // Get the stamp token.
     const Tensor* stamp_token_t;
     OP_REQUIRES_OK(context, context->input("stamp_token", &stamp_token_t));
@@ -66,6 +67,30 @@ class BoostedTreesCreateEnsembleOp : public OpKernel {
     if (status.code() != tensorflow::error::ALREADY_EXISTS) {
       OP_REQUIRES_OK(context, status);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesCreateEnsembleOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesCreateEnsembleOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesCreateEnsembleOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesCreateEnsembleOp(context);
+      } else {
+        do_BoostedTreesCreateEnsembleOp(context);
+      }
+
   }
 };
 

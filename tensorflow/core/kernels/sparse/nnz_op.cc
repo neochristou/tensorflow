@@ -22,6 +22,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/dense_update_functor.h"
@@ -43,7 +44,7 @@ class CSRNNZOp : public OpKernel {
  public:
   explicit CSRNNZOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* c) final {
+  void do_CSRNNZOp(OpKernelContext *c){
     const CSRSparseMatrix* csr_sparse_matrix;
     OP_REQUIRES_OK(c, ExtractVariantFromInput(c, 0, &csr_sparse_matrix));
     Tensor* nnz_t;
@@ -56,6 +57,30 @@ class CSRNNZOp : public OpKernel {
     for (int i = 0; i < csr_sparse_matrix->batch_size(); ++i) {
       nnz(i) = csr_sparse_matrix->nnz(i);
     }
+  }
+
+void Compute(OpKernelContext* c) final {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRNNZOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRNNZOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRNNZOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRNNZOp(c);
+      } else {
+        do_CSRNNZOp(c);
+      }
+
   }
 };
 

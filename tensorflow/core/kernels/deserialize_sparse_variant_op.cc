@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -32,7 +33,7 @@ class DeserializeSparseOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("dtype", &dtype_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DeserializeSparseOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
 
     OP_REQUIRES(
@@ -270,6 +271,30 @@ class DeserializeSparseOp : public OpKernel {
                            "DeserializeSparse Unhandled data type: ", dtype_));
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DeserializeSparseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DeserializeSparseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DeserializeSparseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DeserializeSparseOp(context);
+      } else {
+        do_DeserializeSparseOp(context);
+      }
+
   }
 
  private:

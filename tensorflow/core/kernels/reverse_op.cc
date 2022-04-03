@@ -21,6 +21,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -153,7 +154,7 @@ class ReverseOp : public OpKernel {
  public:
   explicit ReverseOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_ReverseOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     // If input is provided, check to make sure the first dimension is valid.
     if (input.dims() > 0) {
@@ -204,6 +205,30 @@ class ReverseOp : public OpKernel {
 #undef HANDLE_REVERSE
     }
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReverseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReverseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ReverseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ReverseOp(context);
+      } else {
+        do_ReverseOp(context);
+      }
+
+  }
 };
 
 template <typename Device, typename T, int NDIMS>
@@ -236,7 +261,7 @@ class ReverseV2Op : public OpKernel {
  public:
   explicit ReverseV2Op(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_ReverseV2Op(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& sparse_dims = context->input(1);
 
@@ -295,6 +320,30 @@ class ReverseV2Op : public OpKernel {
       }
 #undef HANDLE_REVERSE
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReverseV2Op")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReverseV2Op", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ReverseV2Op(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ReverseV2Op(context);
+      } else {
+        do_ReverseV2Op(context);
+      }
+
   }
 };
 

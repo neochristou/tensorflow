@@ -21,6 +21,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -322,7 +323,7 @@ class LRNOp : public OpKernel {
     beta_ = T(tmp);
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_LRNOp(OpKernelContext *context){
     const Tensor& in = context->input(0);
     OP_REQUIRES(context, in.dims() == 4,
                 errors::InvalidArgument("in must be 4-dimensional"));
@@ -348,6 +349,30 @@ class LRNOp : public OpKernel {
 
     LaunchLRN<Device, T> launcher(depth_radius_, bias_, alpha_, beta_);
     launcher.launch(context, this, in, output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LRNOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LRNOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LRNOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LRNOp(context);
+      } else {
+        do_LRNOp(context);
+      }
+
   }
 
  private:
@@ -652,7 +677,7 @@ class LRNGradOp : public OpKernel {
     beta_ = T(tmp);
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_LRNGradOp(OpKernelContext *context){
     const Tensor& in_grads = context->input(0);
     const Tensor& in_image = context->input(1);
     const Tensor& out_image = context->input(2);
@@ -680,6 +705,30 @@ class LRNGradOp : public OpKernel {
 
     LaunchLRNGrad<Device, T> launcher(depth_radius_, bias_, alpha_, beta_);
     launcher.launch(context, this, in_grads, in_image, out_image, output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LRNGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LRNGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LRNGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LRNGradOp(context);
+      } else {
+        do_LRNGradOp(context);
+      }
+
   }
 
  private:

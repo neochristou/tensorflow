@@ -29,7 +29,7 @@ class LegacyStringToHashBucketOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("num_buckets", &num_buckets_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_LegacyStringToHashBucketOp(OpKernelContext *context){
     const Tensor* input_tensor;
     OP_REQUIRES_OK(context, context->input("string_tensor", &input_tensor));
     const auto& input_flat = input_tensor->flat<tstring>();
@@ -49,6 +49,30 @@ class LegacyStringToHashBucketOp : public OpKernel {
       // safe.
       output_flat(i) = static_cast<int64>(bucket_id);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LegacyStringToHashBucketOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LegacyStringToHashBucketOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LegacyStringToHashBucketOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LegacyStringToHashBucketOp(context);
+      } else {
+        do_LegacyStringToHashBucketOp(context);
+      }
+
   }
 
  private:

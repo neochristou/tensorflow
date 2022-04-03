@@ -33,6 +33,7 @@ limitations under the License.
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -238,8 +239,32 @@ class SdcaOptimizer : public OpKernel {
   explicit SdcaOptimizer(OpKernelConstruction* const context)
       : OpKernel(context), options_(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SdcaOptimizer(OpKernelContext *context){
     DoCompute(options_, context);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SdcaOptimizer")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SdcaOptimizer", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SdcaOptimizer(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SdcaOptimizer(context);
+      } else {
+        do_SdcaOptimizer(context);
+      }
+
   }
 
  private:
@@ -260,7 +285,7 @@ class SdcaShrinkL1 : public OpKernel {
     OP_REQUIRES_OK(context, regularizations_.Initialize(context));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_SdcaShrinkL1(OpKernelContext *context){
     OpMutableInputList weights_inputs;
     OP_REQUIRES_OK(context,
                    context->mutable_input_list("weights", &weights_inputs));
@@ -287,6 +312,30 @@ class SdcaShrinkL1 : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SdcaShrinkL1")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SdcaShrinkL1", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SdcaShrinkL1(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SdcaShrinkL1(context);
+      } else {
+        do_SdcaShrinkL1(context);
+      }
+
+  }
+
  private:
   Regularizations regularizations_;
 };
@@ -303,7 +352,7 @@ class SdcaFprint : public OpKernel {
   explicit SdcaFprint(OpKernelConstruction* const context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SdcaFprint(OpKernelContext *context){
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, TensorShapeUtils::IsVector(input.shape()),
                 errors::InvalidArgument("Input must be a vector, got shape ",
@@ -325,6 +374,30 @@ class SdcaFprint : public OpKernel {
                              : fprint.low64 + ~static_cast<uint64>(1);
       out_values(i, 1) = fprint.high64;
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SdcaFprint")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SdcaFprint", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SdcaFprint(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SdcaFprint(context);
+      } else {
+        do_SdcaFprint(context);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("SdcaFprint").Device(DEVICE_CPU), SdcaFprint);

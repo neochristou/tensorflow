@@ -17,6 +17,7 @@ limitations under the License.
 #include "tensorflow/core/kernels/snapshot_op.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 
@@ -29,7 +30,7 @@ class SnapshotOp : public OpKernel {
  public:
   explicit SnapshotOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SnapshotOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     Tensor* output = nullptr;
     // Try to use buffer forwarding to avoid an explicit copy.
@@ -40,6 +41,30 @@ class SnapshotOp : public OpKernel {
       functor(context->eigen_device<Device>(), input.flat<Scalar>(),
               output->flat<Scalar>());
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SnapshotOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SnapshotOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SnapshotOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SnapshotOp(context);
+      } else {
+        do_SnapshotOp(context);
+      }
+
   }
 };
 

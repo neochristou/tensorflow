@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #define EIGEN_USE_THREADS
+#include "tensorflow/core/framework/fuzzing.h"
 
 #if (defined(GOOGLE_CUDA) && GOOGLE_CUDA) || \
     (defined(TENSORFLOW_USE_ROCM) && TENSORFLOW_USE_ROCM)
@@ -198,7 +199,7 @@ class FakeQuantWithMinMaxVarsOp : public OpKernel {
     SET_USING_FAKE_QUANT();
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FakeQuantWithMinMaxVarsOp(OpKernelContext *context){
     CHECK_EQ(3, context->num_inputs());
     const Tensor& input = context->input(0);
     const Tensor& min = context->input(1);
@@ -212,6 +213,30 @@ class FakeQuantWithMinMaxVarsOp : public OpKernel {
     functor(context->eigen_device<Device>(), input.flat<float>(),
             min.scalar<float>(), max.scalar<float>(), quant_min_, quant_max_,
             output->flat<float>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeQuantWithMinMaxVarsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeQuantWithMinMaxVarsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FakeQuantWithMinMaxVarsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FakeQuantWithMinMaxVarsOp(context);
+      } else {
+        do_FakeQuantWithMinMaxVarsOp(context);
+      }
+
   }
 
  private:
@@ -237,7 +262,7 @@ class FakeQuantWithMinMaxVarsGradientOp : public OpKernel {
     quant_max_ = (1 << num_bits) - 1;
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FakeQuantWithMinMaxVarsGradientOp(OpKernelContext *context){
     CHECK_EQ(4, context->num_inputs());
     const Tensor& gradient = context->input(0);
     const Tensor& input = context->input(1);
@@ -264,6 +289,30 @@ class FakeQuantWithMinMaxVarsGradientOp : public OpKernel {
             input.flat<float>(), min.scalar<float>(), max.scalar<float>(),
             quant_min_, quant_max_, grad_wrt_input->flat<float>(),
             grad_wrt_min->scalar<float>(), grad_wrt_max->scalar<float>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeQuantWithMinMaxVarsGradientOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeQuantWithMinMaxVarsGradientOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FakeQuantWithMinMaxVarsGradientOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FakeQuantWithMinMaxVarsGradientOp(context);
+      } else {
+        do_FakeQuantWithMinMaxVarsGradientOp(context);
+      }
+
   }
 
  private:
@@ -329,7 +378,7 @@ class FakeQuantWithMinMaxVarsPerChannelOp : public OpKernel {
     SET_USING_FAKE_QUANT();
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FakeQuantWithMinMaxVarsPerChannelOp(OpKernelContext *context){
     CHECK_EQ(3, context->num_inputs());
     const Tensor& input = context->input(0);
     const int depth = input.dim_size(input.dims() - 1);  // last dimension size.
@@ -350,6 +399,30 @@ class FakeQuantWithMinMaxVarsPerChannelOp : public OpKernel {
     functor(context->eigen_device<Device>(), input.flat_inner_dims<float, 2>(),
             min.vec<float>(), max.vec<float>(), quant_min_, quant_max_,
             output->flat_inner_dims<float, 2>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeQuantWithMinMaxVarsPerChannelOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeQuantWithMinMaxVarsPerChannelOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FakeQuantWithMinMaxVarsPerChannelOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FakeQuantWithMinMaxVarsPerChannelOp(context);
+      } else {
+        do_FakeQuantWithMinMaxVarsPerChannelOp(context);
+      }
+
   }
 
  private:
@@ -376,7 +449,7 @@ class FakeQuantWithMinMaxVarsPerChannelGradientOp : public OpKernel {
     quant_max_ = (1 << num_bits) - 1;
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FakeQuantWithMinMaxVarsPerChannelGradientOp(OpKernelContext *context){
     CHECK_EQ(4, context->num_inputs());
     const Tensor& gradient = context->input(0);
     const Tensor& input = context->input(1);
@@ -411,6 +484,30 @@ class FakeQuantWithMinMaxVarsPerChannelGradientOp : public OpKernel {
         input.flat_inner_dims<float, 2>(), min.vec<float>(), max.vec<float>(),
         quant_min_, quant_max_, grad_wrt_input->flat_inner_dims<float, 2>(),
         grad_wrt_min->vec<float>(), grad_wrt_max->vec<float>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeQuantWithMinMaxVarsPerChannelGradientOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeQuantWithMinMaxVarsPerChannelGradientOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FakeQuantWithMinMaxVarsPerChannelGradientOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FakeQuantWithMinMaxVarsPerChannelGradientOp(context);
+      } else {
+        do_FakeQuantWithMinMaxVarsPerChannelGradientOp(context);
+      }
+
   }
 
  private:

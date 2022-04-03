@@ -28,6 +28,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -100,7 +101,7 @@ class SparseToDense : public OpKernel {
                    context->GetAttr("validate_indices", &validate_indices_));
   }
 
-  void Compute(OpKernelContext* c) override {
+  void do_SparseToDense(OpKernelContext *c){
     const Tensor& indices = c->input(0);
     const Tensor& output_shape = c->input(1);
     const Tensor& sparse_values = c->input(2);
@@ -167,6 +168,30 @@ class SparseToDense : public OpKernel {
                 errors::InvalidArgument(
                     "Indices are not valid (out of bounds).  Shape: ",
                     output->shape().DebugString()));
+  }
+
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseToDense")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseToDense", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseToDense(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseToDense(c);
+      } else {
+        do_SparseToDense(c);
+      }
+
   }
 
  private:

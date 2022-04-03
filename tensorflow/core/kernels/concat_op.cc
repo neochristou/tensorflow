@@ -21,6 +21,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -59,7 +60,7 @@ class ConcatBaseOp : public OpKernel {
                                  &values_input_end_index_));
   }
 
-  void Compute(OpKernelContext* c) override {
+  void do_ConcatBaseOp(OpKernelContext *c){
     const Tensor& concat_dim_tensor = c->input(axis_input_index_);
 
     // TODO(rmlarsen): Disallow legacy use of length-1 vectors as scalars.
@@ -169,6 +170,30 @@ class ConcatBaseOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ConcatBaseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ConcatBaseOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ConcatBaseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ConcatBaseOp(c);
+      } else {
+        do_ConcatBaseOp(c);
+      }
+
+  }
+
  private:
   const char* const axis_attribute_name_;
   int axis_input_index_;
@@ -246,7 +271,7 @@ class ConcatOffsetOp : public OpKernel {
  public:
   explicit ConcatOffsetOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_ConcatOffsetOp(OpKernelContext *ctx){
     const Tensor& concat_dim = ctx->input(0);
     OP_REQUIRES(
         ctx, TensorShapeUtils::IsScalar(concat_dim.shape()),
@@ -313,6 +338,30 @@ class ConcatOffsetOp : public OpKernel {
         }
       }
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ConcatOffsetOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ConcatOffsetOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ConcatOffsetOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ConcatOffsetOp(ctx);
+      } else {
+        do_ConcatOffsetOp(ctx);
+      }
+
   }
 
   bool IsExpensive() override { return false; }

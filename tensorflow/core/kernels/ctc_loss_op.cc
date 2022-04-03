@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/platform/logging.h"
@@ -84,7 +85,7 @@ class CTCLossOp : public OpKernel {
                                      &ignore_longer_outputs_than_inputs_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CTCLossOp(OpKernelContext *ctx){
     const Tensor* inputs;
     const Tensor* labels_indices;
     const Tensor* labels_values;
@@ -211,6 +212,30 @@ class CTCLossOp : public OpKernel {
                             preprocess_collapse_repeated_, ctc_merge_repeated_,
                             ignore_longer_outputs_than_inputs_, &loss_t,
                             &gradient_list_t, &workers));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CTCLossOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CTCLossOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CTCLossOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CTCLossOp(ctx);
+      } else {
+        do_CTCLossOp(ctx);
+      }
+
   }
 
  private:

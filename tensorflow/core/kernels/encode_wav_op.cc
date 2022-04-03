@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -31,7 +32,7 @@ class EncodeWavOp : public OpKernel {
  public:
   explicit EncodeWavOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_EncodeWavOp(OpKernelContext *context){
     const Tensor& audio = context->input(0);
     OP_REQUIRES(context, audio.dims() == 2,
                 errors::InvalidArgument("audio must be 2-dimensional",
@@ -59,6 +60,30 @@ class EncodeWavOp : public OpKernel {
                    wav::EncodeAudioAsS16LEWav(
                        audio.flat<float>().data(), sample_rate, channel_count,
                        sample_count, &output->scalar<tstring>()()));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EncodeWavOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EncodeWavOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EncodeWavOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EncodeWavOp(context);
+      } else {
+        do_EncodeWavOp(context);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("EncodeWav").Device(DEVICE_CPU), EncodeWavOp);

@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -35,7 +36,7 @@ class StringToNumberOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void Compute(OpKernelContext* context) override {
+  void do_StringToNumberOp(OpKernelContext *context){
     // This is not a deep copy of the input tensor; they will share the same
     // underlying storage.
     const Tensor* input_tensor;
@@ -55,6 +56,30 @@ class StringToNumberOp : public OpKernel {
                                                    &output_flat(i)),
           errors::InvalidArgument(kErrorMessage, input_flat(i).c_str()));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringToNumberOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringToNumberOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StringToNumberOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StringToNumberOp(context);
+      } else {
+        do_StringToNumberOp(context);
+      }
+
   }
 };
 

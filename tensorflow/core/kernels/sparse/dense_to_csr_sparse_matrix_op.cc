@@ -22,6 +22,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_reference.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -64,7 +65,7 @@ class DenseToCSRSparseMatrixCPUOp : public OpKernel {
  public:
   explicit DenseToCSRSparseMatrixCPUOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_DenseToCSRSparseMatrixCPUOp(OpKernelContext *ctx){
     const Tensor& params = ctx->input(0);
     const Tensor& indices = ctx->input(1);
 
@@ -128,6 +129,30 @@ class DenseToCSRSparseMatrixCPUOp : public OpKernel {
                                   cpu_alloc));
     output_csr_matrix_tensor->scalar<Variant>()() =
         std::move(output_csr_matrix);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DenseToCSRSparseMatrixCPUOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DenseToCSRSparseMatrixCPUOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DenseToCSRSparseMatrixCPUOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DenseToCSRSparseMatrixCPUOp(ctx);
+      } else {
+        do_DenseToCSRSparseMatrixCPUOp(ctx);
+      }
+
   }
 };
 

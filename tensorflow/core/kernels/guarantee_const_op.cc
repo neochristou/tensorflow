@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/core/errors.h"
 
 namespace tensorflow {
@@ -24,7 +25,7 @@ class GuaranteeConstOp : public OpKernel {
  public:
   explicit GuaranteeConstOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_GuaranteeConstOp(OpKernelContext *ctx){
     const DataType input_dtype = ctx->input_dtype(0);
     OP_REQUIRES(ctx, input_dtype != DT_RESOURCE,
                 errors::InvalidArgument(
@@ -35,6 +36,30 @@ class GuaranteeConstOp : public OpKernel {
                                                  &output)) {
       ctx->set_output(0, input_tensor);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GuaranteeConstOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GuaranteeConstOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_GuaranteeConstOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_GuaranteeConstOp(ctx);
+      } else {
+        do_GuaranteeConstOp(ctx);
+      }
+
   }
 
   bool IsExpensive() override { return false; }

@@ -22,6 +22,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -517,7 +518,7 @@ class MapStageOp : public OpKernel {
  public:
   explicit MapStageOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapStageOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -544,6 +545,30 @@ class MapStageOp : public OpKernel {
     // Store the tuple in the map
     OP_REQUIRES_OK(ctx, map->put(&key, indices_tensor, &tuple));
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapStageOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapStageOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapStageOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapStageOp(ctx);
+      } else {
+        do_MapStageOp(ctx);
+      }
+
+  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("MapStage").Device(DEVICE_CPU), MapStageOp<false>);
@@ -569,7 +594,7 @@ class MapUnstageOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapUnstageOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -590,6 +615,30 @@ class MapUnstageOp : public OpKernel {
     for (std::size_t i = 0; i < tuple.size(); ++i) {
       ctx->set_output(i, tuple[i]);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapUnstageOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapUnstageOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapUnstageOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapUnstageOp(ctx);
+      } else {
+        do_MapUnstageOp(ctx);
+      }
+
   }
 };
 
@@ -618,7 +667,7 @@ class MapPeekOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapPeekOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -639,6 +688,30 @@ class MapPeekOp : public OpKernel {
     for (std::size_t i = 0; i < tuple.size(); ++i) {
       ctx->set_output(i, tuple[i]);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapPeekOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapPeekOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapPeekOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapPeekOp(ctx);
+      } else {
+        do_MapPeekOp(ctx);
+      }
+
   }
 };
 
@@ -665,7 +738,7 @@ class MapUnstageNoKeyOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapUnstageNoKeyOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -691,6 +764,30 @@ class MapUnstageNoKeyOp : public OpKernel {
     for (std::size_t i = 0; i < tuple.size(); ++i) {
       ctx->set_output(i + 1, tuple[i]);
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapUnstageNoKeyOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapUnstageNoKeyOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapUnstageNoKeyOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapUnstageNoKeyOp(ctx);
+      } else {
+        do_MapUnstageNoKeyOp(ctx);
+      }
+
   }
 };
 
@@ -718,7 +815,7 @@ class MapSizeOp : public OpKernel {
  public:
   explicit MapSizeOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapSizeOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -729,6 +826,30 @@ class MapSizeOp : public OpKernel {
 
     // Set it to the actual size
     size->scalar<int32>().setConstant(map->size());
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapSizeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapSizeOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapSizeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapSizeOp(ctx);
+      } else {
+        do_MapSizeOp(ctx);
+      }
+
   }
 };
 
@@ -749,7 +870,7 @@ class MapIncompleteSizeOp : public OpKernel {
  public:
   explicit MapIncompleteSizeOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapIncompleteSizeOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
@@ -760,6 +881,30 @@ class MapIncompleteSizeOp : public OpKernel {
 
     // Set it to the actual size
     size->scalar<int32>().setConstant(map->incomplete_size());
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapIncompleteSizeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapIncompleteSizeOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapIncompleteSizeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapIncompleteSizeOp(ctx);
+      } else {
+        do_MapIncompleteSizeOp(ctx);
+      }
+
   }
 };
 
@@ -782,12 +927,36 @@ class MapClearOp : public OpKernel {
  public:
   explicit MapClearOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_MapClearOp(OpKernelContext *ctx){
     StagingMap<Ordered>* map = nullptr;
     OP_REQUIRES_OK(ctx, GetStagingMap(ctx, def(), &map));
     core::ScopedUnref scope(map);
 
     OP_REQUIRES_OK(ctx, map->clear());
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MapClearOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MapClearOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MapClearOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MapClearOp(ctx);
+      } else {
+        do_MapClearOp(ctx);
+      }
+
   }
 };
 

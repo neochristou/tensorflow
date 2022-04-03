@@ -30,6 +30,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/cwise_ops.h"
@@ -98,7 +99,7 @@ class CSRTransposeOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("conjugate", &conjugate_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CSRTransposeOp(OpKernelContext *ctx){
     const CSRSparseMatrix* input_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &input_matrix));
     OP_REQUIRES(
@@ -115,6 +116,30 @@ class CSRTransposeOp : public OpKernel {
     Tensor output_t(cpu_allocator(), DT_VARIANT, TensorShape({}));
     output_t.scalar<Variant>()() = std::move(output_matrix);
     ctx->set_output(0, output_t);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRTransposeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRTransposeOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRTransposeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRTransposeOp(ctx);
+      } else {
+        do_CSRTransposeOp(ctx);
+      }
+
   }
 
  private:

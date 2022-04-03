@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/op_requires.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
@@ -38,7 +39,7 @@ class DecodePaddedRawOp : public OpKernel {
     convert_data_endianness_ = host_is_little_endian != data_is_little_endian;
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DecodePaddedRawOp(OpKernelContext *context){
     const auto& input = context->input(0);
     auto flat_in = input.flat<tstring>();
 
@@ -111,6 +112,30 @@ class DecodePaddedRawOp : public OpKernel {
         out_data += width;
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodePaddedRawOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodePaddedRawOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DecodePaddedRawOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DecodePaddedRawOp(context);
+      } else {
+        do_DecodePaddedRawOp(context);
+      }
+
   }
 
  private:

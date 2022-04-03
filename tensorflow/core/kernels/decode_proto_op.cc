@@ -35,6 +35,7 @@ limitations under the License.
 #include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/core/errors.h"
@@ -720,7 +721,7 @@ class DecodeProtoOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("sanitize", &sanitize_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_DecodeProtoOp(OpKernelContext *ctx){
     const Tensor& buf_tensor = ctx->input(0);
     int message_count = buf_tensor.NumElements();
     OP_REQUIRES(ctx, message_count >= 1,
@@ -806,6 +807,30 @@ class DecodeProtoOp : public OpKernel {
     // Make the second pass through the serialized proto, decoding into
     // preallocated tensors.
     AccumulateFields(ctx, bufs, outputs);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeProtoOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeProtoOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DecodeProtoOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DecodeProtoOp(ctx);
+      } else {
+        do_DecodeProtoOp(ctx);
+      }
+
   }
 
  private:

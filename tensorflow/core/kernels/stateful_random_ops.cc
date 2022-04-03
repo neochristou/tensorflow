@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #define EIGEN_USE_THREADS
+#include "tensorflow/core/framework/fuzzing.h"
 
 #include "tensorflow/core/framework/rng_alg.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -145,9 +146,33 @@ class StatefulRandomOp : public OpKernel {
  public:
   explicit StatefulRandomOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StatefulRandomOp(OpKernelContext *ctx){
     StatefulRandomCompute<Device>(ctx, Distribution(), 0, 1, true,
                                   RNG_ALG_PHILOX /*dummy*/);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulRandomOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulRandomOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatefulRandomOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatefulRandomOp(ctx);
+      } else {
+        do_StatefulRandomOp(ctx);
+      }
+
   }
 };
 
@@ -181,12 +206,36 @@ class StatefulRandomOpV2 : public OpKernel {
  public:
   explicit StatefulRandomOpV2(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StatefulRandomOpV2(OpKernelContext *ctx){
     Algorithm alg;
     OP_REQUIRES_OK(ctx, GetAlg<int64>(ctx, 1, &alg));
     StatefulRandomCompute<Device>(ctx, Distribution(), /*state_input_idx=*/0,
                                   /*shape_input_idx=*/2,
                                   /*read_alg_from_state=*/false, alg);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulRandomOpV2")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulRandomOpV2", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatefulRandomOpV2(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatefulRandomOpV2(ctx);
+      } else {
+        do_StatefulRandomOpV2(ctx);
+      }
+
   }
 };
 
@@ -195,7 +244,7 @@ class StatefulUniformIntOp : public OpKernel {
  public:
   explicit StatefulUniformIntOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StatefulUniformIntOp(OpKernelContext *ctx){
     Algorithm alg;
     OP_REQUIRES_OK(ctx, GetAlg<int64>(ctx, 1, &alg));
     const Tensor& minval = ctx->input(3);
@@ -224,6 +273,30 @@ class StatefulUniformIntOp : public OpKernel {
                                   /*shape_input_idx=*/2,
                                   /*read_alg_from_state=*/false, alg);
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulUniformIntOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulUniformIntOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatefulUniformIntOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatefulUniformIntOp(ctx);
+      } else {
+        do_StatefulUniformIntOp(ctx);
+      }
+
+  }
 };
 
 template <typename Device, class IntType>
@@ -232,7 +305,7 @@ class StatefulUniformFullIntOp : public OpKernel {
   explicit StatefulUniformFullIntOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StatefulUniformFullIntOp(OpKernelContext *ctx){
     Algorithm alg;
     OP_REQUIRES_OK(ctx, GetAlg<int64>(ctx, 1, &alg));
     StatefulRandomCompute<Device>(
@@ -240,6 +313,30 @@ class StatefulUniformFullIntOp : public OpKernel {
         random::UniformFullIntDistribution<random::PhiloxRandom, IntType>(),
         /*state_input_idx=*/0, /*shape_input_idx=*/2,
         /*read_alg_from_state=*/false, alg);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulUniformFullIntOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulUniformFullIntOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatefulUniformFullIntOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatefulUniformFullIntOp(ctx);
+      } else {
+        do_StatefulUniformFullIntOp(ctx);
+      }
+
   }
 };
 
@@ -263,7 +360,7 @@ class RngSkipOp : public OpKernel {
  public:
   explicit RngSkipOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_RngSkipOp(OpKernelContext *ctx){
     auto state_input_idx = 0;
     auto alg_input_idx = 1;
     auto delta_input_idx = 2;
@@ -308,6 +405,30 @@ class RngSkipOp : public OpKernel {
                   errors::InvalidArgument("Unsupported algorithm id: ", alg));
     }
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RngSkipOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RngSkipOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RngSkipOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RngSkipOp(ctx);
+      } else {
+        do_RngSkipOp(ctx);
+      }
+
+  }
 };
 
 template <typename T>
@@ -317,7 +438,7 @@ class NonDeterministicIntsOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("dtype", &dtype_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_NonDeterministicIntsOp(OpKernelContext *ctx){
     const Tensor& shape_t = ctx->input(0);
     TensorShape shape;
     OP_REQUIRES_OK(ctx, tensor::MakeShape(shape_t, &shape));
@@ -342,6 +463,30 @@ class NonDeterministicIntsOp : public OpKernel {
                     errors::InvalidArgument("Unsupported dtype: ",
                                             DataTypeString(dtype_)));
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonDeterministicIntsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonDeterministicIntsOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_NonDeterministicIntsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_NonDeterministicIntsOp(ctx);
+      } else {
+        do_NonDeterministicIntsOp(ctx);
+      }
+
   }
 
  private:

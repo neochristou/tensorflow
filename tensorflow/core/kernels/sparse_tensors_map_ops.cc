@@ -22,6 +22,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -161,7 +162,7 @@ class AddSparseToTensorsMapOp : public SparseTensorAccessingOp {
   explicit AddSparseToTensorsMapOp(OpKernelConstruction* context)
       : SparseTensorAccessingOp(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_AddSparseToTensorsMapOp(OpKernelContext *context){
     const Tensor* input_indices;
     const Tensor* input_values;
     const Tensor* input_shape;
@@ -205,6 +206,30 @@ class AddSparseToTensorsMapOp : public SparseTensorAccessingOp {
 
     context->set_output(0, sparse_handle);
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AddSparseToTensorsMapOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AddSparseToTensorsMapOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AddSparseToTensorsMapOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AddSparseToTensorsMapOp(context);
+      } else {
+        do_AddSparseToTensorsMapOp(context);
+      }
+
+  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("AddSparseToTensorsMap").Device(DEVICE_CPU),
@@ -216,7 +241,7 @@ class AddManySparseToTensorsMapOp : public SparseTensorAccessingOp {
   explicit AddManySparseToTensorsMapOp(OpKernelConstruction* context)
       : SparseTensorAccessingOp(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_AddManySparseToTensorsMapOp(OpKernelContext *context){
     const Tensor* input_indices;
     const Tensor* input_values;
     const Tensor* input_shape;
@@ -347,6 +372,30 @@ class AddManySparseToTensorsMapOp : public SparseTensorAccessingOp {
 
     context->set_output(0, sparse_handles);
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AddManySparseToTensorsMapOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AddManySparseToTensorsMapOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_AddManySparseToTensorsMapOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_AddManySparseToTensorsMapOp(context);
+      } else {
+        do_AddManySparseToTensorsMapOp(context);
+      }
+
+  }
 };
 
 #define REGISTER_KERNELS(type)                              \
@@ -364,7 +413,7 @@ class TakeManySparseFromTensorsMapOp : public SparseTensorAccessingOp {
   explicit TakeManySparseFromTensorsMapOp(OpKernelConstruction* context)
       : SparseTensorAccessingOp(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_TakeManySparseFromTensorsMapOp(OpKernelContext *context){
     SparseTensorsMap* map = nullptr;
     OP_REQUIRES_OK(context, GetMap(context, false /* is_writing */, &map));
 
@@ -504,6 +553,30 @@ class TakeManySparseFromTensorsMapOp : public SparseTensorAccessingOp {
     context->set_output(0, output.indices());
     context->set_output(1, output.values());
     context->set_output(2, final_output_shape);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TakeManySparseFromTensorsMapOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TakeManySparseFromTensorsMapOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_TakeManySparseFromTensorsMapOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_TakeManySparseFromTensorsMapOp(context);
+      } else {
+        do_TakeManySparseFromTensorsMapOp(context);
+      }
+
   }
 };
 

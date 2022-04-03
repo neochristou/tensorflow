@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -126,7 +127,7 @@ class Conv3DOp : public BinaryOp<T> {
     cudnn_use_autotune_ = CudnnUseAutotune();
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Conv3DOp(OpKernelContext *context){
     // Input tensor is of the following dimensions:
     // [ batch, in_z, in_y, in_x, in_channels ]
     const Tensor& input = context->input(0);
@@ -185,6 +186,30 @@ class Conv3DOp : public BinaryOp<T> {
     LaunchConvOp<Device, T>::launch(context, cudnn_use_autotune_, input, filter,
                                     dilations, strides, padding_, data_format_,
                                     output);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv3DOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv3DOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Conv3DOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Conv3DOp(context);
+      } else {
+        do_Conv3DOp(context);
+      }
+
   }
 
  private:

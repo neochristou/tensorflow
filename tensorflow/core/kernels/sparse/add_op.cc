@@ -22,6 +22,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -198,7 +199,7 @@ class CSRAddOp : public OpKernel {
  public:
   explicit CSRAddOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* ctx) final {
+  void do_CSRAddOp(OpKernelContext *ctx){
     const CSRSparseMatrix* a_matrix;
     const CSRSparseMatrix* b_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &a_matrix));
@@ -236,6 +237,30 @@ class CSRAddOp : public OpKernel {
     OP_REQUIRES_OK(ctx, add_functor(*a_matrix, *b_matrix, &c_matrix));
     c_t.scalar<Variant>()() = std::move(c_matrix);
     ctx->set_output(0, c_t);
+  }
+
+void Compute(OpKernelContext* ctx) final {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRAddOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRAddOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRAddOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRAddOp(ctx);
+      } else {
+        do_CSRAddOp(ctx);
+      }
+
   }
 };
 

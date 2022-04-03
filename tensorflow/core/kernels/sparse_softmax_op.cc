@@ -21,6 +21,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -39,7 +40,7 @@ class SparseSoftmaxOp : public OpKernel {
  public:
   explicit SparseSoftmaxOp(OpKernelConstruction *context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext *context) override {
+  void do_SparseSoftmaxOp(OpKernelContext *context){
     const Tensor *indices_t, *values_t, *shape_t;
     OP_REQUIRES_OK(context, context->input("sp_indices", &indices_t));
     OP_REQUIRES_OK(context, context->input("sp_values", &values_t));
@@ -115,6 +116,30 @@ class SparseSoftmaxOp : public OpKernel {
 
       count += group_size;
     }
+  }
+
+void Compute(OpKernelContext *context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseSoftmaxOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseSoftmaxOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseSoftmaxOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseSoftmaxOp(context);
+      } else {
+        do_SparseSoftmaxOp(context);
+      }
+
   }
 };
 

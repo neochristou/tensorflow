@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -51,7 +52,7 @@ class GatherOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* c) override {
+  void do_GatherOp(OpKernelContext *c){
     const Tensor& params = c->input(0);
     const Tensor& indices = c->input(1);
     OP_REQUIRES(
@@ -182,6 +183,30 @@ class GatherOp : public OpKernel {
         errors::InvalidArgument(
             "indices", SliceDebugString(indices.shape(), bad_i), " = ",
             indices_flat(bad_i), " is not in [0, ", gather_dim_size, ")"));
+  }
+
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GatherOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GatherOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_GatherOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_GatherOp(c);
+      } else {
+        do_GatherOp(c);
+      }
+
   }
 
  private:

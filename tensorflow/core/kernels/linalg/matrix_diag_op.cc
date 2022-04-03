@@ -28,6 +28,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -54,7 +55,7 @@ class MatrixDiagPartOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_MatrixDiagPartOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
 
     // MatrixDiagPart and MatrixDiagPartV2 both use this OpKernel.
@@ -146,6 +147,30 @@ class MatrixDiagPartOp : public OpKernel {
         padding_value, left_align_superdiagonal_, left_align_subdiagonal_);
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MatrixDiagPartOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MatrixDiagPartOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MatrixDiagPartOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MatrixDiagPartOp(context);
+      } else {
+        do_MatrixDiagPartOp(context);
+      }
+
+  }
+
  private:
   bool left_align_superdiagonal_ = true;
   bool left_align_subdiagonal_ = true;
@@ -164,7 +189,7 @@ class MatrixDiagOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_MatrixDiagOp(OpKernelContext *context){
     const Tensor& diagonal = context->input(0);
 
     // MatrixDiag and MatrixDiagV2 both use this OpKernel. MatrixDiag only has
@@ -279,6 +304,30 @@ class MatrixDiagOp : public OpKernel {
         context, context->eigen_device<Device>(), diag_reshaped,
         output_reshaped, lower_diag_index, upper_diag_index, max_diag_len,
         padding_value, left_align_superdiagonal_, left_align_subdiagonal_);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MatrixDiagOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MatrixDiagOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MatrixDiagOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MatrixDiagOp(context);
+      } else {
+        do_MatrixDiagOp(context);
+      }
+
   }
 
  private:

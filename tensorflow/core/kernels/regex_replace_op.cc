@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "re2/re2.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -72,7 +73,7 @@ class RegexReplaceOp : public OpKernel {
 
   ~RegexReplaceOp() override {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_RegexReplaceOp(OpKernelContext *ctx){
     const Tensor* pattern_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("pattern", &pattern_tensor));
     OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(pattern_tensor->shape()),
@@ -91,6 +92,30 @@ class RegexReplaceOp : public OpKernel {
                                         rewrite_tensor->shape().DebugString()));
     const string& rewrite = rewrite_tensor->scalar<tstring>()();
     OP_REQUIRES_OK(ctx, InternalCompute(*regex, rewrite, replace_global_, ctx));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RegexReplaceOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RegexReplaceOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RegexReplaceOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RegexReplaceOp(ctx);
+      } else {
+        do_RegexReplaceOp(ctx);
+      }
+
   }
 
  private:
@@ -135,9 +160,33 @@ class StaticRegexReplaceOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("replace_global", &replace_global_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StaticRegexReplaceOp(OpKernelContext *ctx){
     OP_REQUIRES_OK(ctx,
                    InternalCompute(*re_, rewrite_str_, replace_global_, ctx));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StaticRegexReplaceOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StaticRegexReplaceOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StaticRegexReplaceOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StaticRegexReplaceOp(ctx);
+      } else {
+        do_StaticRegexReplaceOp(ctx);
+      }
+
   }
 
  private:

@@ -15,6 +15,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/graph.pb.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/summary.pb.h"
 #include "tensorflow/core/lib/core/refcount.h"
@@ -35,7 +36,7 @@ class CreateSummaryFileWriterOp : public OpKernel {
   explicit CreateSummaryFileWriterOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CreateSummaryFileWriterOp(OpKernelContext *ctx){
     const Tensor* tmp;
     OP_REQUIRES_OK(ctx, ctx->input("logdir", &tmp));
     const string logdir = tmp->scalar<tstring>()();
@@ -56,6 +57,30 @@ class CreateSummaryFileWriterOp : public OpKernel {
                                   filename_suffix, ctx->env(), s);
                             }));
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CreateSummaryFileWriterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CreateSummaryFileWriterOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CreateSummaryFileWriterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CreateSummaryFileWriterOp(ctx);
+      } else {
+        do_CreateSummaryFileWriterOp(ctx);
+      }
+
+  }
 };
 REGISTER_KERNEL_BUILDER(Name("CreateSummaryFileWriter").Device(DEVICE_CPU),
                         CreateSummaryFileWriterOp);
@@ -64,7 +89,7 @@ class CreateSummaryDbWriterOp : public OpKernel {
  public:
   explicit CreateSummaryDbWriterOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CreateSummaryDbWriterOp(OpKernelContext *ctx){
     const Tensor* tmp;
     OP_REQUIRES_OK(ctx, ctx->input("db_uri", &tmp));
     const string db_uri = tmp->scalar<tstring>()();
@@ -92,6 +117,30 @@ class CreateSummaryDbWriterOp : public OpKernel {
               return Status::OK();
             }));
   }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CreateSummaryDbWriterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CreateSummaryDbWriterOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CreateSummaryDbWriterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CreateSummaryDbWriterOp(ctx);
+      } else {
+        do_CreateSummaryDbWriterOp(ctx);
+      }
+
+  }
 };
 REGISTER_KERNEL_BUILDER(Name("CreateSummaryDbWriter").Device(DEVICE_CPU),
                         CreateSummaryDbWriterOp);
@@ -100,10 +149,34 @@ class FlushSummaryWriterOp : public OpKernel {
  public:
   explicit FlushSummaryWriterOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_FlushSummaryWriterOp(OpKernelContext *ctx){
     core::RefCountPtr<SummaryWriterInterface> s;
     OP_REQUIRES_OK(ctx, LookupResource(ctx, HandleFromInput(ctx, 0), &s));
     OP_REQUIRES_OK(ctx, s->Flush());
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FlushSummaryWriterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FlushSummaryWriterOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FlushSummaryWriterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FlushSummaryWriterOp(ctx);
+      } else {
+        do_FlushSummaryWriterOp(ctx);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("FlushSummaryWriter").Device(DEVICE_CPU),
@@ -113,9 +186,33 @@ class CloseSummaryWriterOp : public OpKernel {
  public:
   explicit CloseSummaryWriterOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CloseSummaryWriterOp(OpKernelContext *ctx){
     OP_REQUIRES_OK(ctx, DeleteResource<SummaryWriterInterface>(
                             ctx, HandleFromInput(ctx, 0)));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CloseSummaryWriterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CloseSummaryWriterOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CloseSummaryWriterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CloseSummaryWriterOp(ctx);
+      } else {
+        do_CloseSummaryWriterOp(ctx);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("CloseSummaryWriter").Device(DEVICE_CPU),
@@ -185,7 +282,7 @@ class ImportEventOp : public OpKernel {
  public:
   explicit ImportEventOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_ImportEventOp(OpKernelContext *ctx){
     core::RefCountPtr<SummaryWriterInterface> s;
     OP_REQUIRES_OK(ctx, LookupResource(ctx, HandleFromInput(ctx, 0), &s));
     const Tensor* t;
@@ -197,6 +294,30 @@ class ImportEventOp : public OpKernel {
       return;
     }
     OP_REQUIRES_OK(ctx, s->WriteEvent(std::move(event)));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ImportEventOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ImportEventOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ImportEventOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ImportEventOp(ctx);
+      } else {
+        do_ImportEventOp(ctx);
+      }
+
   }
 };
 REGISTER_KERNEL_BUILDER(Name("ImportEvent").Device(DEVICE_CPU), ImportEventOp);

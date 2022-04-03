@@ -16,6 +16,7 @@ limitations under the License.
 // See docs in ../ops/audio_ops.cc
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -39,7 +40,7 @@ class MfccOp : public OpKernel {
                                              &dct_coefficient_count_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_MfccOp(OpKernelContext *context){
     const Tensor& spectrogram = context->input(0);
     OP_REQUIRES(context, spectrogram.dims() == 3,
                 errors::InvalidArgument("spectrogram must be 3-dimensional",
@@ -98,6 +99,30 @@ class MfccOp : public OpKernel {
         }
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MfccOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MfccOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_MfccOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_MfccOp(context);
+      } else {
+        do_MfccOp(context);
+      }
+
   }
 
  private:

@@ -24,6 +24,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/random/random.h"
 #include "tensorflow/core/platform/logging.h"
 #include "tensorflow/core/platform/mutex.h"
@@ -64,7 +65,7 @@ class FractionalAvgPoolOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FractionalAvgPoolOp(OpKernelContext *context){
     typedef Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
         ConstEigenMatrixMap;
     typedef Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
@@ -184,6 +185,30 @@ class FractionalAvgPoolOp : public OpKernel {
     out_mat.array().rowwise() /= out_count.transpose().array();
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FractionalAvgPoolOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FractionalAvgPoolOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FractionalAvgPoolOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FractionalAvgPoolOp(context);
+      } else {
+        do_FractionalAvgPoolOp(context);
+      }
+
+  }
+
  private:
   bool deterministic_;
   int64 seed_;
@@ -213,7 +238,7 @@ class FractionalAvgPoolGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("overlapping", &overlapping_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FractionalAvgPoolGradOp(OpKernelContext *context){
     // Here's the basic idea:
     // Batch and depth dimension are independent from row and col dimension. And
     // because FractionalAvgPool currently only support pooling along row and
@@ -353,6 +378,30 @@ class FractionalAvgPoolGradOp : public OpKernel {
       in_backprop_tensor_flat(i) =
           static_cast<T>(in_backprop_tensor_temp_flat(i));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FractionalAvgPoolGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FractionalAvgPoolGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FractionalAvgPoolGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FractionalAvgPoolGradOp(context);
+      } else {
+        do_FractionalAvgPoolGradOp(context);
+      }
+
   }
 
  private:

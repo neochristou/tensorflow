@@ -379,6 +379,8 @@ class CApiFunctionTest : public ::testing::Test {
   }
 
   void GetAttr(const char* attr_name, AttrValue* out_attr) {
+    std::cout << attr << std::endl << std::flush;
+    std::cout << "TESTTESTTESTTESTTESTTEST" << std::endl << std::flush;
     TF_Buffer* attr_buf = TF_NewBuffer();
     TF_FunctionGetAttrValueProto(func_, attr_name, attr_buf, s_);
     ASSERT_TRUE(out_attr->ParseFromArray(attr_buf->data, attr_buf->length));

@@ -24,6 +24,7 @@ limitations under the License.
 #endif
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
 #include "tensorflow/core/platform/macros.h"
@@ -701,7 +702,7 @@ class QuantizedResizeBilinearOp : public OpKernel {
         context, context->GetAttr("half_pixel_centers", &half_pixel_centers_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedResizeBilinearOp(OpKernelContext *context){
     const auto& in_min_tensor = context->input(2);
     OP_REQUIRES(context, TensorShapeUtils::IsScalar(in_min_tensor.shape()),
                 errors::InvalidArgument("min must be a scalar"));
@@ -732,6 +733,30 @@ class QuantizedResizeBilinearOp : public OpKernel {
     Tensor* out_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &out_max));
     out_max->flat<float>()(0) = in_max;
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedResizeBilinearOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedResizeBilinearOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedResizeBilinearOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedResizeBilinearOp(context);
+      } else {
+        do_QuantizedResizeBilinearOp(context);
+      }
+
   }
 
  private:

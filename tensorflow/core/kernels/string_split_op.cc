@@ -19,6 +19,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -171,7 +172,7 @@ class StringSplitOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StringSplitOp(OpKernelContext *ctx){
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
     OP_REQUIRES(ctx, TensorShapeUtils::IsVector(input_tensor->shape()),
@@ -235,6 +236,30 @@ class StringSplitOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringSplitOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringSplitOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StringSplitOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StringSplitOp(ctx);
+      } else {
+        do_StringSplitOp(ctx);
+      }
+
+  }
+
  private:
   bool skip_empty_;
 };
@@ -246,7 +271,7 @@ class StringSplitV2Op : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("maxsplit", &maxsplit_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_StringSplitV2Op(OpKernelContext *ctx){
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
     OP_REQUIRES(ctx, TensorShapeUtils::IsVector(input_tensor->shape()),
@@ -303,6 +328,30 @@ class StringSplitV2Op : public OpKernel {
         ++c;
       }
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringSplitV2Op")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringSplitV2Op", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StringSplitV2Op(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StringSplitV2Op(ctx);
+      } else {
+        do_StringSplitV2Op(ctx);
+      }
+
   }
 
  private:

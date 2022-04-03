@@ -1,538 +1,1118 @@
-Successfully modified QuantizeV2Op
-Successfully modified L2LossOp
-Successfully modified UnaryOpsComposition
-Successfully modified ScanOp
-Successfully modified SparseReorderOp
-Successfully modified SerializeSparseOp
-Successfully modified SerializeManySparseOp
-Successfully modified GatherNdOp
-Skipping SparseMatMul (>1 params)
-Successfully modified SparseMatMulOp
-Successfully modified SplitVOpCPU
-Successfully modified DataFormatDimMapOp
-Successfully modified DataFormatVecPermuteOp
-Successfully modified FractionalMaxPoolOp
-Skipping FractionalMaxPoolGradOp (GradOp)
-Successfully modified StringLengthOp
-Successfully modified InvertPermutationOp
-Successfully modified RollOp
-Successfully modified SnapshotOp
-Successfully modified SpaceToBatchNDOp
-Successfully modified SpaceToBatchOp
-Successfully modified KmeansPlusPlusInitializationOp
-Successfully modified KMC2ChainInitializationOp
-Successfully modified NearestNeighborsOp
-Successfully modified SubstrOp
-Successfully modified RaggedTensorToSparseOp
-Successfully modified CreateSummaryFileWriterOp
-Successfully modified CreateSummaryDbWriterOp
-Successfully modified FlushSummaryWriterOp
-Successfully modified CloseSummaryWriterOp
-Skipping WriteSummaryOp (SummaryOp)
-Skipping WriteRawProtoSummaryOp (SummaryOp)
-Successfully modified ImportEventOp
-Skipping WriteScalarSummaryOp (SummaryOp)
-Skipping WriteHistogramSummaryOp (SummaryOp)
-Skipping WriteImageSummaryOp (SummaryOp)
-Skipping WriteAudioSummaryOp (SummaryOp)
-Skipping WriteGraphSummaryOp (SummaryOp)
-Successfully modified SparseSoftmaxXentWithLogitsOp
-Successfully modified QuantizedConcatOp
-Successfully modified ArgOp
-Successfully modified MapStageOp
-Successfully modified MapUnstageOp
-Successfully modified MapPeekOp
-Successfully modified MapUnstageNoKeyOp
-Successfully modified MapSizeOp
-Successfully modified MapIncompleteSizeOp
-Successfully modified MapClearOp
-Successfully modified UnsortedSegmentJoinOp
-Skipping HistogramFixedWidthFunctor (>1 params)
-Successfully modified HistogramFixedWidthOp
-Skipping DenseUpdateOp (mutex)
-Successfully modified DynamicPartitionOp
-Successfully modified UnpackOp
-Successfully modified SplitOpCPU
-Successfully modified StringNGramsOp
-Successfully modified SparseAddOp
-Successfully modified TensorToHashBucketOp
-Successfully modified SparseTensorDenseAddOp
-Successfully modified RaggedTensorToTensorBaseOp
-Successfully modified RegexReplaceOp
-Successfully modified StaticRegexReplaceOp
-Successfully modified StringToNumberOp
-Successfully modified LegacyStringToHashBucketOp
-Successfully modified StatelessRandomOpBase
-Successfully modified GetKeyCounterAlgOp
-Successfully modified GetKeyCounterOp
-Successfully modified GetAlgOp
-Successfully modified FFTBase
-Skipping BucketizeFunctor (>1 params)
-Successfully modified BucketizeOp
-Successfully modified ReduceJoinOp
-Successfully modified QuantizedResizeBilinearOp
-Successfully modified DepthwiseConv2dNativeBackpropInputOp
-Successfully modified DepthwiseConv2dNativeBackpropFilterOp
-Successfully modified ScopedAllocatorOp
-Successfully modified ScopedAllocatorConcatOp
-Successfully modified ScopedAllocatorSplitOp
-Successfully modified FusedMatMulOp
-Successfully modified StatelessRandomOpBase
-Successfully modified SaveOp
-Successfully modified SaveSlicesOp
-Successfully modified ShardedFilenameOp
-Successfully modified ShardedFilespecOp
-Successfully modified StringJoinOp
-Successfully modified ScatterNdOp
-Successfully modified TensorScatterOp
-Skipping ScatterNdUpdateOp (mutex)
-Successfully modified UnicodeTranscodeOp
-Successfully modified UnicodeDecodeBaseOp
-Successfully modified UnicodeEncodeOp
-Successfully modified DeserializeSparseOp
-Skipping CountUpToOp (mutex)
-Skipping ResourceCountUpToOp (mutex)
-Successfully modified ParseTensorOp
-Successfully modified SerializeTensorOp
-Successfully modified PassOn
-Successfully modified CompositeTensorVariantFromComponents
-Successfully modified CompositeTensorVariantToComponents
-Successfully modified ReverseSequenceOp
-Successfully modified PackOp
-Successfully modified BaseCandidateSamplerOp
-Successfully modified ComputeAccidentalHitsOp
-Successfully modified StringFormatOp
-Skipping InitializeTableOp (mutex)
-Skipping InitializeTableFromTextFileOp (mutex)
-Successfully modified MatchingFilesOp
-Successfully modified QuantizedMatMulOp
-Successfully modified GetSessionHandleOp
-Successfully modified GetSessionTensorOp
-Successfully modified DeleteSessionTensorOp
-Successfully modified SoftmaxXentWithLogitsOp
-Successfully modified EditDistanceOp
-Successfully modified RaggedTensorFromVariantOp
-Successfully modified SparseSliceOp
-Successfully modified DeserializeSparseOp
-Successfully modified QuantizeDownAndShrinkRangeOp
-Successfully modified QuantizedMulOp
-Successfully modified Conv2DOp
-Successfully modified SparseCrossV2Op
-Successfully modified SparseCrossHashedOp
-Successfully modified DepthToSpaceOp
-Successfully modified AvgPoolingOp
-Skipping AvgPoolingGradOp (GradOp)
-Successfully modified CTCLossOp
-Successfully modified GenerateVocabRemappingOp
-Successfully modified LoadAndRemapMatrixOp
-Successfully modified UniqueOp
-Skipping AccumulatorSetGlobalStepOp (>1 params)
-Skipping AccumulatorNumAccumulatedOp (>1 params)
-Successfully modified BatchToSpaceNDOp
-Successfully modified BatchToSpaceOp
-Successfully modified UnicodeScriptOp
-Successfully modified QuantizedInstanceNorm
-Successfully modified Conv3DBackpropInputOp
-Successfully modified Conv3DCustomBackpropInputOp
-Successfully modified Conv3DBackpropFilterOp
-Successfully modified Conv3DCustomBackpropFilterOp
-Skipping MaxPoolingGradOp (GradOp)
-Skipping MaxPoolingGradGradOp (GradOp)
-Successfully modified MaxPoolingNoMaskOp
-Successfully modified MaxPoolingNoMaskV2Op
-Successfully modified MaxPoolingWithArgmaxOp
-Successfully modified MaxPoolingGradWithArgmaxOp
-Successfully modified MaxPoolingGradGradWithArgmaxOp
-Skipping ApplyGradientDescentOp (mutex)
-Skipping ApplyAdadeltaOp (mutex)
-Skipping SparseApplyAdadeltaOp (mutex)
-Skipping ApplyProximalGradientDescentOp (mutex)
-Skipping SparseApplyProximalGradientDescentOp (no body)
-Skipping ApplyAdagradOp (mutex)
-Skipping ApplyAdagradV2Op (mutex)
-Skipping ApplyProximalAdagradOp (mutex)
-Skipping SparseApplyAdagradOp (no body)
-Skipping SparseApplyAdagradV2Op (no body)
-Skipping SparseApplyProximalAdagradOp (no body)
-Skipping ApplyAdagradDAOp (mutex)
-Skipping SparseApplyAdagradDAOp (no body)
-Skipping ApplyFtrlOp (mutex)
-Skipping SparseApplyFtrlOp (no body)
-Skipping ApplyMomentumOp (mutex)
-Skipping SparseApplyMomentumOp (no body)
-Skipping ApplyKerasMomentumOp (mutex)
-Skipping SparseApplyKerasMomentumOp (no body)
-Skipping ApplyAdamOp (mutex)
-Skipping ApplyAdamWithAmsgradOp (mutex)
-Skipping ApplyAdaMaxOp (mutex)
-Skipping ApplyRMSPropOp (mutex)
-Skipping ApplyCenteredRMSPropOp (mutex)
-Skipping SparseApplyRMSPropOp (no body)
-Skipping SparseApplyCenteredRMSPropOp (no body)
-Skipping ApplyAddSignOp (mutex)
-Skipping ApplyPowerSignOp (mutex)
-Skipping PrintOp (mutex)
-Successfully modified PrintV2Op
-Successfully modified TimestampOp
-Successfully modified DecodePaddedRawOp
-Successfully modified SparseConcatOp
-Successfully modified AddSparseToTensorsMapOp
-Successfully modified AddManySparseToTensorsMapOp
-Successfully modified TakeManySparseFromTensorsMapOp
-Successfully modified FractionalAvgPoolOp
-Skipping FractionalAvgPoolGradOp (GradOp)
-Successfully modified StatelessRandomGammaOp
-Successfully modified MfccOp
-Successfully modified SparseSoftmaxOp
-Successfully modified SpaceToDepthOp
-Skipping TemporaryVariableOp (ResourceMgr)
-Skipping DestroyTemporaryVariableOp (ResourceMgr)
-Successfully modified IsVariableInitializedOp
-Successfully modified StringLowerOp
-Successfully modified FakeQuantWithMinMaxVarsOp
-Successfully modified FakeQuantWithMinMaxVarsGradientOp
-Successfully modified FakeQuantWithMinMaxVarsPerChannelOp
-Successfully modified FakeQuantWithMinMaxVarsPerChannelGradientOp
-Successfully modified DenseCount
-Successfully modified SparseCount
-Successfully modified RaggedCount
-Successfully modified OneHotOp
-Successfully modified RandomPoissonOp
-Successfully modified SliceOp
-Successfully modified StringUpperOp
-Successfully modified Conv2DUsingGemmOp
-Successfully modified WhileOp
-Successfully modified ToBoolOp
-Successfully modified FakeParamOp
-Successfully modified DeviceIndexOp
-Successfully modified FillOp
-Successfully modified ZerosLikeOp
-Successfully modified OnesLikeOp
-Successfully modified GuaranteeConstOp
-Successfully modified TileOp
-Successfully modified TileGradientOp
-Successfully modified SparseDenseBinaryOpShared
-Successfully modified LuOp
-Successfully modified ClipOp
-Successfully modified TopK
-Successfully modified SoftmaxOp
-Successfully modified DecodeRawOp
-Successfully modified BandedTriangularSolveOpCpu
-Successfully modified QuantizedAddOp
-Successfully modified ConcatBaseOp
-Successfully modified ConcatOffsetOp
-Successfully modified MatrixDiagPartOp
-Successfully modified MatrixDiagOp
-Skipping MatrixDiag (>1 params)
-Skipping MatrixDiagPart (>1 params)
-Successfully modified RandomShuffleOp
-Successfully modified QuantizedBiasAddOp
-Successfully modified MatrixSetDiagOp
-Skipping MatrixSetDiag (>1 params)
-Successfully modified RequantizeOp
-Successfully modified MatrixBandPartOp
-Successfully modified StridedSliceOp
-Skipping StridedSliceGradOp (GradOp)
-Skipping StridedSliceAssignOp (mutex)
-Successfully modified RegexFullMatchOp
-Successfully modified StaticRegexFullMatchOp
-Successfully modified ParseExampleOp
-Successfully modified ParseSingleExampleOp
-Successfully modified ParseSequenceExampleOp
-Successfully modified ParseSingleSequenceExampleOp
-Successfully modified DecodeJSONExampleOp
-Successfully modified NthElementOp
-Successfully modified SdcaOptimizer
-Successfully modified SdcaShrinkL1
-Successfully modified SdcaFprint
-Skipping SparseAddGradOp (GradOp)
-Successfully modified RaggedRangeOp
-Successfully modified Conv3DOp
-Successfully modified QuantizedBatchNormOp
-Successfully modified DiagOp
-Successfully modified DiagPartOp
-Successfully modified SelectOp
-Successfully modified SelectV2Op
-Successfully modified UnravelIndexOp
-Successfully modified SparseToDense
-Successfully modified LRNOp
-Skipping LRNGradOp (GradOp)
-Skipping SkipgramOp (mutex)
-Successfully modified NegTrainOp
-Successfully modified SparseTensorDenseMatMulOp
-Skipping SparseTensorDenseMatMulFunctor (>1 params)
-Successfully modified CheckNumericsOp
-Successfully modified ParallelConcatUpdate
-Successfully modified ParallelConcatStart
-Skipping FailureKernel (no param name)
-Successfully modified InplaceOpBase
-Successfully modified CopyOpBase
-Successfully modified EmptyOp
-Skipping BoostedTreesCreateQuantileStreamResourceOp (BoostedTreesCreate)
-Successfully modified BoostedTreesMakeQuantileSummariesOp
-Skipping BoostedTreesFlushQuantileSummariesOp (mutex)
-Skipping BoostedTreesQuantileStreamResourceAddSummariesOp (mutex)
-Skipping BoostedTreesQuantileStreamResourceDeserializeOp (mutex)
-Skipping BoostedTreesQuantileStreamResourceFlushOp (mutex)
-Skipping BoostedTreesQuantileStreamResourceGetBucketBoundariesOp (mutex)
-Successfully modified BoostedTreesBucketizeOp
-Skipping BoostedTreesUpdateEnsembleOp (mutex)
-Skipping BoostedTreesUpdateEnsembleV2Op (mutex)
-Skipping BoostedTreesCenterBiasOp (mutex)
-Successfully modified BoostedTreesTrainingPredictOp
-Successfully modified BoostedTreesPredictOp
-Successfully modified BoostedTreesExampleDebugOutputsOp
-Skipping BoostedTreesCreateEnsembleOp (BoostedTreesCreate)
-Skipping BoostedTreesGetEnsembleStatesOp (mutex)
-Skipping BoostedTreesSerializeEnsembleOp (mutex)
-Skipping BoostedTreesDeserializeEnsembleOp (mutex)
-Successfully modified BoostedTreesCalculateBestGainsPerFeatureOp
-Successfully modified BoostedTreesCalculateBestFeatureSplitOp
-Successfully modified BoostedTreesCalculateBestFeatureSplitV2
-Successfully modified BoostedTreesSparseCalculateBestFeatureSplitOp
-Skipping BoostedTreesMakeStatsSummaryOp (SummaryOp)
-Successfully modified BoostedTreesAggregateStatsOp
-Successfully modified BoostedTreesSparseAggregateStatsOp
-Successfully modified CrossOp
-Successfully modified CSRNNZOp
-Successfully modified DenseToCSRSparseMatrixCPUOp
-Successfully modified CSRTransposeOp
-Successfully modified QuantizeAndDequantizeV2Op
-Successfully modified QuantizeAndDequantizeV4GradientOp
-Successfully modified QuantizeAndDequantizeV3Op
-Successfully modified QuantizeAndDequantizeOp
-Successfully modified CSRSparseCholeskyCPUOp
-Successfully modified CSRMulOp
-Successfully modified CSRZerosOp
-Successfully modified EnsureShapeOp
-Successfully modified CSRMatMulCPUOp
-Successfully modified CSRMatMulGPUOp
-Skipping ConsumeMutexLockOp (mutex)
-Successfully modified CSROrderingAMDCPUOp
-Successfully modified CSRAddOp
-Successfully modified PopulationCountOp
-Successfully modified CSRSparseMatrixComponentsOp
-Successfully modified SparseTensorToCSRSparseMatrixCPUOp
-Successfully modified RaggedCrossOp
-Successfully modified CSRSoftmaxOp
-Skipping CSRSoftmaxGradOp (GradOp)
-Successfully modified Conv2DBackpropFilterOp
-Successfully modified Conv2DCustomBackpropFilterOp
-Successfully modified CSRSparseMatrixToDenseCPUOp
-Successfully modified CSRSparseMatrixToDenseGPUOp
-Successfully modified CSRSparseMatrixToSparseTensorCPUOp
-Successfully modified CSRSparseMatrixToSparseTensorGPUOp
-Successfully modified CSRSparseMatMulCPUOp
-Successfully modified CSRSparseMatMulGPUOp
-Successfully modified AsStringOp
-Successfully modified GatherOp
-Successfully modified QuantizedConv2DOp
-Successfully modified SobolSampleOp
-Successfully modified RefSelectOp
-Successfully modified AbortOp
-Successfully modified DynamicStitchOpImplCPU
-Successfully modified SaveV2
-Successfully modified RestoreV2
-Successfully modified MergeV2Checkpoints
-Successfully modified SparseFillEmptyRowsOp
-Skipping SparseFillEmptyRowsGradOp (GradOp)
-Successfully modified BatchNormOp
-Skipping BatchNormGradOp (GradOp)
-Successfully modified RaggedGatherOpBase
-Successfully modified FusedResizeConv2DUsingGemmOp
-Successfully modified QuantizedReshapeOp
-Successfully modified SummaryTensorOpV2
-Successfully modified RandomBinomialOp
-Successfully modified StatelessRandomBinomialOp
-Successfully modified QuantizedAvgPoolingOp
-Successfully modified QuantizedMaxPoolingOp
-Successfully modified DecodeProtoOp
-Successfully modified ReverseOp
-Successfully modified ReverseV2Op
-Skipping BincountFunctor (>1 params)
-Skipping BincountReduceFunctor (>1 params)
-Successfully modified BincountOp
-Successfully modified DenseBincountOp
-Successfully modified SparseBincountOp
-Successfully modified RaggedBincountOp
-Successfully modified SparseSplitOp
-Successfully modified BCastArgsOp
-Successfully modified BCastGradArgsOp
-Successfully modified FusedBatchNormOp
-Successfully modified FusedBatchNormOpV3
-Successfully modified FusedBatchNormOpEx
-Skipping FusedBatchNormGradOp (GradOp)
-Successfully modified FusedBatchNormGradOpV3
-Successfully modified SummaryImageOp
-Successfully modified DecodeCSVOp
-Successfully modified RestoreOp
-Successfully modified RestoreSliceOp
-Successfully modified DecodeCompressedOp
-Skipping SparseSliceGradOp (GradOp)
-Successfully modified BetaincOp
-Successfully modified SummaryAudioOp
-Successfully modified Pooling3DOp
-Skipping MaxPooling3dGradOp (GradOp)
-Skipping AvgPooling3dGradOp (GradOp)
-Skipping MaxPooling3dGradGradOp (GradOp)
-Successfully modified LookupTableFindOp
-Successfully modified LookupTableInsertOp
-Successfully modified LookupTableRemoveOp
-Successfully modified LookupTableSizeOp
-Successfully modified LookupTableExportOp
-Successfully modified LookupTableImportOp
-Successfully modified SparseReduceOp
-Successfully modified SparseReduceSparseOp
-Successfully modified RaggedTensorToVariantOp
-Successfully modified RaggedTensorToVariantGradientOp
-Successfully modified EncodeWavOp
-Successfully modified DilationBackpropInputOp
-Successfully modified DilationBackpropFilterOp
-Successfully modified PadOp
-Successfully modified DecodeWavOp
-Successfully modified StringStripOp
-Successfully modified RecordInputOp
-Successfully modified StringSplitOp
-Successfully modified StringSplitV2Op
-Successfully modified InTopK
-Successfully modified SparseReshapeOp
-Successfully modified StageOp
-Successfully modified UnstageOp
-Successfully modified StagePeekOp
-Successfully modified StageSizeOp
-Successfully modified StageClearOp
-Successfully modified ListDiffOp
-Successfully modified DepthwiseConv2dNativeOp
-Successfully modified AudioSpectrogramOp
-Successfully modified EncodeBase64Op
-Successfully modified DecodeBase64Op
-Successfully modified RangeOp
-Successfully modified LinSpaceOp
+Found Compute() call in NumTrue
 Skipping NumTrue (>1 params)
+Found Compute() call in WhereCPUOp
 Successfully modified WhereCPUOp
-Successfully modified StatefulMultinomialOp
-Successfully modified StatelessMultinomialOp
-Successfully modified RequantizationRangeOp
-Successfully modified FakeQueueOp
+Found Compute() call in DataFormatDimMapOp
+Successfully modified DataFormatDimMapOp
+Found Compute() call in DataFormatVecPermuteOp
+Successfully modified DataFormatVecPermuteOp
+Found Compute() call in CompositeTensorVariantFromComponents
+Successfully modified CompositeTensorVariantFromComponents
+Found Compute() call in CompositeTensorVariantToComponents
+Successfully modified CompositeTensorVariantToComponents
+Found Compute() call in ParseExampleOp
+Successfully modified ParseExampleOp
+Found Compute() call in ParseSingleExampleOp
+Successfully modified ParseSingleExampleOp
+Found Compute() call in ParseSequenceExampleOp
+Successfully modified ParseSequenceExampleOp
+Found Compute() call in ParseSingleSequenceExampleOp
+Successfully modified ParseSingleSequenceExampleOp
+Found Compute() call in DecodeJSONExampleOp
+Successfully modified DecodeJSONExampleOp
+Found Compute() call in SparseReshapeOp
+Successfully modified SparseReshapeOp
+Found Compute() call in DeserializeSparseOp
+Successfully modified DeserializeSparseOp
+Found Compute() call in UpperBoundFunctor
 Skipping UpperBoundFunctor (>1 params)
+Found Compute() call in LowerBoundFunctor
 Skipping LowerBoundFunctor (>1 params)
+Found Compute() call in UpperBoundOp
 Successfully modified UpperBoundOp
+Found Compute() call in LowerBoundOp
 Successfully modified LowerBoundOp
-Successfully modified AddNOp
-Successfully modified CTCGreedyDecoderOp
-Successfully modified CTCBeamSearchDecoderOp
-Successfully modified SparseSparseBinaryOpShared
-Successfully modified StatefulRandomOp
-Successfully modified StatefulRandomOpV2
-Successfully modified StatefulUniformIntOp
-Successfully modified StatefulUniformFullIntOp
-Successfully modified RngSkipOp
-Successfully modified NonDeterministicIntsOp
-Successfully modified ParameterizedTruncatedNormalOp
-Successfully modified StatelessParameterizedTruncatedNormal
-Successfully modified RiscAddOp
-Successfully modified ReadFileOp
-Successfully modified WriteFileOp
-Successfully modified RiscSqueezeOp
-Successfully modified RiscConditionOp
-Successfully modified RiscFftOp
-Successfully modified RiscExpOp
-Successfully modified RiscRandomUniformOp
-Successfully modified ReaderVerbSyncOpKernel
-Successfully modified RiscAbsOp
-Successfully modified RiscConcatOp
-Successfully modified RiscCosOp
-Successfully modified RiscSortOp
-Successfully modified RiscBitcastOp
-Successfully modified RiscPadOp
+Found Compute() call in ParallelConcatUpdate
+Successfully modified ParallelConcatUpdate
+Found Compute() call in ParallelConcatStart
+Successfully modified ParallelConcatStart
+Found Compute() call in FailureKernel
+Skipping FailureKernel (no param name)
+Found Compute() call in InplaceOpBase
+Successfully modified InplaceOpBase
+Found Compute() call in CopyOpBase
+Successfully modified CopyOpBase
+Found Compute() call in EmptyOp
+Successfully modified EmptyOp
+Found Compute() call in FusedResizeConv2DUsingGemmOp
+Successfully modified FusedResizeConv2DUsingGemmOp
+Found Compute() call in QuantizedReluOp
 Successfully modified QuantizedReluOp
+Found Compute() call in QuantizedRelu6Op
 Successfully modified QuantizedRelu6Op
-Successfully modified RiscTriangularSolveOp
-Successfully modified RiscBinaryArithmeticOp
-Successfully modified RiscCholeskyOp
-Successfully modified RiscImagOp
-Skipping ScatterUpdateOp (mutex)
-Successfully modified RiscMulOp
-Successfully modified RiscCastOp
-Successfully modified RiscRealOp
-Successfully modified RiscBinaryComparisonOp
-Successfully modified RiscShapeOp
-Successfully modified RiscPoolOp
-Successfully modified RiscScatterOp
-Successfully modified RiscSliceOp
-Successfully modified RiscPowOp
-Successfully modified RiscIsFiniteOp
-Successfully modified RiscDivOp
-Successfully modified RiscSignOp
-Successfully modified RiscRemOp
-Successfully modified RiscWhileOp
-Successfully modified RiscTransposeOp
-Successfully modified RiscReverseOp
-Successfully modified RiscDotOp
-Successfully modified RiscBroadcastOp
-Successfully modified RiscMaxOp
-Successfully modified RiscLogicalNotOp
-Successfully modified RiscReshapeOp
-Successfully modified RiscConvOp
-Successfully modified RiscFloorOp
-Successfully modified RiscCeilOp
-Successfully modified RiscReduceOp
-Successfully modified RiscMinOp
-Successfully modified RiscNegOp
-Successfully modified RiscGatherOp
-Successfully modified RiscLogicalOrOp
-Successfully modified RiscLogOp
-Successfully modified RiscMaxOp
-Successfully modified RiscLogicalAndOp
-Successfully modified RiscUnaryOp
+Found Compute() call in RollOp
+Successfully modified RollOp
+Found Compute() call in SparseReorderOp
+Successfully modified SparseReorderOp
+Found Compute() call in SummaryTensorOpV2
+Successfully modified SummaryTensorOpV2
+Found Compute() call in SummaryTensorOp
+Successfully modified SummaryTensorOp
+Found Compute() call in DenseUpdateOp
+Skipping DenseUpdateOp (mutex)
+Found Compute() call in SparseSliceOp
+Successfully modified SparseSliceOp
+Found Compute() call in SplitVOpCPU
+Successfully modified SplitVOpCPU
+Found Compute() call in RaggedTensorFromVariantOp
+Successfully modified RaggedTensorFromVariantOp
+Found Compute() call in BetaincOp
+Successfully modified BetaincOp
+Found Compute() call in BatchToSpaceNDOp
+Successfully modified BatchToSpaceNDOp
+Found Compute() call in BatchToSpaceOp
+Successfully modified BatchToSpaceOp
+Found Compute() call in Conv3DOp
+Successfully modified Conv3DOp
+Found Compute() call in QuantizedBiasAddOp
+Successfully modified QuantizedBiasAddOp
+Found Compute() call in MapStageOp
+Successfully modified MapStageOp
+Found Compute() call in MapUnstageOp
+Successfully modified MapUnstageOp
+Found Compute() call in MapPeekOp
+Successfully modified MapPeekOp
+Found Compute() call in MapUnstageNoKeyOp
+Successfully modified MapUnstageNoKeyOp
+Found Compute() call in MapSizeOp
+Successfully modified MapSizeOp
+Found Compute() call in MapIncompleteSizeOp
+Successfully modified MapIncompleteSizeOp
+Found Compute() call in MapClearOp
+Successfully modified MapClearOp
+Found Compute() call in StatelessRandomOpBase
+Successfully modified StatelessRandomOpBase
+Found Compute() call in GetKeyCounterAlgOp
+Successfully modified GetKeyCounterAlgOp
+Found Compute() call in GetKeyCounterOp
+Successfully modified GetKeyCounterOp
+Found Compute() call in GetAlgOp
+Successfully modified GetAlgOp
+Found Compute() call in SkipgramOp
+Skipping SkipgramOp (mutex)
+Found Compute() call in NegTrainOp
+Successfully modified NegTrainOp
+Found Compute() call in LoadAndRemapMatrixOp
+Successfully modified LoadAndRemapMatrixOp
+Found Compute() call in DecodeCSVOp
+Successfully modified DecodeCSVOp
+Found Compute() call in CheckNumericsOp
+Successfully modified CheckNumericsOp
+Found Compute() call in StringLowerOp
+Successfully modified StringLowerOp
+Found Compute() call in QuantizedBatchNormOp
+Successfully modified QuantizedBatchNormOp
+Found Compute() call in IsotonicRegressionOp
+Skipping IsotonicRegressionOp (isotonic regression)
+Found Compute() call in SparseSliceGradOp
+Successfully modified SparseSliceGradOp
+Found Compute() call in LRNOp
+Successfully modified LRNOp
+Found Compute() call in LRNGradOp
+Successfully modified LRNGradOp
+Found Compute() call in FFTBase
+Successfully modified FFTBase
+Found Compute() call in FactOpKernel
+Skipping FactOpKernel (no body)
+Found Compute() call in FactOpKernel
+Skipping FactOpKernel (>1 params)
+Found Compute() call in FactOpKernel1
+Skipping FactOpKernel1 (fact op)
+Found Compute() call in FactOpKernel2
+Skipping FactOpKernel2 (fact op)
+Found Compute() call in ParseTensorOp
+Successfully modified ParseTensorOp
+Found Compute() call in SerializeTensorOp
+Successfully modified SerializeTensorOp
+Found Compute() call in GatherOp
+Successfully modified GatherOp
+Found Compute() call in RaggedRangeOp
+Successfully modified RaggedRangeOp
+Found Compute() call in RaggedGatherOpBase
+Successfully modified RaggedGatherOpBase
+Found Compute() call in InitializeTableOp
+Skipping InitializeTableOp (mutex)
+Found Compute() call in InitializeTableFromTextFileOp
+Skipping InitializeTableFromTextFileOp (mutex)
+Found Compute() call in UnicodeTranscodeOp
+Successfully modified UnicodeTranscodeOp
+Found Compute() call in UnicodeDecodeBaseOp
+Successfully modified UnicodeDecodeBaseOp
+Found Compute() call in UnicodeEncodeOp
+Successfully modified UnicodeEncodeOp
+Found Compute() call in EmptyTensorList
+Skipping EmptyTensorList (list kernel)
+Found Compute() call in TensorListPushBack
+Skipping TensorListPushBack (list kernel)
+Found Compute() call in TensorListLength
+Skipping TensorListLength (list kernel)
+Found Compute() call in TensorListElementShape
+Skipping TensorListElementShape (list kernel)
+Found Compute() call in TensorListReserve
+Skipping TensorListReserve (list kernel)
+Found Compute() call in TensorListResize
+Skipping TensorListResize (list kernel)
+Found Compute() call in TensorListSetItem
+Skipping TensorListSetItem (list kernel)
+Found Compute() call in TensorListConcatLists
+Skipping TensorListConcatLists (list kernel)
+Found Compute() call in SdcaOptimizer
+Successfully modified SdcaOptimizer
+Found Compute() call in SdcaShrinkL1
+Successfully modified SdcaShrinkL1
+Found Compute() call in SdcaFprint
+Successfully modified SdcaFprint
+Found Compute() call in UnbatchResource
+Skipping UnbatchResource (>1 params)
+Found Compute() call in UnbatchGradResource
+Skipping UnbatchGradResource (>1 params)
+Found Compute() call in DynamicPartitionOp
+Successfully modified DynamicPartitionOp
+Found Compute() call in RestoreOp
+Successfully modified RestoreOp
+Found Compute() call in RestoreSliceOp
+Successfully modified RestoreSliceOp
+Found Compute() call in EditDistanceOp
+Successfully modified EditDistanceOp
+Found Compute() call in FakeQuantWithMinMaxVarsOp
+Successfully modified FakeQuantWithMinMaxVarsOp
+Found Compute() call in FakeQuantWithMinMaxVarsGradientOp
+Successfully modified FakeQuantWithMinMaxVarsGradientOp
+Found Compute() call in FakeQuantWithMinMaxVarsPerChannelOp
+Successfully modified FakeQuantWithMinMaxVarsPerChannelOp
+Found Compute() call in FakeQuantWithMinMaxVarsPerChannelGradientOp
+Successfully modified FakeQuantWithMinMaxVarsPerChannelGradientOp
+Found Compute() call in SparseReduceOp
+Successfully modified SparseReduceOp
+Found Compute() call in SparseReduceSparseOp
+Successfully modified SparseReduceSparseOp
+Found Compute() call in QuantizeV2Op
+Successfully modified QuantizeV2Op
+Found Compute() call in QuantizedMatMulOp
+Successfully modified QuantizedMatMulOp
+Found Compute() call in UnravelIndexOp
+Successfully modified UnravelIndexOp
+Found Compute() call in FusedBatchNormOp
+Successfully modified FusedBatchNormOp
+Found Compute() call in FusedBatchNormOpV3
+Successfully modified FusedBatchNormOpV3
+Found Compute() call in FusedBatchNormOpEx
+Successfully modified FusedBatchNormOpEx
+Found Compute() call in FusedBatchNormGradOp
+Successfully modified FusedBatchNormGradOp
+Found Compute() call in FusedBatchNormGradOpV3
+Successfully modified FusedBatchNormGradOpV3
+Found Compute() call in SparseDenseBinaryOpShared
+Successfully modified SparseDenseBinaryOpShared
+Found Compute() call in BincountFunctor
+Skipping BincountFunctor (>1 params)
+Found Compute() call in BincountFunctor
+Skipping BincountFunctor (>1 params)
+Found Compute() call in BincountReduceFunctor
+Skipping BincountReduceFunctor (>1 params)
+Found Compute() call in BincountOp
+Successfully modified BincountOp
+Found Compute() call in DenseBincountOp
+Successfully modified DenseBincountOp
+Found Compute() call in SparseBincountOp
+Successfully modified SparseBincountOp
+Found Compute() call in RaggedBincountOp
+Successfully modified RaggedBincountOp
+Found Compute() call in ListDiffOp
+Successfully modified ListDiffOp
+Found Compute() call in SpaceToDepthOp
+Successfully modified SpaceToDepthOp
+Found Compute() call in EncodeBase64Op
+Successfully modified EncodeBase64Op
+Found Compute() call in DecodeBase64Op
+Successfully modified DecodeBase64Op
+Found Compute() call in StringToNumberOp
+Successfully modified StringToNumberOp
+Found Compute() call in CrossOp
+Successfully modified CrossOp
+Found Compute() call in GuaranteeConstOp
+Successfully modified GuaranteeConstOp
+Found Compute() call in ParameterizedTruncatedNormalOp
+Successfully modified ParameterizedTruncatedNormalOp
+Found Compute() call in StatelessParameterizedTruncatedNormal
+Successfully modified StatelessParameterizedTruncatedNormal
+Found Compute() call in SummaryImageOp
+Successfully modified SummaryImageOp
+Found Compute() call in RandomBinomialOp
+Successfully modified RandomBinomialOp
+Found Compute() call in StatelessRandomBinomialOp
+Successfully modified StatelessRandomBinomialOp
+Found Compute() call in RequantizationRangeOp
+Successfully modified RequantizationRangeOp
+Found Compute() call in AccumulatorSetGlobalStepOp
+Skipping AccumulatorSetGlobalStepOp (>1 params)
+Found Compute() call in AccumulatorNumAccumulatedOp
+Skipping AccumulatorNumAccumulatedOp (>1 params)
+Found Compute() call in SparseSparseBinaryOpShared
+Successfully modified SparseSparseBinaryOpShared
+Found Compute() call in Conv2DOp
+Successfully modified Conv2DOp
+Found Compute() call in LSTMBlockCellOp
 Successfully modified LSTMBlockCellOp
-Skipping LSTMBlockCellGradOp (GradOp)
+Found Compute() call in LSTMBlockCellGradOp
+Successfully modified LSTMBlockCellGradOp
+Found Compute() call in BlockLSTMOp
 Successfully modified BlockLSTMOp
-Skipping BlockLSTMGradOp (GradOp)
+Found Compute() call in BlockLSTMGradOp
+Successfully modified BlockLSTMGradOp
+Found Compute() call in LuOp
+Successfully modified LuOp
+Found Compute() call in GRUCellBlockOp
 Successfully modified GRUCellBlockOp
-Skipping GRUBlockCellGradOp (GradOp)
-Successfully modified AdjustContrastOp
-Successfully modified AdjustContrastOpV2Base
-Successfully modified AdjustSaturationOpBase
-Successfully modified ExtractJpegShapeOp
-Successfully modified ScaleAndTranslateOp
-Skipping ScaleAndTranslateGradOp (GradOp)
-Successfully modified MirrorPadOp
-Skipping MirrorPadGradOp (GradOp)
-Successfully modified EncodePngOp
-Successfully modified ImageProjectiveTransformV2
-Successfully modified AdjustHueOpBase
-Successfully modified EncodeJpegOp
-Successfully modified EncodeJpegVariableQualityOp
-Successfully modified DecodeImageV2Op
-Successfully modified ExtractImagePatchesOp
-Successfully modified ResizeBilinearOp
-Successfully modified ResizeBilinearOpGrad
-Successfully modified ExtractVolumePatchesOp
-Successfully modified ExtractGlimpseOp
-Successfully modified StatefulSampleDistortedBoundingBoxOp
-Successfully modified StatelessSampleDistortedBoundingBoxOp
-Successfully modified RGBToHSVOp
-Successfully modified HSVToRGBOp
-Successfully modified NonMaxSuppressionOp
-Successfully modified NonMaxSuppressionV2Op
-Successfully modified NonMaxSuppressionV3Op
-Successfully modified NonMaxSuppressionV4Op
-Successfully modified NonMaxSuppressionV5Op
-Successfully modified NonMaxSuppressionWithOverlapsOp
-Successfully modified CombinedNonMaxSuppressionOp
-Successfully modified ResizeAreaOp
-Successfully modified RandomCropOp
-Successfully modified ResizeNearestNeighborOp
-Successfully modified ResizeNearestNeighborOpGrad
-Successfully modified ToSingleElementOp
-Skipping MultiDeviceIteratorHandleOp (no body)
+Found Compute() call in GRUBlockCellGradOp
+Successfully modified GRUBlockCellGradOp
+Found Compute() call in AddSparseToTensorsMapOp
+Successfully modified AddSparseToTensorsMapOp
+Found Compute() call in AddManySparseToTensorsMapOp
+Successfully modified AddManySparseToTensorsMapOp
+Found Compute() call in TakeManySparseFromTensorsMapOp
+Successfully modified TakeManySparseFromTensorsMapOp
+Found Compute() call in StringLengthOp
+Successfully modified StringLengthOp
+Found Compute() call in SummaryAudioOp
+Successfully modified SummaryAudioOp
+Found Compute() call in SparseSplitOp
+Successfully modified SparseSplitOp
+Found Compute() call in RaggedTensorToSparseOp
+Successfully modified RaggedTensorToSparseOp
+Found Compute() call in EncodeWavOp
+Successfully modified EncodeWavOp
+Found Compute() call in GemmState
+Skipping GemmState (no params)
+Found Compute() call in ScopedAllocatorOp
+Successfully modified ScopedAllocatorOp
+Found Compute() call in ScopedAllocatorConcatOp
+Successfully modified ScopedAllocatorConcatOp
+Found Compute() call in ScopedAllocatorSplitOp
+Successfully modified ScopedAllocatorSplitOp
+Found Compute() call in UnpackOp
+Successfully modified UnpackOp
+Found Compute() call in MatrixSetDiagOp
+Successfully modified MatrixSetDiagOp
+Found Compute() call in MatrixSetDiag
+Skipping MatrixSetDiag (>1 params)
+Found Compute() call in SparseTensorDenseAddOp
+Successfully modified SparseTensorDenseAddOp
+Found Compute() call in PhiloxRandomOp
+Skipping PhiloxRandomOp (random op)
+Found Compute() call in RandomUniformIntOp
+Skipping RandomUniformIntOp (random op)
+Found Compute() call in RandomGammaOp
+Skipping RandomGammaOp (random op)
+Found Compute() call in MatrixDiagPartOp
+Successfully modified MatrixDiagPartOp
+Found Compute() call in MatrixDiagOp
+Successfully modified MatrixDiagOp
+Found Compute() call in MatrixDiag
+Skipping MatrixDiag (>1 params)
+Found Compute() call in MatrixDiagPart
+Skipping MatrixDiagPart (>1 params)
+Found Compute() call in Conv3DBackpropInputOp
+Successfully modified Conv3DBackpropInputOp
+Found Compute() call in Conv3DCustomBackpropInputOp
+Successfully modified Conv3DCustomBackpropInputOp
+Found Compute() call in Conv3DBackpropFilterOp
+Successfully modified Conv3DBackpropFilterOp
+Found Compute() call in Conv3DCustomBackpropFilterOp
+Successfully modified Conv3DCustomBackpropFilterOp
+Found Compute() call in SobolSampleOp
+Successfully modified SobolSampleOp
+Found Compute() call in PadOp
+Successfully modified PadOp
+Found Compute() call in BandedTriangularSolveOpCpu
+Successfully modified BandedTriangularSolveOpCpu
+Found Compute() call in MatrixBandPartOp
+Successfully modified MatrixBandPartOp
+Found Compute() call in DecodePaddedRawOp
+Successfully modified DecodePaddedRawOp
+Found Compute() call in StatefulRandomOp
+Successfully modified StatefulRandomOp
+Found Compute() call in StatefulRandomOpV2
+Successfully modified StatefulRandomOpV2
+Found Compute() call in StatefulUniformIntOp
+Successfully modified StatefulUniformIntOp
+Found Compute() call in StatefulUniformFullIntOp
+Successfully modified StatefulUniformFullIntOp
+Found Compute() call in RngSkipOp
+Successfully modified RngSkipOp
+Found Compute() call in NonDeterministicIntsOp
+Successfully modified NonDeterministicIntsOp
+Found Compute() call in PackOp
+Successfully modified PackOp
+Found Compute() call in DecodeProtoOp
+Successfully modified DecodeProtoOp
+Found Compute() call in DepthToSpaceOp
+Successfully modified DepthToSpaceOp
+Found Compute() call in RaggedCrossOp
+Successfully modified RaggedCrossOp
+Found Compute() call in EnsureShapeOp
+Successfully modified EnsureShapeOp
+Found Compute() call in ScatterNdOp
+Successfully modified ScatterNdOp
+Found Compute() call in TensorScatterOp
+Successfully modified TensorScatterOp
+Found Compute() call in ScatterNdUpdateOp
+Skipping ScatterNdUpdateOp (mutex)
+Found Compute() call in Pooling3DOp
+Successfully modified Pooling3DOp
+Found Compute() call in MaxPooling3dGradOp
+Successfully modified MaxPooling3dGradOp
+Found Compute() call in AvgPooling3dGradOp
+Successfully modified AvgPooling3dGradOp
+Found Compute() call in MaxPooling3dGradGradOp
+Successfully modified MaxPooling3dGradGradOp
+Found Compute() call in SaveOp
+Successfully modified SaveOp
+Found Compute() call in SaveSlicesOp
+Successfully modified SaveSlicesOp
+Found Compute() call in ShardedFilenameOp
+Successfully modified ShardedFilenameOp
+Found Compute() call in ShardedFilespecOp
+Successfully modified ShardedFilespecOp
+Found Compute() call in StatelessRandomOpBase
+Successfully modified StatelessRandomOpBase
+Found Compute() call in DiagOp
+Successfully modified DiagOp
+Found Compute() call in DiagPartOp
+Successfully modified DiagPartOp
+Found Compute() call in BoostedTreesTrainingPredictOp
+Successfully modified BoostedTreesTrainingPredictOp
+Found Compute() call in BoostedTreesPredictOp
+Successfully modified BoostedTreesPredictOp
+Found Compute() call in BoostedTreesExampleDebugOutputsOp
+Successfully modified BoostedTreesExampleDebugOutputsOp
+Found Compute() call in MaxPoolingGradOp
+Successfully modified MaxPoolingGradOp
+Found Compute() call in MaxPoolingGradGradOp
+Successfully modified MaxPoolingGradGradOp
+Found Compute() call in MaxPoolingNoMaskOp
+Successfully modified MaxPoolingNoMaskOp
+Found Compute() call in MaxPoolingNoMaskV2Op
+Successfully modified MaxPoolingNoMaskV2Op
+Found Compute() call in MaxPoolingWithArgmaxOp
+Successfully modified MaxPoolingWithArgmaxOp
+Found Compute() call in MaxPoolingGradWithArgmaxOp
+Successfully modified MaxPoolingGradWithArgmaxOp
+Found Compute() call in MaxPoolingGradGradWithArgmaxOp
+Successfully modified MaxPoolingGradGradWithArgmaxOp
+Found Compute() call in BoostedTreesCalculateBestGainsPerFeatureOp
+Successfully modified BoostedTreesCalculateBestGainsPerFeatureOp
+Found Compute() call in BoostedTreesCalculateBestFeatureSplitOp
+Successfully modified BoostedTreesCalculateBestFeatureSplitOp
+Found Compute() call in BoostedTreesCalculateBestFeatureSplitV2
+Successfully modified BoostedTreesCalculateBestFeatureSplitV2
+Found Compute() call in BoostedTreesSparseCalculateBestFeatureSplitOp
+Successfully modified BoostedTreesSparseCalculateBestFeatureSplitOp
+Found Compute() call in BoostedTreesMakeStatsSummaryOp
+Skipping BoostedTreesMakeStatsSummaryOp (SummaryOp)
+Found Compute() call in BoostedTreesAggregateStatsOp
+Successfully modified BoostedTreesAggregateStatsOp
+Found Compute() call in BoostedTreesSparseAggregateStatsOp
+Successfully modified BoostedTreesSparseAggregateStatsOp
+Found Compute() call in SubstrOp
+Successfully modified SubstrOp
+Found Compute() call in BoostedTreesCreateQuantileStreamResourceOp
+Successfully modified BoostedTreesCreateQuantileStreamResourceOp
+Found Compute() call in BoostedTreesMakeQuantileSummariesOp
+Successfully modified BoostedTreesMakeQuantileSummariesOp
+Found Compute() call in BoostedTreesFlushQuantileSummariesOp
+Skipping BoostedTreesFlushQuantileSummariesOp (mutex)
+Found Compute() call in BoostedTreesQuantileStreamResourceAddSummariesOp
+Skipping BoostedTreesQuantileStreamResourceAddSummariesOp (mutex)
+Found Compute() call in BoostedTreesQuantileStreamResourceDeserializeOp
+Skipping BoostedTreesQuantileStreamResourceDeserializeOp (mutex)
+Found Compute() call in BoostedTreesQuantileStreamResourceFlushOp
+Skipping BoostedTreesQuantileStreamResourceFlushOp (mutex)
+Found Compute() call in BoostedTreesQuantileStreamResourceGetBucketBoundariesOp
+Skipping BoostedTreesQuantileStreamResourceGetBucketBoundariesOp (mutex)
+Found Compute() call in BoostedTreesBucketizeOp
+Successfully modified BoostedTreesBucketizeOp
+Found Compute() call in BoostedTreesCreateEnsembleOp
+Successfully modified BoostedTreesCreateEnsembleOp
+Found Compute() call in BoostedTreesGetEnsembleStatesOp
+Skipping BoostedTreesGetEnsembleStatesOp (mutex)
+Found Compute() call in BoostedTreesSerializeEnsembleOp
+Skipping BoostedTreesSerializeEnsembleOp (mutex)
+Found Compute() call in BoostedTreesDeserializeEnsembleOp
+Skipping BoostedTreesDeserializeEnsembleOp (mutex)
+Found Compute() call in BoostedTreesUpdateEnsembleOp
+Skipping BoostedTreesUpdateEnsembleOp (mutex)
+Found Compute() call in BoostedTreesUpdateEnsembleV2Op
+Skipping BoostedTreesUpdateEnsembleV2Op (mutex)
+Found Compute() call in BoostedTreesCenterBiasOp
+Skipping BoostedTreesCenterBiasOp (mutex)
+Found Compute() call in DecodeCompressedOp
+Successfully modified DecodeCompressedOp
+Found Compute() call in HistogramFixedWidthFunctor
+Skipping HistogramFixedWidthFunctor (>1 params)
+Found Compute() call in HistogramFixedWidthOp
+Successfully modified HistogramFixedWidthOp
+Found Compute() call in DepthwiseConv2dNativeOp
+Successfully modified DepthwiseConv2dNativeOp
+Found Compute() call in AddNOp
+Successfully modified AddNOp
+Found Compute() call in AddNOp
+Successfully modified AddNOp
+Found Compute() call in WhileOp
+Successfully modified WhileOp
+Found Compute() call in ToBoolOp
+Successfully modified ToBoolOp
+Found Compute() call in FakeParamOp
+Successfully modified FakeParamOp
+Found Compute() call in DeviceIndexOp
+Successfully modified DeviceIndexOp
+Found Compute() call in StringUpperOp
+Successfully modified StringUpperOp
+Found Compute() call in QuantizedReshapeOp
+Successfully modified QuantizedReshapeOp
+Found Compute() call in SparseAddOp
+Successfully modified SparseAddOp
+Found Compute() call in SerializeSparseOp
+Successfully modified SerializeSparseOp
+Found Compute() call in SerializeManySparseOp
+Successfully modified SerializeManySparseOp
+Found Compute() call in ReaderVerbSyncOpKernel
+Successfully modified ReaderVerbSyncOpKernel
+Found Compute() call in FingerprintOp
+Successfully modified FingerprintOp
+Found Compute() call in AvgPoolingOp
+Successfully modified AvgPoolingOp
+Found Compute() call in AvgPoolingGradOp
+Successfully modified AvgPoolingGradOp
+Found Compute() call in SparseAddGradOp
+Successfully modified SparseAddGradOp
+Found Compute() call in BCastArgsOp
+Successfully modified BCastArgsOp
+Found Compute() call in BCastGradArgsOp
+Successfully modified BCastGradArgsOp
+Found Compute() call in InTopK
+Successfully modified InTopK
+Found Compute() call in ReduceJoinOp
+Successfully modified ReduceJoinOp
+Found Compute() call in RaggedTensorToTensorBaseOp
+Successfully modified RaggedTensorToTensorBaseOp
+Found Compute() call in ScatterUpdateOp
+Skipping ScatterUpdateOp (mutex)
+Found Compute() call in StatefulMultinomialOp
+Successfully modified StatefulMultinomialOp
+Found Compute() call in StatelessMultinomialOp
+Successfully modified StatelessMultinomialOp
+Found Compute() call in RangeOp
+Successfully modified RangeOp
+Found Compute() call in LinSpaceOp
+Successfully modified LinSpaceOp
+Found Compute() call in QuantizedResizeBilinearOp
+Successfully modified QuantizedResizeBilinearOp
+Found Compute() call in StringSplitOp
+Successfully modified StringSplitOp
+Found Compute() call in StringSplitV2Op
+Successfully modified StringSplitV2Op
+Found Compute() call in SliceOp
+Successfully modified SliceOp
+Found Compute() call in RandomPoissonOp
+Successfully modified RandomPoissonOp
+Found Compute() call in UnsortedSegmentJoinOp
+Successfully modified UnsortedSegmentJoinOp
+Found Compute() call in QuantizedInstanceNorm
+Successfully modified QuantizedInstanceNorm
+Found Compute() call in BatchNormOp
+Successfully modified BatchNormOp
+Found Compute() call in BatchNormGradOp
+Successfully modified BatchNormGradOp
+Found Compute() call in ApplyGradientDescentOp
+Skipping ApplyGradientDescentOp (mutex)
+Found Compute() call in ApplyAdadeltaOp
+Skipping ApplyAdadeltaOp (mutex)
+Found Compute() call in SparseApplyAdadeltaOp
+Skipping SparseApplyAdadeltaOp (mutex)
+Found Compute() call in ApplyProximalGradientDescentOp
+Skipping ApplyProximalGradientDescentOp (mutex)
+Found Compute() call in SparseApplyProximalGradientDescentOp
+Skipping SparseApplyProximalGradientDescentOp (mutex)
+Found Compute() call in ApplyAdagradOp
+Skipping ApplyAdagradOp (mutex)
+Found Compute() call in ApplyAdagradV2Op
+Skipping ApplyAdagradV2Op (mutex)
+Found Compute() call in ApplyProximalAdagradOp
+Skipping ApplyProximalAdagradOp (mutex)
+Found Compute() call in SparseApplyAdagradOp
+Skipping SparseApplyAdagradOp (mutex)
+Found Compute() call in SparseApplyAdagradV2Op
+Skipping SparseApplyAdagradV2Op (mutex)
+Found Compute() call in SparseApplyProximalAdagradOp
+Skipping SparseApplyProximalAdagradOp (mutex)
+Found Compute() call in ApplyAdagradDAOp
+Skipping ApplyAdagradDAOp (mutex)
+Found Compute() call in SparseApplyAdagradDAOp
+Skipping SparseApplyAdagradDAOp (mutex)
+Found Compute() call in ApplyFtrlOp
+Skipping ApplyFtrlOp (mutex)
+Found Compute() call in SparseApplyFtrlOp
+Skipping SparseApplyFtrlOp (mutex)
+Found Compute() call in ApplyMomentumOp
+Skipping ApplyMomentumOp (mutex)
+Found Compute() call in SparseApplyMomentumOp
+Skipping SparseApplyMomentumOp (mutex)
+Found Compute() call in ApplyKerasMomentumOp
+Skipping ApplyKerasMomentumOp (mutex)
+Found Compute() call in SparseApplyKerasMomentumOp
+Skipping SparseApplyKerasMomentumOp (mutex)
+Found Compute() call in ApplyAdamOp
+Skipping ApplyAdamOp (mutex)
+Found Compute() call in ApplyAdamWithAmsgradOp
+Skipping ApplyAdamWithAmsgradOp (mutex)
+Found Compute() call in ApplyAdaMaxOp
+Skipping ApplyAdaMaxOp (mutex)
+Found Compute() call in ApplyRMSPropOp
+Skipping ApplyRMSPropOp (mutex)
+Found Compute() call in ApplyCenteredRMSPropOp
+Skipping ApplyCenteredRMSPropOp (mutex)
+Found Compute() call in SparseApplyRMSPropOp
+Skipping SparseApplyRMSPropOp (mutex)
+Found Compute() call in SparseApplyCenteredRMSPropOp
+Skipping SparseApplyCenteredRMSPropOp (mutex)
+Found Compute() call in ApplyAddSignOp
+Skipping ApplyAddSignOp (mutex)
+Found Compute() call in ApplyPowerSignOp
+Skipping ApplyPowerSignOp (mutex)
+Found Compute() call in RegexReplaceOp
+Successfully modified RegexReplaceOp
+Found Compute() call in StaticRegexReplaceOp
+Successfully modified StaticRegexReplaceOp
+Found Compute() call in RequantizeOp
+Successfully modified RequantizeOp
+Found Compute() call in StageOp
+Successfully modified StageOp
+Found Compute() call in UnstageOp
+Successfully modified UnstageOp
+Found Compute() call in StagePeekOp
+Successfully modified StagePeekOp
+Found Compute() call in StageSizeOp
+Successfully modified StageSizeOp
+Found Compute() call in StageClearOp
+Successfully modified StageClearOp
+Found Compute() call in RaggedTensorToVariantOp
+Successfully modified RaggedTensorToVariantOp
+Found Compute() call in RaggedTensorToVariantGradientOp
+Successfully modified RaggedTensorToVariantGradientOp
+Found Compute() call in ReadFileOp
+Successfully modified ReadFileOp
+Found Compute() call in WriteFileOp
+Successfully modified WriteFileOp
+Found Compute() call in StridedSliceOp
+Successfully modified StridedSliceOp
+Found Compute() call in StridedSliceGradOp
+Successfully modified StridedSliceGradOp
+Found Compute() call in StridedSliceAssignOp
+Skipping StridedSliceAssignOp (mutex)
+Found Compute() call in DepthwiseConv2dNativeBackpropInputOp
+Successfully modified DepthwiseConv2dNativeBackpropInputOp
+Found Compute() call in DepthwiseConv2dNativeBackpropFilterOp
+Successfully modified DepthwiseConv2dNativeBackpropFilterOp
+Found Compute() call in QuantizedAvgPoolingOp
+Successfully modified QuantizedAvgPoolingOp
+Found Compute() call in QuantizedMaxPoolingOp
+Successfully modified QuantizedMaxPoolingOp
+Found Compute() call in SoftmaxXentWithLogitsOp
+Successfully modified SoftmaxXentWithLogitsOp
+Found Compute() call in ScanOp
+Successfully modified ScanOp
+Found Compute() call in AudioSpectrogramOp
+Successfully modified AudioSpectrogramOp
+Found Compute() call in CountUpToOp
+Skipping CountUpToOp (mutex)
+Found Compute() call in ResourceCountUpToOp
+Skipping ResourceCountUpToOp (mutex)
+Found Compute() call in UnicodeScriptOp
+Successfully modified UnicodeScriptOp
+Found Compute() call in FakeQueueOp
+Successfully modified FakeQueueOp
+Found Compute() call in SparseConcatOp
+Successfully modified SparseConcatOp
+Found Compute() call in BucketizeFunctor
+Skipping BucketizeFunctor (>1 params)
+Found Compute() call in BucketizeOp
+Successfully modified BucketizeOp
+Found Compute() call in BroadcastToOp
+Successfully modified BroadcastToOp
+Found Compute() call in ReverseSequenceOp
+Successfully modified ReverseSequenceOp
+Found Compute() call in SparseSoftmaxXentWithLogitsOp
+Successfully modified SparseSoftmaxXentWithLogitsOp
+Found Compute() call in OneHotOp
+Successfully modified OneHotOp
+Found Compute() call in MultiDeviceIteratorHandleOp
+Skipping MultiDeviceIteratorHandleOp (ResourceMgr)
+Found Compute() call in MultiDeviceIteratorInitOp
 Successfully modified MultiDeviceIteratorInitOp
+Found Compute() call in MultiDeviceIteratorToStringHandleOp
 Successfully modified MultiDeviceIteratorToStringHandleOp
+Found Compute() call in MultiDeviceIteratorFromStringHandleOp
 Successfully modified MultiDeviceIteratorFromStringHandleOp
+Found Compute() call in DeleteMultiDeviceIteratorOp
 Successfully modified DeleteMultiDeviceIteratorOp
+Found Compute() call in UniqueOp
+Successfully modified UniqueOp
+Found Compute() call in NthElementOp
+Successfully modified NthElementOp
+Found Compute() call in DecodeWavOp
+Successfully modified DecodeWavOp
+Found Compute() call in L2LossOp
+Successfully modified L2LossOp
+Found Compute() call in StatelessRandomGammaOp
+Successfully modified StatelessRandomGammaOp
+Found Compute() call in GatherNdOp
+Successfully modified GatherNdOp
+Found Compute() call in QuantizedConv2DOp
+Successfully modified QuantizedConv2DOp
+Found Compute() call in UnaryOpsComposition
+Successfully modified UnaryOpsComposition
+Found Compute() call in ArgOp
+Successfully modified ArgOp
+Found Compute() call in SaveV2
+Successfully modified SaveV2
+Found Compute() call in RestoreV2
+Successfully modified RestoreV2
+Found Compute() call in MergeV2Checkpoints
+Successfully modified MergeV2Checkpoints
+Found Compute() call in StatsAggregatorSummaryOp
 Skipping StatsAggregatorSummaryOp (SummaryOp)
+Found Compute() call in StatsAggregatorSetSummaryWriterOp
 Successfully modified StatsAggregatorSetSummaryWriterOp
+Found Compute() call in IteratorGetDeviceOp
 Successfully modified IteratorGetDeviceOp
+Found Compute() call in KmeansPlusPlusInitializationOp
+Successfully modified KmeansPlusPlusInitializationOp
+Found Compute() call in KMC2ChainInitializationOp
+Successfully modified KMC2ChainInitializationOp
+Found Compute() call in NearestNeighborsOp
+Successfully modified NearestNeighborsOp
+Found Compute() call in TileOp
+Successfully modified TileOp
+Found Compute() call in TileGradientOp
+Successfully modified TileGradientOp
+Found Compute() call in DecodeRawOp
+Successfully modified DecodeRawOp
+Found Compute() call in SparseTensorDenseMatMulOp
+Successfully modified SparseTensorDenseMatMulOp
+Found Compute() call in SparseTensorDenseMatMulFunctor
+Skipping SparseTensorDenseMatMulFunctor (>1 params)
+Found Compute() call in ThreadPoolHandleOp
+Skipping ThreadPoolHandleOp (ResourceMgr)
+Found Compute() call in RegexFullMatchOp
+Successfully modified RegexFullMatchOp
+Found Compute() call in StaticRegexFullMatchOp
+Successfully modified StaticRegexFullMatchOp
+Found Compute() call in Conv2DBackpropFilterOp
+Successfully modified Conv2DBackpropFilterOp
+Found Compute() call in Conv2DCustomBackpropFilterOp
+Successfully modified Conv2DCustomBackpropFilterOp
+Found Compute() call in ComputeBatchSizeOp
 Successfully modified ComputeBatchSizeOp
-Skipping ThreadPoolHandleOp (no body)
+Found Compute() call in CSRMatMulCPUOp
+Successfully modified CSRMatMulCPUOp
+Found Compute() call in CSRMatMulGPUOp
+Successfully modified CSRMatMulGPUOp
+Found Compute() call in CSROrderingAMDCPUOp
+Successfully modified CSROrderingAMDCPUOp
+Found Compute() call in CSRAddOp
+Successfully modified CSRAddOp
+Found Compute() call in CSRSparseCholeskyCPUOp
+Successfully modified CSRSparseCholeskyCPUOp
+Found Compute() call in CSRSparseMatrixToSparseTensorCPUOp
+Successfully modified CSRSparseMatrixToSparseTensorCPUOp
+Found Compute() call in CSRSparseMatrixToSparseTensorGPUOp
+Successfully modified CSRSparseMatrixToSparseTensorGPUOp
+Found Compute() call in SparseTensorToCSRSparseMatrixCPUOp
+Successfully modified SparseTensorToCSRSparseMatrixCPUOp
+Found Compute() call in CSRTransposeOp
+Successfully modified CSRTransposeOp
+Found Compute() call in CTCGreedyDecoderOp
+Successfully modified CTCGreedyDecoderOp
+Found Compute() call in CTCBeamSearchDecoderOp
+Successfully modified CTCBeamSearchDecoderOp
+Found Compute() call in CSRSparseMatrixToDenseCPUOp
+Successfully modified CSRSparseMatrixToDenseCPUOp
+Found Compute() call in CSRSparseMatrixToDenseGPUOp
+Successfully modified CSRSparseMatrixToDenseGPUOp
+Found Compute() call in CSRSparseMatMulCPUOp
+Successfully modified CSRSparseMatMulCPUOp
+Found Compute() call in CSRSparseMatMulGPUOp
+Successfully modified CSRSparseMatMulGPUOp
+Found Compute() call in CSRMulOp
+Successfully modified CSRMulOp
+Found Compute() call in CSRNNZOp
+Successfully modified CSRNNZOp
+Found Compute() call in DenseToCSRSparseMatrixCPUOp
+Successfully modified DenseToCSRSparseMatrixCPUOp
+Found Compute() call in CSRSparseMatrixComponentsOp
+Successfully modified CSRSparseMatrixComponentsOp
+Found Compute() call in CSRSoftmaxOp
+Successfully modified CSRSoftmaxOp
+Found Compute() call in CSRSoftmaxGradOp
+Successfully modified CSRSoftmaxGradOp
+Found Compute() call in CSRZerosOp
+Successfully modified CSRZerosOp
+Found Compute() call in GetSessionHandleOp
+Successfully modified GetSessionHandleOp
+Found Compute() call in GetSessionTensorOp
+Successfully modified GetSessionTensorOp
+Found Compute() call in DeleteSessionTensorOp
+Successfully modified DeleteSessionTensorOp
+Found Compute() call in QuantizedMulOp
+Successfully modified QuantizedMulOp
+Found Compute() call in FusedMatMulOp
+Successfully modified FusedMatMulOp
+Found Compute() call in StringStripOp
+Successfully modified StringStripOp
+Found Compute() call in SparseCrossOp
+Successfully modified SparseCrossOp
+Found Compute() call in SparseCrossV2Op
+Successfully modified SparseCrossV2Op
+Found Compute() call in SparseCrossHashedOp
+Successfully modified SparseCrossHashedOp
+Found Compute() call in ResizeNearestNeighborOp
+Successfully modified ResizeNearestNeighborOp
+Found Compute() call in ResizeNearestNeighborOpGrad
+Successfully modified ResizeNearestNeighborOpGrad
+Found Compute() call in StringNGramsOp
+Successfully modified StringNGramsOp
+Found Compute() call in AsStringOp
+Successfully modified AsStringOp
+Found Compute() call in RandomCropOp
+Successfully modified RandomCropOp
+Found Compute() call in DeserializeSparseOp
+Successfully modified DeserializeSparseOp
+Found Compute() call in ExtractJpegShapeOp
+Successfully modified ExtractJpegShapeOp
+Found Compute() call in NonMaxSuppressionOp
+Successfully modified NonMaxSuppressionOp
+Found Compute() call in NonMaxSuppressionV2Op
+Successfully modified NonMaxSuppressionV2Op
+Found Compute() call in NonMaxSuppressionV3Op
+Successfully modified NonMaxSuppressionV3Op
+Found Compute() call in NonMaxSuppressionV4Op
+Successfully modified NonMaxSuppressionV4Op
+Found Compute() call in NonMaxSuppressionV5Op
+Successfully modified NonMaxSuppressionV5Op
+Found Compute() call in NonMaxSuppressionWithOverlapsOp
+Successfully modified NonMaxSuppressionWithOverlapsOp
+Found Compute() call in CombinedNonMaxSuppressionOp
+Successfully modified CombinedNonMaxSuppressionOp
+Found Compute() call in GenerateVocabRemappingOp
+Successfully modified GenerateVocabRemappingOp
+Found Compute() call in FractionalMaxPoolOp
+Successfully modified FractionalMaxPoolOp
+Found Compute() call in FractionalMaxPoolGradOp
+Successfully modified FractionalMaxPoolGradOp
+Found Compute() call in Conv2DUsingGemmOp
+Successfully modified Conv2DUsingGemmOp
+Found Compute() call in ResizeBilinearOp
+Successfully modified ResizeBilinearOp
+Found Compute() call in ResizeBilinearOpGrad
+Successfully modified ResizeBilinearOpGrad
+Found Compute() call in ResizeAreaOp
+Successfully modified ResizeAreaOp
+Found Compute() call in DilationOp
+Successfully modified DilationOp
+Found Compute() call in DilationBackpropInputOp
+Successfully modified DilationBackpropInputOp
+Found Compute() call in DilationBackpropFilterOp
+Successfully modified DilationBackpropFilterOp
+Found Compute() call in ImageProjectiveTransformV2
+Successfully modified ImageProjectiveTransformV2
+Found Compute() call in SpaceToBatchNDOp
+Successfully modified SpaceToBatchNDOp
+Found Compute() call in SpaceToBatchOp
+Successfully modified SpaceToBatchOp
+Found Compute() call in MfccOp
+Successfully modified MfccOp
+Found Compute() call in DequantizeOp
+Successfully modified DequantizeOp
+Found Compute() call in QuantizeAndDequantizeV2Op
+Successfully modified QuantizeAndDequantizeV2Op
+Found Compute() call in QuantizeAndDequantizeV4GradientOp
+Successfully modified QuantizeAndDequantizeV4GradientOp
+Found Compute() call in QuantizeAndDequantizeV3Op
+Successfully modified QuantizeAndDequantizeV3Op
+Found Compute() call in QuantizeAndDequantizeOp
+Successfully modified QuantizeAndDequantizeOp
+Found Compute() call in ClipOp
+Successfully modified ClipOp
+Found Compute() call in FractionalAvgPoolOp
+Successfully modified FractionalAvgPoolOp
+Found Compute() call in FractionalAvgPoolGradOp
+Successfully modified FractionalAvgPoolGradOp
+Found Compute() call in ExtractVolumePatchesOp
+Successfully modified ExtractVolumePatchesOp
+Found Compute() call in ConcatBaseOp
+Successfully modified ConcatBaseOp
+Found Compute() call in ConcatOffsetOp
+Successfully modified ConcatOffsetOp
+Found Compute() call in EncodePngOp
+Successfully modified EncodePngOp
+Found Compute() call in DynamicStitchOpImplCPU
+Successfully modified DynamicStitchOpImplCPU
+Found Compute() call in ExtractGlimpseOp
+Successfully modified ExtractGlimpseOp
+Found Compute() call in SnapshotOp
+Successfully modified SnapshotOp
+Found Compute() call in TensorArrayCreationOp
+Skipping TensorArrayCreationOp (ResourceMgr)
+Found Compute() call in TensorArrayWriteOp
+Skipping TensorArrayWriteOp (tensor array)
+Found Compute() call in TensorArrayReadOp
+Skipping TensorArrayReadOp (tensor array)
+Found Compute() call in TensorArrayPackOrGatherOp
+Skipping TensorArrayPackOrGatherOp (tensor array)
+Found Compute() call in TensorArrayConcatOp
+Skipping TensorArrayConcatOp (tensor array)
+Found Compute() call in TensorArrayUnpackOrScatterOp
+Skipping TensorArrayUnpackOrScatterOp (tensor array)
+Found Compute() call in TensorArraySplitOp
+Skipping TensorArraySplitOp (tensor array)
+Found Compute() call in TensorArraySizeOp
+Skipping TensorArraySizeOp (tensor array)
+Found Compute() call in TensorArrayCloseOp
+Skipping TensorArrayCloseOp (mutex)
+Found Compute() call in QuantizedConcatOp
+Successfully modified QuantizedConcatOp
+Found Compute() call in AdjustSaturationOpBase
+Successfully modified AdjustSaturationOpBase
+Found Compute() call in RecordInputOp
+Successfully modified RecordInputOp
+Found Compute() call in SparseToDense
+Successfully modified SparseToDense
+Found Compute() call in SoftmaxOp
+Successfully modified SoftmaxOp
+Found Compute() call in QuantizedAddOp
+Successfully modified QuantizedAddOp
+Found Compute() call in TopK
+Successfully modified TopK
+Found Compute() call in LegacyStringToHashBucketOp
+Successfully modified LegacyStringToHashBucketOp
+Found Compute() call in RandomShuffleOp
+Successfully modified RandomShuffleOp
+Found Compute() call in CreateSummaryFileWriterOp
+Successfully modified CreateSummaryFileWriterOp
+Found Compute() call in CreateSummaryDbWriterOp
+Successfully modified CreateSummaryDbWriterOp
+Found Compute() call in FlushSummaryWriterOp
+Successfully modified FlushSummaryWriterOp
+Found Compute() call in CloseSummaryWriterOp
+Successfully modified CloseSummaryWriterOp
+Found Compute() call in WriteSummaryOp
+Skipping WriteSummaryOp (SummaryOp)
+Found Compute() call in WriteRawProtoSummaryOp
+Skipping WriteRawProtoSummaryOp (SummaryOp)
+Found Compute() call in ImportEventOp
+Successfully modified ImportEventOp
+Found Compute() call in WriteScalarSummaryOp
+Skipping WriteScalarSummaryOp (SummaryOp)
+Found Compute() call in WriteHistogramSummaryOp
+Skipping WriteHistogramSummaryOp (SummaryOp)
+Found Compute() call in WriteImageSummaryOp
+Skipping WriteImageSummaryOp (SummaryOp)
+Found Compute() call in WriteAudioSummaryOp
+Skipping WriteAudioSummaryOp (SummaryOp)
+Found Compute() call in WriteGraphSummaryOp
+Skipping WriteGraphSummaryOp (SummaryOp)
+Found Compute() call in RiscAbsOp
+Successfully modified RiscAbsOp
+Found Compute() call in EncodeJpegOp
+Successfully modified EncodeJpegOp
+Found Compute() call in EncodeJpegVariableQualityOp
+Successfully modified EncodeJpegVariableQualityOp
+Found Compute() call in RiscTransposeOp
+Successfully modified RiscTransposeOp
+Found Compute() call in DecodeImageV2Op
+Successfully modified DecodeImageV2Op
+Found Compute() call in DenseCount
+Successfully modified DenseCount
+Found Compute() call in SparseCount
+Successfully modified SparseCount
+Found Compute() call in RaggedCount
+Successfully modified RaggedCount
+Found Compute() call in RiscSliceOp
+Successfully modified RiscSliceOp
+Found Compute() call in ScaleAndTranslateOp
+Successfully modified ScaleAndTranslateOp
+Found Compute() call in ScaleAndTranslateGradOp
+Successfully modified ScaleAndTranslateGradOp
+Found Compute() call in RiscDotOp
+Successfully modified RiscDotOp
+Found Compute() call in TensorToHashBucketOp
+Successfully modified TensorToHashBucketOp
+Found Compute() call in PopulationCountOp
+Successfully modified PopulationCountOp
+Found Compute() call in RiscCeilOp
+Successfully modified RiscCeilOp
+Found Compute() call in CTCLossOp
+Successfully modified CTCLossOp
+Found Compute() call in RiscMinOp
+Successfully modified RiscMinOp
+Found Compute() call in RiscCastOp
+Successfully modified RiscCastOp
+Found Compute() call in RiscUnaryOp
+Successfully modified RiscUnaryOp
+Found Compute() call in DrawBoundingBoxesOp
+Successfully modified DrawBoundingBoxesOp
+Found Compute() call in RiscReduceOp
+Successfully modified RiscReduceOp
+Found Compute() call in SplitOpCPU
+Successfully modified SplitOpCPU
+Found Compute() call in AdjustContrastOp
+Successfully modified AdjustContrastOp
+Found Compute() call in AdjustContrastOpV2Base
+Successfully modified AdjustContrastOpV2Base
+Found Compute() call in RiscTriangularSolveOp
+Successfully modified RiscTriangularSolveOp
+Found Compute() call in RiscImagOp
+Successfully modified RiscImagOp
+Found Compute() call in StatefulSampleDistortedBoundingBoxOp
+Successfully modified StatefulSampleDistortedBoundingBoxOp
+Found Compute() call in StatelessSampleDistortedBoundingBoxOp
+Successfully modified StatelessSampleDistortedBoundingBoxOp
+Found Compute() call in RiscMulOp
+Successfully modified RiscMulOp
+Found Compute() call in RiscMaxOp
+Successfully modified RiscMaxOp
+Found Compute() call in RiscConditionOp
+Successfully modified RiscConditionOp
+Found Compute() call in RiscPowOp
+Successfully modified RiscPowOp
+Found Compute() call in RiscBinaryComparisonOp
+Successfully modified RiscBinaryComparisonOp
+Found Compute() call in AdjustHueOpBase
+Successfully modified AdjustHueOpBase
+Found Compute() call in RiscGatherOp
+Successfully modified RiscGatherOp
+Found Compute() call in ExtractImagePatchesOp
+Successfully modified ExtractImagePatchesOp
+Found Compute() call in RiscFloorOp
+Successfully modified RiscFloorOp
+Found Compute() call in RiscSortOp
+Successfully modified RiscSortOp
+Found Compute() call in StringFormatOp
+Successfully modified StringFormatOp
+Found Compute() call in RiscConcatOp
+Successfully modified RiscConcatOp
+Found Compute() call in ConsumeMutexLockOp
+Skipping ConsumeMutexLockOp (mutex)
+Found Compute() call in MirrorPadOp
+Successfully modified MirrorPadOp
+Found Compute() call in MirrorPadGradOp
+Successfully modified MirrorPadGradOp
+Found Compute() call in RiscRealOp
+Successfully modified RiscRealOp
+Found Compute() call in RiscWhileOp
+Successfully modified RiscWhileOp
+Found Compute() call in SelectOp
+Successfully modified SelectOp
+Found Compute() call in SelectV2Op
+Successfully modified SelectV2Op
+Found Compute() call in RiscShapeOp
+Successfully modified RiscShapeOp
+Found Compute() call in RGBToHSVOp
+Successfully modified RGBToHSVOp
+Found Compute() call in HSVToRGBOp
+Successfully modified HSVToRGBOp
+Found Compute() call in RiscSqueezeOp
+Successfully modified RiscSqueezeOp
+Found Compute() call in BaseCandidateSamplerOp
+Successfully modified BaseCandidateSamplerOp
+Found Compute() call in ComputeAccidentalHitsOp
+Successfully modified ComputeAccidentalHitsOp
+Found Compute() call in RiscPoolOp
+Successfully modified RiscPoolOp
+Found Compute() call in RiscReshapeOp
+Successfully modified RiscReshapeOp
+Found Compute() call in StringJoinOp
+Successfully modified StringJoinOp
+Found Compute() call in RiscLogOp
+Successfully modified RiscLogOp
+Found Compute() call in RiscPadOp
+Successfully modified RiscPadOp
+Found Compute() call in LookupTableFindOp
+Successfully modified LookupTableFindOp
+Found Compute() call in LookupTableInsertOp
+Successfully modified LookupTableInsertOp
+Found Compute() call in LookupTableRemoveOp
+Successfully modified LookupTableRemoveOp
+Found Compute() call in LookupTableSizeOp
+Successfully modified LookupTableSizeOp
+Found Compute() call in LookupTableExportOp
+Successfully modified LookupTableExportOp
+Found Compute() call in LookupTableImportOp
+Successfully modified LookupTableImportOp
+Found Compute() call in RiscRemOp
+Successfully modified RiscRemOp
+Found Compute() call in RiscScatterOp
+Successfully modified RiscScatterOp
+Found Compute() call in SparseFillEmptyRowsOp
+Successfully modified SparseFillEmptyRowsOp
+Found Compute() call in SparseFillEmptyRowsGradOp
+Successfully modified SparseFillEmptyRowsGradOp
+Found Compute() call in ReverseOp
+Successfully modified ReverseOp
+Found Compute() call in ReverseV2Op
+Successfully modified ReverseV2Op
+Found Compute() call in RiscAddOp
+Successfully modified RiscAddOp
+Found Compute() call in SparseSoftmaxOp
+Successfully modified SparseSoftmaxOp
+Found Compute() call in RiscReverseOp
+Successfully modified RiscReverseOp
+Found Compute() call in MatchingFilesOp
+Successfully modified MatchingFilesOp
+Found Compute() call in RiscLogicalOrOp
+Successfully modified RiscLogicalOrOp
+Found Compute() call in QuantizeDownAndShrinkRangeOp
+Successfully modified QuantizeDownAndShrinkRangeOp
+Found Compute() call in RiscConvOp
+Successfully modified RiscConvOp
+Found Compute() call in RiscNegOp
+Successfully modified RiscNegOp
+Found Compute() call in RiscMaxOp
+Successfully modified RiscMaxOp
+Found Compute() call in RiscLogicalNotOp
+Successfully modified RiscLogicalNotOp
+Found Compute() call in RiscBroadcastOp
+Successfully modified RiscBroadcastOp
+Found Compute() call in RiscSignOp
+Successfully modified RiscSignOp
+Found Compute() call in RiscFftOp
+Successfully modified RiscFftOp
+Found Compute() call in RiscBinaryArithmeticOp
+Successfully modified RiscBinaryArithmeticOp
+Found Compute() call in RiscBitcastOp
+Successfully modified RiscBitcastOp
+Found Compute() call in RiscCholeskyOp
+Successfully modified RiscCholeskyOp
+Found Compute() call in RiscExpOp
+Successfully modified RiscExpOp
+Found Compute() call in RiscIsFiniteOp
+Successfully modified RiscIsFiniteOp
+Found Compute() call in RiscLogicalAndOp
+Successfully modified RiscLogicalAndOp
+Found Compute() call in RiscRandomUniformOp
+Successfully modified RiscRandomUniformOp
+Found Compute() call in RiscCosOp
+Successfully modified RiscCosOp
+Found Compute() call in RiscDivOp
+Successfully modified RiscDivOp

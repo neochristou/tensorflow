@@ -16,6 +16,7 @@ limitations under the License.
 // See docs in ../ops/state_ops.cc.
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/scatter_functor.h"

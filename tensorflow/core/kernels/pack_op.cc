@@ -20,6 +20,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -46,7 +47,7 @@ class PackOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("axis", &axis_));
   }
 
-  void Compute(OpKernelContext* c) override {
+  void do_PackOp(OpKernelContext *c){
     const int num = num_inputs();
     const Tensor& first_input = c->input(0);
 
@@ -114,6 +115,30 @@ class PackOp : public OpKernel {
 #endif  // GOOGLE_CUDA || TENSORFLOW_USE_ROCM
       ConcatCPU<T>(c->device(), inputs_flat, &output_flat);
     }
+  }
+
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("PackOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("PackOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_PackOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_PackOp(c);
+      } else {
+        do_PackOp(c);
+      }
+
   }
 
  private:

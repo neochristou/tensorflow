@@ -16,6 +16,9 @@ static llvm::cl::OptionCategory InjectFuzzerCategory("inject-fuzzer options");
 //===----------------------------------------------------------------------===//
 // PluginASTAction
 //===----------------------------------------------------------------------===//
+//
+std::string InputFilename;
+
 class InjectFuzzerPluginAction : public PluginASTAction {
 public:
   bool ParseArgs(const CompilerInstance &CI,
@@ -26,7 +29,7 @@ public:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef file) override {
     InjectFuzzerRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-    return std::make_unique<InjectFuzzerASTConsumer>(InjectFuzzerRewriter);
+    return std::make_unique<InjectFuzzerASTConsumer>(InjectFuzzerRewriter, InputFilename);
   }
 
 private:
@@ -41,6 +44,7 @@ int main(int Argc, const char **Argv) {
   clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
                                  OptionsParser.getSourcePathList());
 
+  InputFilename = std::string(Argv[Argc-1]);
   return Tool.run(
       clang::tooling::newFrontendActionFactory<InjectFuzzerPluginAction>().get());
 }

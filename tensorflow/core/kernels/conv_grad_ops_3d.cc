@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -223,7 +224,7 @@ class Conv3DBackpropInputOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Conv3DBackpropInputOp(OpKernelContext *context){
     const Tensor& filter = context->input(1);
     const TensorShape& filter_shape = filter.shape();
 
@@ -280,6 +281,30 @@ class Conv3DBackpropInputOp : public OpKernel {
         static_cast<int>(dims.spatial_dims[0].stride),   // stride_planes
         static_cast<int>(dims.spatial_dims[1].stride),   // stride_rows
         static_cast<int>(dims.spatial_dims[2].stride));  // stride_cols
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv3DBackpropInputOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv3DBackpropInputOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Conv3DBackpropInputOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Conv3DBackpropInputOp(context);
+      } else {
+        do_Conv3DBackpropInputOp(context);
+      }
+
   }
 
  private:
@@ -352,7 +377,7 @@ class Conv3DCustomBackpropInputOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Conv3DCustomBackpropInputOp(OpKernelContext *context){
     const Tensor& filter = context->input(1);
     const TensorShape& filter_shape = filter.shape();
 
@@ -630,6 +655,30 @@ class Conv3DCustomBackpropInputOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv3DCustomBackpropInputOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv3DCustomBackpropInputOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Conv3DCustomBackpropInputOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Conv3DCustomBackpropInputOp(context);
+      } else {
+        do_Conv3DCustomBackpropInputOp(context);
+      }
+
+  }
+
  private:
   std::vector<int32> dilation_;
   std::vector<int32> stride_;
@@ -730,7 +779,7 @@ class Conv3DBackpropFilterOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Conv3DBackpropFilterOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const TensorShape& input_shape = input.shape();
 
@@ -792,6 +841,30 @@ class Conv3DBackpropFilterOp : public OpKernel {
         static_cast<int>(dims.spatial_dims[0].stride),   // stride_planes
         static_cast<int>(dims.spatial_dims[1].stride),   // stride_rows
         static_cast<int>(dims.spatial_dims[2].stride));  // stride_cols
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv3DBackpropFilterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv3DBackpropFilterOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Conv3DBackpropFilterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Conv3DBackpropFilterOp(context);
+      } else {
+        do_Conv3DBackpropFilterOp(context);
+      }
+
   }
 
  private:
@@ -864,7 +937,7 @@ class Conv3DCustomBackpropFilterOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_Conv3DCustomBackpropFilterOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const TensorShape& input_shape = input.shape();
 
@@ -1097,6 +1170,30 @@ class Conv3DCustomBackpropFilterOp : public OpKernel {
       input_data += input_offset * shard_limit;
       out_backprop_data += output_offset * shard_limit;
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv3DCustomBackpropFilterOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv3DCustomBackpropFilterOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_Conv3DCustomBackpropFilterOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_Conv3DCustomBackpropFilterOp(context);
+      } else {
+        do_Conv3DCustomBackpropFilterOp(context);
+      }
+
   }
 
  private:

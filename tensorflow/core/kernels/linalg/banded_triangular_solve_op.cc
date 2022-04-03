@@ -18,6 +18,7 @@ limitations under the License.
 #include "third_party/eigen3/Eigen/Core"
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/kernels/fill_functor.h"
 #include "tensorflow/core/kernels/linalg/linalg_ops_common.h"
@@ -212,7 +213,7 @@ class BandedTriangularSolveOpCpu : public OpKernel {
 
   ~BandedTriangularSolveOpCpu() override {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_BandedTriangularSolveOpCpu(OpKernelContext *ctx){
     const Tensor& in0 = ctx->input(0);
     const Tensor& in1 = ctx->input(1);
 
@@ -264,6 +265,30 @@ class BandedTriangularSolveOpCpu : public OpKernel {
     LaunchBatchBandedTriangularSolve<Scalar>::Launch(
         ctx, in0_reshaped, in1_reshaped, adjoint_, lower_, bcast,
         &out_reshaped);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BandedTriangularSolveOpCpu")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BandedTriangularSolveOpCpu", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BandedTriangularSolveOpCpu(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BandedTriangularSolveOpCpu(ctx);
+      } else {
+        do_BandedTriangularSolveOpCpu(ctx);
+      }
+
   }
 
  private:

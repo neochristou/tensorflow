@@ -8,7 +8,8 @@
 
 class ComputeDeclMatcher : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  ComputeDeclMatcher(clang::Rewriter &InjectFuzzerRewriter) : InjectFuzzerRewriter(InjectFuzzerRewriter) {}
+  ComputeDeclMatcher(clang::Rewriter &InjectFuzzerRewriter, std::string InputFilename) :
+    InjectFuzzerRewriter(InjectFuzzerRewriter), InputFilename(InputFilename) {}
   // Callback that's executed whenever the Matcher in InjectFuzzerASTConsumer
   // matches.
   void run(const clang::ast_matchers::MatchFinder::MatchResult &) override;
@@ -17,11 +18,14 @@ public:
 
 private:
   clang::Rewriter InjectFuzzerRewriter;
+  std::string InputFilename;
 };
 
 class InjectFuzzerASTConsumer : public clang::ASTConsumer {
 public:
-  InjectFuzzerASTConsumer(clang::Rewriter &R);
+
+  InjectFuzzerASTConsumer(clang::Rewriter &R, std::string &InputFilename);
+
   void HandleTranslationUnit(clang::ASTContext &Ctx) override {
     Finder.matchAST(Ctx);
   }

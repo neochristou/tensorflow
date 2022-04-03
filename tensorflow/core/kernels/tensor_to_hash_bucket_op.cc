@@ -41,7 +41,7 @@ class TensorToHashBucketOp : public OpKernel {
                                         DataTypeString(dtype)));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_TensorToHashBucketOp(OpKernelContext *context){
     const Tensor* input_tensor;
     OP_REQUIRES_OK(context, context->input("input", &input_tensor));
     const auto& input_flat = input_tensor->flat<T>();
@@ -55,6 +55,30 @@ class TensorToHashBucketOp : public OpKernel {
     functor::LaunchTensorToHashBucket<Device, T>()(
         context, num_buckets_, input_flat.data(), input_tensor->NumElements(),
         output_flat.data());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TensorToHashBucketOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TensorToHashBucketOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_TensorToHashBucketOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_TensorToHashBucketOp(context);
+      } else {
+        do_TensorToHashBucketOp(context);
+      }
+
   }
 
  private:

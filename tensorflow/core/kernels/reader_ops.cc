@@ -16,6 +16,7 @@ limitations under the License.
 // See docs in ../ops/io_ops.cc.
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/queue_interface.h"
 #include "tensorflow/core/framework/reader_interface.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -29,12 +30,36 @@ class ReaderVerbSyncOpKernel : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void Compute(OpKernelContext* context) override {
+  void do_ReaderVerbSyncOpKernel(OpKernelContext *context){
     ReaderInterface* reader;
     OP_REQUIRES_OK(context,
                    GetResourceFromContext(context, "reader_handle", &reader));
     ComputeWithReader(context, reader);
     reader->Unref();
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReaderVerbSyncOpKernel")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReaderVerbSyncOpKernel", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ReaderVerbSyncOpKernel(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ReaderVerbSyncOpKernel(context);
+      } else {
+        do_ReaderVerbSyncOpKernel(context);
+      }
+
   }
 
  protected:

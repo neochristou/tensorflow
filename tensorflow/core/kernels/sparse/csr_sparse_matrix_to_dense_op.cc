@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/core/framework/allocator.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
@@ -51,7 +52,7 @@ class CSRSparseMatrixToDenseCPUOp : public OpKernel {
  public:
   explicit CSRSparseMatrixToDenseCPUOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_CSRSparseMatrixToDenseCPUOp(OpKernelContext *context){
     const CSRSparseMatrix* csr_sparse_matrix;
     OP_REQUIRES_OK(context,
                    ExtractVariantFromInput(context, 0, &csr_sparse_matrix));
@@ -117,6 +118,30 @@ class CSRSparseMatrixToDenseCPUOp : public OpKernel {
 
     context->set_output(0, dense_t);
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSparseMatrixToDenseCPUOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSparseMatrixToDenseCPUOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRSparseMatrixToDenseCPUOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRSparseMatrixToDenseCPUOp(context);
+      } else {
+        do_CSRSparseMatrixToDenseCPUOp(context);
+      }
+
+  }
 };
 
 template <typename Device, typename T>
@@ -124,7 +149,7 @@ class CSRSparseMatrixToDenseGPUOp : public OpKernel {
  public:
   explicit CSRSparseMatrixToDenseGPUOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void Compute(OpKernelContext* c) final {
+  void do_CSRSparseMatrixToDenseGPUOp(OpKernelContext *c){
     const CSRSparseMatrix* csr_sparse_matrix;
     OP_REQUIRES_OK(c, ExtractVariantFromInput(c, 0, &csr_sparse_matrix));
 
@@ -201,6 +226,30 @@ class CSRSparseMatrixToDenseGPUOp : public OpKernel {
             c, indices_t, values_t, dense_tensor_shape, &dense_t,
             true /*allocate*/));
     c->set_output(0, dense_t);
+  }
+
+void Compute(OpKernelContext* c) final {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSparseMatrixToDenseGPUOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSparseMatrixToDenseGPUOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CSRSparseMatrixToDenseGPUOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CSRSparseMatrixToDenseGPUOp(c);
+      } else {
+        do_CSRSparseMatrixToDenseGPUOp(c);
+      }
+
   }
 };
 

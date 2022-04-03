@@ -18,6 +18,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/meta_support.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
@@ -30,7 +31,7 @@ class QuantizedReluOp : public OpKernel {
  public:
   explicit QuantizedReluOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedReluOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const float min_input = context->input(1).flat<float>()(0);
     const float max_input = context->input(2).flat<float>()(0);
@@ -55,6 +56,30 @@ class QuantizedReluOp : public OpKernel {
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &output_max));
     output_max->flat<float>()(0) = max_input;
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedReluOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedReluOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedReluOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedReluOp(context);
+      } else {
+        do_QuantizedReluOp(context);
+      }
+
+  }
 };
 
 template <typename T>
@@ -63,7 +88,7 @@ class QuantizedRelu6Op : public OpKernel {
   explicit QuantizedRelu6Op(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_QuantizedRelu6Op(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const float min_input = context->input(1).flat<float>()(0);
     const float max_input = context->input(2).flat<float>()(0);
@@ -92,6 +117,30 @@ class QuantizedRelu6Op : public OpKernel {
     Tensor* output_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &output_max));
     output_max->flat<float>()(0) = max_input;
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedRelu6Op")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedRelu6Op", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_QuantizedRelu6Op(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_QuantizedRelu6Op(context);
+      } else {
+        do_QuantizedRelu6Op(context);
+      }
+
   }
 };
 

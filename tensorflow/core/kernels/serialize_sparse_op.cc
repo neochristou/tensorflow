@@ -23,6 +23,7 @@ limitations under the License.
 
 #include "tensorflow/core/common_runtime/dma_helper.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor.pb.h"
@@ -53,7 +54,7 @@ class SerializeSparseOp : public OpKernel {
   Status Initialize(Tensor* result);
   Status Serialize(const Tensor& input, T* result);
 
-  void Compute(OpKernelContext* context) override {
+  void do_SerializeSparseOp(OpKernelContext *context){
     const Tensor* input_indices;
     const Tensor* input_values;
     const Tensor* input_shape;
@@ -85,6 +86,30 @@ class SerializeSparseOp : public OpKernel {
     OP_REQUIRES_OK(context, Serialize(*input_shape, &serialized_sparse_t(2)));
 
     context->set_output(0, serialized_sparse);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SerializeSparseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SerializeSparseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SerializeSparseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SerializeSparseOp(context);
+      } else {
+        do_SerializeSparseOp(context);
+      }
+
   }
 };
 
@@ -335,7 +360,7 @@ class SerializeManySparseOp : public OpKernel {
   explicit SerializeManySparseOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SerializeManySparseOp(OpKernelContext *context){
     const Tensor* input_indices;
     const Tensor* input_values;
     const Tensor* input_shape;
@@ -390,6 +415,30 @@ class SerializeManySparseOp : public OpKernel {
 
     OP_REQUIRES_OK(context, SerializeGroups<T, U>()(&minibatch, output_shape, N,
                                                     rank, serialized_sparse));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SerializeManySparseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SerializeManySparseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SerializeManySparseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SerializeManySparseOp(context);
+      } else {
+        do_SerializeManySparseOp(context);
+      }
+
   }
 };
 

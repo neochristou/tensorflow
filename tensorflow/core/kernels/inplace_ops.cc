@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bfloat16.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -70,7 +71,7 @@ class ParallelConcatUpdate : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("loc", &loc_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_ParallelConcatUpdate(OpKernelContext *ctx){
     auto value = ctx->input(0);
     auto update = ctx->input(1);
 
@@ -97,6 +98,30 @@ class ParallelConcatUpdate : public OpKernel {
     ctx->set_output(0, output);
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParallelConcatUpdate")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParallelConcatUpdate", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ParallelConcatUpdate(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ParallelConcatUpdate(ctx);
+      } else {
+        do_ParallelConcatUpdate(ctx);
+      }
+
+  }
+
  private:
   int32 loc_;
 };
@@ -108,13 +133,37 @@ class ParallelConcatStart : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("shape", &shape_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_ParallelConcatStart(OpKernelContext *ctx){
     Tensor* out = nullptr;
     // We do not know whether the output will be used on GPU. Setting it to be
     // gpu-compatible for now.
     AllocatorAttributes attr;
     attr.set_gpu_compatible(true);
     OP_REQUIRES_OK(ctx, ctx->allocate_output(0, shape_, &out, attr));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParallelConcatStart")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParallelConcatStart", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ParallelConcatStart(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ParallelConcatStart(ctx);
+      } else {
+        do_ParallelConcatStart(ctx);
+      }
+
   }
 
  private:
@@ -200,7 +249,7 @@ class InplaceOpBase : public OpKernel {
  public:
   explicit InplaceOpBase(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_InplaceOpBase(OpKernelContext *ctx){
     auto x = ctx->input(0);
     auto i = ctx->input(1);
     auto v = ctx->input(2);
@@ -230,6 +279,30 @@ class InplaceOpBase : public OpKernel {
       OP_REQUIRES_OK(ctx, DoCompute(ctx, i, v, &y));
     }
     ctx->set_output(0, y);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("InplaceOpBase")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("InplaceOpBase", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_InplaceOpBase(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_InplaceOpBase(ctx);
+      } else {
+        do_InplaceOpBase(ctx);
+      }
+
   }
 
  protected:
@@ -324,11 +397,35 @@ class CopyOpBase : public OpKernel {
  public:
   explicit CopyOpBase(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_CopyOpBase(OpKernelContext *ctx){
     auto x = ctx->input(0);
     Tensor* y;
     OP_REQUIRES_OK(ctx, ctx->allocate_output(0, x.shape(), &y));
     OP_REQUIRES_OK(ctx, DoCompute(ctx, x, y));
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CopyOpBase")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CopyOpBase", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CopyOpBase(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CopyOpBase(ctx);
+      } else {
+        do_CopyOpBase(ctx);
+      }
+
   }
 
  protected:
@@ -384,7 +481,7 @@ class EmptyOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("init", &init_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_EmptyOp(OpKernelContext *ctx){
     const Tensor& shape = ctx->input(0);
     OP_REQUIRES(
         ctx, TensorShapeUtils::IsVector(shape.shape()),
@@ -402,6 +499,30 @@ class EmptyOp : public OpKernel {
       functor::SetZeroFunctor<Device, T>()(ctx->eigen_device<Device>(),
                                            out->flat<T>());
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EmptyOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EmptyOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EmptyOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EmptyOp(ctx);
+      } else {
+        do_EmptyOp(ctx);
+      }
+
   }
 
  private:

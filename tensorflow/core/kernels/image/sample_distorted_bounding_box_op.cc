@@ -19,6 +19,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -443,10 +444,34 @@ class StatefulSampleDistortedBoundingBoxOp
     OP_REQUIRES_OK(context, generator_.Init(context));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_StatefulSampleDistortedBoundingBoxOp(OpKernelContext *context){
     // Need to reserve samples since `generator_` is shared.
     this->DoCompute(context,
                     generator_.ReserveSamples32(4 * this->max_attempts_));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulSampleDistortedBoundingBoxOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulSampleDistortedBoundingBoxOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatefulSampleDistortedBoundingBoxOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatefulSampleDistortedBoundingBoxOp(context);
+      } else {
+        do_StatefulSampleDistortedBoundingBoxOp(context);
+      }
+
   }
 
  private:
@@ -460,7 +485,7 @@ class StatelessSampleDistortedBoundingBoxOp
   explicit StatelessSampleDistortedBoundingBoxOp(OpKernelConstruction* context)
       : SampleDistortedBoundingBoxBaseOp<T>(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_StatelessSampleDistortedBoundingBoxOp(OpKernelContext *context){
     const Tensor& seed_t = context->input(3);
     OP_REQUIRES(context, seed_t.dims() == 1 && seed_t.dim_size(0) == 2,
                 errors::InvalidArgument("seed must have shape [2], not ",
@@ -474,6 +499,30 @@ class StatelessSampleDistortedBoundingBoxOp
     OP_REQUIRES_OK(context, GenerateKey(seed_t, &key, &counter));
 
     this->DoCompute(context, random::PhiloxRandom(counter, key));
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessSampleDistortedBoundingBoxOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessSampleDistortedBoundingBoxOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_StatelessSampleDistortedBoundingBoxOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_StatelessSampleDistortedBoundingBoxOp(context);
+      } else {
+        do_StatelessSampleDistortedBoundingBoxOp(context);
+      }
+
   }
 };
 

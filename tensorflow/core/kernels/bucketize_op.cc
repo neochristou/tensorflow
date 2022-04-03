@@ -17,6 +17,7 @@ limitations under the License.
 
 #include "tensorflow/core/kernels/bucketize_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -59,7 +60,7 @@ class BucketizeOp : public OpKernel {
                 errors::InvalidArgument("Expected sorted boundaries"));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_BucketizeOp(OpKernelContext *context){
     const Tensor& input_tensor = context->input(0);
     const auto input = input_tensor.flat<T>();
 
@@ -71,6 +72,30 @@ class BucketizeOp : public OpKernel {
       OP_REQUIRES_OK(context, functor::BucketizeFunctor<Device, T>::Compute(
                                   context, input, boundaries_, output));
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BucketizeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BucketizeOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BucketizeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BucketizeOp(context);
+      } else {
+        do_BucketizeOp(context);
+      }
+
   }
 
  private:

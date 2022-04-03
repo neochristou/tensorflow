@@ -16,6 +16,7 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -133,7 +134,7 @@ class RaggedTensorToVariantOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("batched_input", &batched_input_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_RaggedTensorToVariantOp(OpKernelContext *context){
     // Read ragged_splits inputs.
     OpInputList ragged_nested_splits_in;
     OP_REQUIRES_OK(context, context->input_list("rt_nested_splits",
@@ -185,6 +186,30 @@ class RaggedTensorToVariantOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedTensorToVariantOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedTensorToVariantOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RaggedTensorToVariantOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RaggedTensorToVariantOp(context);
+      } else {
+        do_RaggedTensorToVariantOp(context);
+      }
+
+  }
+
  private:
   bool batched_input_;
 };
@@ -194,7 +219,7 @@ class RaggedTensorToVariantGradientOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void Compute(OpKernelContext* context) override {
+  void do_RaggedTensorToVariantGradientOp(OpKernelContext *context){
     // Read inputs.
     Tensor encoded_variant = context->input(0);
     Tensor row_splits = context->input(1);
@@ -248,6 +273,30 @@ class RaggedTensorToVariantGradientOp : public OpKernel {
           out->shaped<VALUE_TYPE, 2>({1, dense_values_shape.num_elements()});
       ConcatCPU<VALUE_TYPE>(context->device(), pieces, &out_flat);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedTensorToVariantGradientOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedTensorToVariantGradientOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RaggedTensorToVariantGradientOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RaggedTensorToVariantGradientOp(context);
+      } else {
+        do_RaggedTensorToVariantGradientOp(context);
+      }
+
   }
 };
 

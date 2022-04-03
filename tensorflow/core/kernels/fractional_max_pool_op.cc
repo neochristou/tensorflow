@@ -24,6 +24,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/random/random.h"
 #include "tensorflow/core/platform/logging.h"
 #include "tensorflow/core/platform/mutex.h"
@@ -67,7 +68,7 @@ class FractionalMaxPoolOp : public OpKernel {
     }
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FractionalMaxPoolOp(OpKernelContext *context){
     typedef Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
         ConstEigenMatrixMap;
     typedef Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>
@@ -181,6 +182,30 @@ class FractionalMaxPoolOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FractionalMaxPoolOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FractionalMaxPoolOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FractionalMaxPoolOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FractionalMaxPoolOp(context);
+      } else {
+        do_FractionalMaxPoolOp(context);
+      }
+
+  }
+
  private:
   bool deterministic_;
   int64 seed_;
@@ -212,7 +237,7 @@ class FractionalMaxPoolGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("overlapping", &overlapping_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_FractionalMaxPoolGradOp(OpKernelContext *context){
     // There are two steps when calculating gradient for FractionalMaxPool.
     // 1) Walk through the process of calculating fractional pooling given
     //    pooling region; however, in the process, keep track of where the max
@@ -368,6 +393,30 @@ class FractionalMaxPoolGradOp : public OpKernel {
           << num_total_inputs;
       input_backprop_flat(input_backprop_index) += out_backprop_flat(index);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FractionalMaxPoolGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FractionalMaxPoolGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_FractionalMaxPoolGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_FractionalMaxPoolGradOp(context);
+      } else {
+        do_FractionalMaxPoolGradOp(context);
+      }
+
   }
 
  private:

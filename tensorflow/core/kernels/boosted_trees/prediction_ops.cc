@@ -19,6 +19,7 @@ limitations under the License.
 
 #include "tensorflow/core/framework/device_base.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -64,7 +65,7 @@ class BoostedTreesTrainingPredictOp : public OpKernel {
                    context->GetAttr("logits_dimension", &logits_dimension_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesTrainingPredictOp(OpKernelContext *context){
     core::RefCountPtr<BoostedTreesEnsembleResource> resource;
     // Get the resource.
     OP_REQUIRES_OK(context, LookupResource(context, HandleFromInput(context, 0),
@@ -188,6 +189,30 @@ class BoostedTreesTrainingPredictOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesTrainingPredictOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesTrainingPredictOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesTrainingPredictOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesTrainingPredictOp(context);
+      } else {
+        do_BoostedTreesTrainingPredictOp(context);
+      }
+
+  }
+
  private:
   int32 logits_dimension_;         // the size of the output prediction vector.
   int32 num_bucketized_features_;  // Indicates the number of features.
@@ -207,7 +232,7 @@ class BoostedTreesPredictOp : public OpKernel {
                    context->GetAttr("logits_dimension", &logits_dimension_));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesPredictOp(OpKernelContext *context){
     core::RefCountPtr<BoostedTreesEnsembleResource> resource;
     // Get the resource.
     OP_REQUIRES_OK(context, LookupResource(context, HandleFromInput(context, 0),
@@ -277,6 +302,30 @@ class BoostedTreesPredictOp : public OpKernel {
           /*cost_per_unit=*/cost, do_work);
   }
 
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesPredictOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesPredictOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesPredictOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesPredictOp(context);
+      } else {
+        do_BoostedTreesPredictOp(context);
+      }
+
+  }
+
  private:
   int32
       logits_dimension_;  // Indicates the size of the output prediction vector.
@@ -307,7 +356,7 @@ class BoostedTreesExampleDebugOutputsOp : public OpKernel {
                     "Currently only one dimensional outputs are supported."));
   }
 
-  void Compute(OpKernelContext* const context) override {
+  void do_BoostedTreesExampleDebugOutputsOp(OpKernelContext *context){
     core::RefCountPtr<BoostedTreesEnsembleResource> resource;
     // Get the resource.
     OP_REQUIRES_OK(context, LookupResource(context, HandleFromInput(context, 0),
@@ -392,6 +441,30 @@ class BoostedTreesExampleDebugOutputsOp : public OpKernel {
         context->device()->tensorflow_cpu_worker_threads()->workers;
     Shard(worker_threads->NumThreads(), worker_threads, batch_size,
           /*cost_per_unit=*/cost, do_work);
+  }
+
+void Compute(OpKernelContext* const context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesExampleDebugOutputsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesExampleDebugOutputsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BoostedTreesExampleDebugOutputsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BoostedTreesExampleDebugOutputsOp(context);
+      } else {
+        do_BoostedTreesExampleDebugOutputsOp(context);
+      }
+
   }
 
  private:

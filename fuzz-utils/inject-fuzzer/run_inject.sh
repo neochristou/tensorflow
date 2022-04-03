@@ -1,6 +1,7 @@
 #!/bin/bash
 # set -x
 
+TF_PATH="/media/ivysyn/tensorflow/"
 TF_KERNELS_PATH="/media/ivysyn/tensorflow/tensorflow/core/kernels"
 INCLUDE_OP_STRING="#include \"tensorflow/core/framework/op_kernel.h\""
 INCLUDE_EIGEN_STRING="#define EIGEN_USE"
@@ -33,8 +34,8 @@ inject_header() {
 main()
 {
     for filename in $filenames; do
-        # echo $filename
-        bin/inject-fuzzer --extra-arg-before='-xc++' $filename -- 2> /dev/null | grep 'Successfully' && inject_header $filename # && echo $filename
+        echo $filename 1>&2
+        bin/inject-fuzzer --extra-arg-before="-I$TF_PATH" --extra-arg-before="-xc++" $filename -- 2> /dev/null | grep -E 'Found Compute|Successfully|Skipping' && inject_header $filename
 
     done
 

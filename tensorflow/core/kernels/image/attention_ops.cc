@@ -20,6 +20,7 @@ limitations under the License.
 #include <vector>
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -65,7 +66,7 @@ class ExtractGlimpseOp : public OpKernel {
 
   // Expect input tensor of rank 4 with dimensions (batch_size, height, width,
   // depth).
-  void Compute(OpKernelContext* context) override {
+  void do_ExtractGlimpseOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const TensorShape& input_shape = input.shape();
     const int32 num_dims = input_shape.dims();
@@ -124,6 +125,30 @@ class ExtractGlimpseOp : public OpKernel {
         Eigen::ExtractGlimpses(input.tensor<float, 4>().swap_layout(),
                                output_width, output_height, offset_vec,
                                normalized_, centered_, noise_, version_);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ExtractGlimpseOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ExtractGlimpseOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_ExtractGlimpseOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_ExtractGlimpseOp(context);
+      } else {
+        do_ExtractGlimpseOp(context);
+      }
+
   }
 
  private:

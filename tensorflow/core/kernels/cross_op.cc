@@ -21,6 +21,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -41,7 +42,7 @@ class CrossOp : public OpKernel {
  public:
   explicit CrossOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_CrossOp(OpKernelContext *context){
     const Tensor& in0 = context->input(0);
     const Tensor& in1 = context->input(1);
     OP_REQUIRES(context, in0.shape() == in1.shape(),
@@ -77,6 +78,30 @@ class CrossOp : public OpKernel {
 
     functor::Cross<Device, Type>()(context->eigen_device<Device>(), in0_data,
                                    in1_data, output_data);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CrossOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CrossOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CrossOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CrossOp(context);
+      } else {
+        do_CrossOp(context);
+      }
+
   }
 };
 

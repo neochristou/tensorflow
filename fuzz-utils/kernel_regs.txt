@@ -933,7 +933,6 @@ RiscBroadcastOp RiscBroadcast
 RiscLogicalNotOp RiscLogicalNot
 BatchMatMulOp MatMul
 BatchMatMulV2Op BatchMatMulV3
-DEFAULT_CONV_2D_BACKPROP_CPU_OP Conv2DBackpropInput
 Conv2DCustomBackpropInputOp Conv2DBackpropInput
 FusedConv2DOp _FusedConv2D
 MatrixTriangularSolveOp BatchMatrixTriangularSolve

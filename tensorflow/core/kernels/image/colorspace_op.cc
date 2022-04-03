@@ -23,6 +23,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -42,7 +43,7 @@ class RGBToHSVOp : public OpKernel {
  public:
   explicit RGBToHSVOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_RGBToHSVOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() >= 1,
                 errors::InvalidArgument("input must be at least 1D",
@@ -74,6 +75,30 @@ class RGBToHSVOp : public OpKernel {
     functor::RGBToHSV<Device, T>()(context->eigen_device<Device>(), input_data,
                                    range, output_data);
   }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RGBToHSVOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RGBToHSVOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_RGBToHSVOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_RGBToHSVOp(context);
+      } else {
+        do_RGBToHSVOp(context);
+      }
+
+  }
 };
 
 template <typename Device, typename T>
@@ -81,7 +106,7 @@ class HSVToRGBOp : public OpKernel {
  public:
   explicit HSVToRGBOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_HSVToRGBOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() >= 1,
                 errors::InvalidArgument("input must be at least 1D",
@@ -102,6 +127,30 @@ class HSVToRGBOp : public OpKernel {
 
     functor::HSVToRGB<Device, T>()(context->eigen_device<Device>(), input_data,
                                    output_data);
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("HSVToRGBOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("HSVToRGBOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_HSVToRGBOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_HSVToRGBOp(context);
+      } else {
+        do_HSVToRGBOp(context);
+      }
+
   }
 };
 

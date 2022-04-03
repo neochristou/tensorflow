@@ -24,6 +24,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -40,7 +41,7 @@ class BroadcastToOp : public OpKernel {
  public:
   explicit BroadcastToOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_BroadcastToOp(OpKernelContext *ctx){
     const Tensor& input_tensor = ctx->input(0);
     const TensorShape& input_shape = input_tensor.shape();
 
@@ -89,6 +90,30 @@ class BroadcastToOp : public OpKernel {
 
     functor::BroadcastTo<Device, T>()(device, ctx, *output_tensor, output_shape,
                                       input_tensor, input_shape, bcast);
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BroadcastToOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BroadcastToOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BroadcastToOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BroadcastToOp(ctx);
+      } else {
+        do_BroadcastToOp(ctx);
+      }
+
   }
 };
 

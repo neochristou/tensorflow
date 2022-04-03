@@ -17,6 +17,7 @@ limitations under the License.
 
 #include <algorithm>
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -81,7 +82,7 @@ class DecodeCompressedOp : public OpKernel {
                     "Only ZLIB, GZIP or NONE are supported compressions"));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_DecodeCompressedOp(OpKernelContext *context){
     const Tensor* bytes_tensor;
     OP_REQUIRES_OK(context, context->input("bytes", &bytes_tensor));
     const auto& bytes_flat = bytes_tensor->flat<tstring>();
@@ -112,6 +113,30 @@ class DecodeCompressedOp : public OpKernel {
         output_flat(i) = std::move(output_string);
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeCompressedOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeCompressedOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_DecodeCompressedOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_DecodeCompressedOp(context);
+      } else {
+        do_DecodeCompressedOp(context);
+      }
+
   }
 
  private:

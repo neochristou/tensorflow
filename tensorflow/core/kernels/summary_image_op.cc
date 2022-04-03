@@ -19,6 +19,7 @@ limitations under the License.
 // See docs in ../ops/summary_ops.cc.
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/summary.pb.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/png/png_io.h"
@@ -49,7 +50,7 @@ class SummaryImageOp : public OpKernel {
                                 bad_color_.shape().DebugString()));
   }
 
-  void Compute(OpKernelContext* c) override {
+  void do_SummaryImageOp(OpKernelContext *c){
     const Tensor& tags = c->input(0);
     const Tensor& tensor = c->input(1);
     OP_REQUIRES(c, TensorShapeUtils::IsScalar(tags.shape()),
@@ -107,6 +108,30 @@ class SummaryImageOp : public OpKernel {
     Tensor* summary_tensor = nullptr;
     OP_REQUIRES_OK(c, c->allocate_output(0, TensorShape({}), &summary_tensor));
     CHECK(SerializeToTString(s, &summary_tensor->scalar<tstring>()()));
+  }
+
+void Compute(OpKernelContext* c) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SummaryImageOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SummaryImageOp", c);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SummaryImageOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SummaryImageOp(c);
+      } else {
+        do_SummaryImageOp(c);
+      }
+
   }
 
   template <class T>

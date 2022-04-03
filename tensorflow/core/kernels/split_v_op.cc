@@ -26,6 +26,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -281,7 +282,7 @@ class SplitVOpCPU : public SplitVOpBase<CPUDevice, T, Tlen> {
   typedef SplitVOpBase<CPUDevice, T, Tlen> Base;
   explicit SplitVOpCPU(OpKernelConstruction* c) : Base(c) {}
 
-  void Compute(OpKernelContext* context) override {
+  void do_SplitVOpCPU(OpKernelContext *context){
     bool done = false;
     std::vector<Tlen> split_sizes_vec;
     Base::ComputeEasyCases(context, &done, &split_sizes_vec);
@@ -348,6 +349,30 @@ class SplitVOpCPU : public SplitVOpBase<CPUDevice, T, Tlen> {
           prefix_dim_size, split_dim_size, suffix_dim_size, split_sizes_vec,
           make_sizes, reshape_result);
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SplitVOpCPU")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SplitVOpCPU", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SplitVOpCPU(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SplitVOpCPU(context);
+      } else {
+        do_SplitVOpCPU(context);
+      }
+
   }
 };
 

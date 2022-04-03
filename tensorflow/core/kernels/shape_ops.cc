@@ -473,7 +473,7 @@ class EnsureShapeOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("shape", &expected_shape_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_EnsureShapeOp(OpKernelContext *ctx){
     TensorShape shape;
     OP_REQUIRES_OK(ctx, shape_op_helpers::GetShape(ctx, 0, &shape));
 
@@ -490,6 +490,30 @@ class EnsureShapeOp : public OpKernel {
     } else {
       ctx->set_output(0, ctx->input(0));
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("EnsureShapeOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("EnsureShapeOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_EnsureShapeOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_EnsureShapeOp(ctx);
+      } else {
+        do_EnsureShapeOp(ctx);
+      }
+
   }
 
   bool IsExpensive() override { return false; }

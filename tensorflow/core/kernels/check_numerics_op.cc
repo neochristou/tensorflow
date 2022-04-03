@@ -24,6 +24,7 @@ limitations under the License.
 // clang-format on
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_reference.h"
@@ -87,7 +88,7 @@ class CheckNumericsOp<CPUDevice, T> : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("message", &message_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_CheckNumericsOp(OpKernelContext *context){
     // pass along the input to the output
     context->set_output(0, context->input(0));
 
@@ -105,6 +106,30 @@ class CheckNumericsOp<CPUDevice, T> : public OpKernel {
                                                    status, " values"));
       }
     }
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CheckNumericsOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CheckNumericsOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_CheckNumericsOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_CheckNumericsOp(context);
+      } else {
+        do_CheckNumericsOp(context);
+      }
+
   }
 
  protected:

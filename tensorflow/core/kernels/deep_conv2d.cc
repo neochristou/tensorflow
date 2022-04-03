@@ -21,6 +21,7 @@ limitations under the License.
 #include <stdlib.h>
 
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/kernels/winograd_transform.h"
 #include "tensorflow/core/util/work_sharder.h"
 

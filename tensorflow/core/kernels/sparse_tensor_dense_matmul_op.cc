@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/kernels/fill_functor.h"
 #include "tensorflow/core/platform/bfloat16.h"
 
@@ -39,7 +40,7 @@ class SparseTensorDenseMatMulOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("adjoint_b", &adjoint_b_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_SparseTensorDenseMatMulOp(OpKernelContext *ctx){
     const Tensor* a_indices;
     const Tensor* a_values;
     const Tensor* a_shape;
@@ -148,6 +149,30 @@ class SparseTensorDenseMatMulOp : public OpKernel {
     MAYBE_ADJOINT(true, true);
 
 #undef MAYBE_ADJOINT
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseTensorDenseMatMulOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseTensorDenseMatMulOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_SparseTensorDenseMatMulOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_SparseTensorDenseMatMulOp(ctx);
+      } else {
+        do_SparseTensorDenseMatMulOp(ctx);
+      }
+
   }
 
  private:

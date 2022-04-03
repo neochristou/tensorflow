@@ -21,6 +21,7 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 
@@ -41,7 +42,7 @@ class BatchNormOp : public OpKernel {
                                              &scale_after_normalization_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_BatchNormOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& mean = context->input(1);
     const Tensor& var = context->input(2);
@@ -74,6 +75,30 @@ class BatchNormOp : public OpKernel {
         scale_after_normalization_, output->tensor<T, 4>());
   }
 
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BatchNormOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BatchNormOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BatchNormOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BatchNormOp(context);
+      } else {
+        do_BatchNormOp(context);
+      }
+
+  }
+
  private:
   T variance_epsilon_;
   bool scale_after_normalization_;
@@ -91,7 +116,7 @@ class BatchNormGradOp : public OpKernel {
                                              &scale_after_normalization_));
   }
 
-  void Compute(OpKernelContext* context) override {
+  void do_BatchNormGradOp(OpKernelContext *context){
     const Tensor& input = context->input(0);
     const Tensor& mean = context->input(1);
     const Tensor& var = context->input(2);
@@ -154,6 +179,30 @@ class BatchNormGradOp : public OpKernel {
         variance_epsilon_, scale_after_normalization_, dx->tensor<T, 4>(),
         dm->vec<T>(), dv->vec<T>(), db->vec<T>(), dg->vec<T>(),
         scratch1.vec<T>(), scratch2.vec<T>());
+  }
+
+void Compute(OpKernelContext* context) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BatchNormGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BatchNormGradOp", context);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BatchNormGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BatchNormGradOp(context);
+      } else {
+        do_BatchNormGradOp(context);
+      }
+
   }
 
  private:

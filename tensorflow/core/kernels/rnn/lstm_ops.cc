@@ -26,6 +26,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -303,7 +304,7 @@ class LSTMBlockCellOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("use_peephole", &use_peephole_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LSTMBlockCellOp(OpKernelContext *ctx){
     const Tensor* x_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("x", &x_tensor));
 
@@ -428,6 +429,30 @@ class LSTMBlockCellOp : public OpKernel {
         h_tensor->matrix<T>());
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LSTMBlockCellOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LSTMBlockCellOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LSTMBlockCellOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LSTMBlockCellOp(ctx);
+      } else {
+        do_LSTMBlockCellOp(ctx);
+      }
+
+  }
+
  private:
   float forget_bias_;
   float cell_clip_;
@@ -461,7 +486,7 @@ class LSTMBlockCellGradOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("use_peephole", &use_peephole_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_LSTMBlockCellGradOp(OpKernelContext *ctx){
     const Tensor* x_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("x", &x_tensor));
 
@@ -694,6 +719,30 @@ class LSTMBlockCellGradOp : public OpKernel {
         wco_grad_tensor->vec<T>());
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LSTMBlockCellGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LSTMBlockCellGradOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_LSTMBlockCellGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_LSTMBlockCellGradOp(ctx);
+      } else {
+        do_LSTMBlockCellGradOp(ctx);
+      }
+
+  }
+
  protected:
   bool use_peephole_;
 };
@@ -839,7 +888,7 @@ class BlockLSTMOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("use_peephole", &use_peephole_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_BlockLSTMOp(OpKernelContext *ctx){
     const Tensor* seq_len_max_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("seq_len_max", &seq_len_max_tensor));
 
@@ -1011,6 +1060,30 @@ class BlockLSTMOp : public OpKernel {
     }
   }
 
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BlockLSTMOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BlockLSTMOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BlockLSTMOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BlockLSTMOp(ctx);
+      } else {
+        do_BlockLSTMOp(ctx);
+      }
+
+  }
+
  private:
   float forget_bias_;
   float cell_clip_;
@@ -1073,7 +1146,7 @@ class BlockLSTMGradOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("use_peephole", &use_peephole_));
   }
 
-  void Compute(OpKernelContext* ctx) override {
+  void do_BlockLSTMGradOp(OpKernelContext *ctx){
     const Tensor* seq_len_max_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("seq_len_max", &seq_len_max_tensor));
 
@@ -1293,6 +1366,30 @@ class BlockLSTMGradOp : public OpKernel {
       functor::TensorUnalignedZero<Device, T>()(
           device, x_grad_tensor.unaligned_flat<T>());
     }
+  }
+
+void Compute(OpKernelContext* ctx) override {
+
+    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BlockLSTMGradOp")) {
+
+        tffuzzing::already_fuzzing = true;
+
+        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BlockLSTMGradOp", ctx);
+        OpKernelContext *fuzz_ctx;
+
+        while (fuzzer.has_more_mutations(true)) {
+          fuzz_ctx = fuzzer.get_fuzzed_context();
+          fuzzer.mut_start_time();
+          do_BlockLSTMGradOp(fuzz_ctx);
+          fuzzer.mut_end_time(fuzz_ctx);
+        }
+
+        tffuzzing::already_fuzzing = false;
+        do_BlockLSTMGradOp(ctx);
+      } else {
+        do_BlockLSTMGradOp(ctx);
+      }
+
   }
 
  private:
