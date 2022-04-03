@@ -35,7 +35,7 @@ main()
 {
     for filename in $filenames; do
         echo $filename 1>&2
-        bin/inject-fuzzer --extra-arg-before="-I$TF_PATH" --extra-arg-before="-xc++" $filename -- 2> /dev/null | grep -E 'Found Compute|Successfully|Skipping' && inject_header $filename
+        bin/inject-fuzzer --extra-arg-before="-I$TF_PATH" --extra-arg-before="-xc++" $filename -- 2> /dev/null | grep -E 'Found Compute|Successfully|Skipping|Match|parent' && inject_header $filename
 
     done
 

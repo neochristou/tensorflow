@@ -69,8 +69,8 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   ASTContext *Ctx = Result.Context;
   const SourceManager &SrcMgr = InjectFuzzerRewriter.getSourceMgr();
 
-  const FunctionDecl *ComputeDecl =
-    Result.Nodes.getNodeAs<FunctionDecl>("computedecl");
+  const CXXMethodDecl *ComputeDecl =
+    Result.Nodes.getNodeAs<CXXMethodDecl>("computedecl");
 
   std::string SourceFile = get_source_filename(SrcMgr, ComputeDecl->getLocation());
 
@@ -83,14 +83,13 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  const CXXRecordDecl* ParentClass;
-  const auto Parents = Ctx->getParents(*ComputeDecl);
+  llvm::outs() << "Match\n";
 
-  for (auto ParentNode : Parents) {
-    if (isa<CXXRecordDecl>(ParentNode.get<Decl>())){
-      ParentClass = ParentNode.get<CXXRecordDecl>();
-      break;
-    }
+  const CXXRecordDecl* ParentClass = ComputeDecl->getParent();
+
+  if (!ParentClass) {
+    llvm::outs() << "No parent: " << SourceFile << " " << ComputeDecl->getNameInfo().getAsString() << "\n";
+    return;
   }
 
   StringRef OpName = ParentClass->getName();
@@ -220,7 +219,7 @@ void ComputeDeclMatcher::onEndOfTranslationUnit() {
 InjectFuzzerASTConsumer::InjectFuzzerASTConsumer(Rewriter &R, std::string &InpF) : ComputeDeclHandler(R, InpF) {
 
   DeclarationMatcher ComputeDeclMatcher =
-    functionDecl(hasName("Compute"))
+    cxxMethodDecl(hasName("Compute"))
     .bind("computedecl");
 
   // InjectFuzzer is the callback that will run when the ASTMatcher finds the pattern

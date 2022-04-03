@@ -4,7 +4,9 @@ skipped_reasons = {}
 def get_all_kernels(lines):
     allk_lines = [x for x in lines if x.startswith("Found Compute")]
     allk_names = [x.split(" ")[-1] for x in allk_lines]
+    print(f"All: {len(allk_names)}")
     allk_names = set(allk_names)
+    print(f"All unique: {len(allk_names)}")
     return allk_names
 
 
