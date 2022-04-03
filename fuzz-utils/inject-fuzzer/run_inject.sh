@@ -6,7 +6,7 @@ TF_KERNELS_PATH="/media/ivysyn/tensorflow/tensorflow/core/kernels"
 INCLUDE_OP_STRING="#include \"tensorflow/core/framework/op_kernel.h\""
 INCLUDE_EIGEN_STRING="#define EIGEN_USE"
 
-filenames=$(/usr/bin/fdfind -t f '.*\.cc$' $TF_KERNELS_PATH)
+filenames=$(/usr/bin/fdfind -t f '.*\.cc$|.*\.h' $TF_KERNELS_PATH)
 filenames+=('reshape_op.h')
 extra_header_files=("cwise_ops_common.h" "cwise_ops_gpu_common.cu.h" "function_ops.h" "data/experimental/compute_batch_size_op.cc" "shape_ops.h" "conditional_accumulator_base.h" "tensor_to_hash_bucket_op.h" "example_parsing_ops.cc" "string_to_hash_bucket_op.h")
 
@@ -35,7 +35,7 @@ main()
 {
     for filename in $filenames; do
         echo $filename 1>&2
-        bin/inject-fuzzer --extra-arg-before="-I$TF_PATH" --extra-arg-before="-xc++" $filename -- 2> /dev/null | grep -E 'Found Compute|Successfully|Skipping|Match|parent' && inject_header $filename
+        bin/inject-fuzzer --extra-arg-before="-I$TF_PATH" --extra-arg-before="-xc++" $filename -- 2> /dev/null | grep -E 'Found Compute|Successfully|Skipping|Match|parent|Declaration' && inject_header $filename
 
     done
 

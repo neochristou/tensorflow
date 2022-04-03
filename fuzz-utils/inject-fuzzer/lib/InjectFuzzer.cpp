@@ -83,8 +83,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
-  llvm::outs() << "Match\n";
-
   const CXXRecordDecl* ParentClass = ComputeDecl->getParent();
 
   if (!ParentClass) {
@@ -94,11 +92,15 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   StringRef OpName = ParentClass->getName();
 
+  if (!ComputeDecl->isThisDeclarationADefinition()) {
+    llvm::outs() << "Declaration only " << OpName << "File " << InputFilename << "\n";
+  }
+
   if (OpName == "OpKernel" || OpName == "AsyncOpKernel" || OpName == "UnaryElementWiseOp") {
     return;
   }
 
-  llvm::outs() << "Found Compute() call in " << OpName << "\n";
+  llvm::outs() << "Found Compute() call in " << OpName << "File " << InputFilename << "\n";
 
   if (ComputeDecl->getNumParams() > 1) {
     llvm::outs() << "Skipping " << OpName << " (>1 params)\n";
@@ -112,11 +114,6 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
 
   if (ComputeDecl->getStorageClass() == SC_Static) {
     llvm::outs() << "Skipping " << OpName << " (static)\n";
-    return;
-  }
-
-  if (OpName.contains("SummaryOp")) {
-    llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
     return;
   }
 
@@ -149,6 +146,11 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
       ComputeText.find(std::string("Mutex")) != std::string::npos
       ) {
     llvm::outs() << "Skipping " << OpName << " (mutex)\n";
+    return;
+  }
+
+  if (OpName.contains("SummaryOp")) {
+    llvm::outs() << "Skipping " << OpName << " (SummaryOp)\n";
     return;
   }
 
