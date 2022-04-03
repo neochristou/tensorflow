@@ -23,7 +23,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 
@@ -272,7 +271,7 @@ class QuantizedInstanceNorm : public OpKernel {
     }
   }
 
-  void do_QuantizedInstanceNorm(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
 
     float input_min = context->input(1).flat<float>()(0);
@@ -392,30 +391,6 @@ class QuantizedInstanceNorm : public OpKernel {
       output_min->flat<float>()(0) = normed_min();
       output_max->flat<float>()(0) = normed_max();
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedInstanceNorm")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedInstanceNorm", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedInstanceNorm(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedInstanceNorm(context);
-      } else {
-        do_QuantizedInstanceNorm(context);
-      }
-
   }
 
  private:

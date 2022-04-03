@@ -18,7 +18,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/rnn/gru_ops.h"
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 
 namespace tensorflow {
 
@@ -30,7 +29,7 @@ class GRUCellBlockOp : public OpKernel {
  public:
   explicit GRUCellBlockOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
   // TODO(gitegaurav) Replace the input checks with some smarter function.
-  void do_GRUCellBlockOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // Grab the input tensors.
     const Tensor* x_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("x", &x_tensor));
@@ -157,30 +156,6 @@ class GRUCellBlockOp : public OpKernel {
         h_tensor->matrix<T>(), x_h_prev_tensor.matrix<T>(),
         x_h_prevr_tensor.matrix<T>());
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GRUCellBlockOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GRUCellBlockOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GRUCellBlockOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GRUCellBlockOp(ctx);
-      } else {
-        do_GRUCellBlockOp(ctx);
-      }
-
-  }
 };
 
 // Register the Block GRU cell kernel for CPU.
@@ -197,7 +172,7 @@ class GRUBlockCellGradOp : public OpKernel {
  public:
   explicit GRUBlockCellGradOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_GRUBlockCellGradOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // Grab the input tensors.
     const Tensor* x_tensor = nullptr;
     OP_REQUIRES_OK(ctx, ctx->input("x", &x_tensor));
@@ -392,30 +367,6 @@ class GRUBlockCellGradOp : public OpKernel {
         d_h_prevr_tensor.matrix<T>(),
         d_x_component_1_h_prev_component_1.matrix<T>(),
         d_x_component_2_h_prevr.matrix<T>());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GRUBlockCellGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GRUBlockCellGradOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GRUBlockCellGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GRUBlockCellGradOp(ctx);
-      } else {
-        do_GRUBlockCellGradOp(ctx);
-      }
-
   }
 };
 

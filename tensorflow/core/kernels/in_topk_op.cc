@@ -20,7 +20,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/in_topk_op.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 
@@ -38,7 +37,7 @@ class InTopK : public OpKernel {
     }
   }
 
-  void do_InTopK(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const auto& predictions_in = context->input(0);
     const auto& targets_in = context->input(1);
 
@@ -79,30 +78,6 @@ class InTopK : public OpKernel {
     arg.k_value = k_value;
     arg.k_tensor = k_tensor;
     f(context, predictions, targets, arg, out);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("InTopK")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("InTopK", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_InTopK(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_InTopK(context);
-      } else {
-        do_InTopK(context);
-      }
-
   }
 
  private:

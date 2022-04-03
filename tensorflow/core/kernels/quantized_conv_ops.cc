@@ -26,7 +26,6 @@ limitations under the License.
 #include "public/gemmlowp.h"
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/conv_ops.h"
 #include "tensorflow/core/kernels/meta_support.h"
@@ -489,7 +488,7 @@ class QuantizedConv2DOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void do_QuantizedConv2DOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Input tensor is of the following dimensions:
     // [ batch, in_rows, in_cols, in_depth ]
     const Tensor& input = context->input(0);
@@ -587,30 +586,6 @@ class QuantizedConv2DOp : public OpKernel {
     Tensor* output_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &output_max));
     output_max->flat<float>()(0) = max_output_value;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedConv2DOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedConv2DOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedConv2DOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedConv2DOp(context);
-      } else {
-        do_QuantizedConv2DOp(context);
-      }
-
   }
 
  private:

@@ -17,7 +17,6 @@ limitations under the License.
 
 #include <vector>
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/util/sparse/sparse_tensor.h"
 
@@ -28,7 +27,7 @@ class SparseSliceOp : public OpKernel {
  public:
   explicit SparseSliceOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SparseSliceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input_indices = context->input(0);
     const Tensor& input_values = context->input(1);
     const Tensor& input_shape = context->input(2);
@@ -92,30 +91,6 @@ class SparseSliceOp : public OpKernel {
     for (int dim = 0; dim < output_shape.dims(); ++dim) {
       shape->vec<int64>()(dim) = output_shape.dim_size(dim);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseSliceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseSliceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseSliceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseSliceOp(context);
-      } else {
-        do_SparseSliceOp(context);
-      }
-
   }
 
  private:

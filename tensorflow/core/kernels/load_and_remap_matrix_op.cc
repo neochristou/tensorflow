@@ -21,7 +21,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
@@ -68,7 +67,7 @@ class LoadAndRemapMatrixOp : public OpKernel {
         context, context->GetAttr("max_rows_in_memory", &max_rows_in_memory_));
   }
 
-  void do_LoadAndRemapMatrixOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Checks what we're remapping and inverts the relevant remapping Tensors to
     // be maps with key = old ID, value = new ID.
     std::unordered_map<int64, int64> old_row_to_new_row_map;
@@ -298,30 +297,6 @@ class LoadAndRemapMatrixOp : public OpKernel {
             "initializing_values contained ", initializing_values.size(),
             " elements, but only ", initializing_values_index,
             " elements were used to fill in missing values."));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LoadAndRemapMatrixOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LoadAndRemapMatrixOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_LoadAndRemapMatrixOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_LoadAndRemapMatrixOp(context);
-      } else {
-        do_LoadAndRemapMatrixOp(context);
-      }
-
   }
 
  private:

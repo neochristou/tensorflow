@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -72,7 +71,7 @@ class StatelessRandomOpBase : public OpKernel {
   explicit StatelessRandomOpBase(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_StatelessRandomOpBase(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Sanitize input
     const Tensor& shape_t = context->input(0);
     const Tensor& seed_t = context->input(1);
@@ -93,30 +92,6 @@ class StatelessRandomOpBase : public OpKernel {
 
     // Fill in the random numbers
     Fill(context, random::PhiloxRandom(counter, key), output);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessRandomOpBase")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessRandomOpBase", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatelessRandomOpBase(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatelessRandomOpBase(context);
-      } else {
-        do_StatelessRandomOpBase(context);
-      }
-
   }
 
   // The part of Compute that depends on device, type, and distribution

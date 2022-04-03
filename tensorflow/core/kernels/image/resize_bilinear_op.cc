@@ -30,7 +30,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -54,7 +53,7 @@ class ResizeBilinearOp : public OpKernel {
         context, context->GetAttr("half_pixel_centers", &half_pixel_centers_));
   }
 
-  void do_ResizeBilinearOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     ImageResizerState st(align_corners_, half_pixel_centers_);
     st.ValidateAndCreateOutput(context);
 
@@ -70,30 +69,6 @@ class ResizeBilinearOp : public OpKernel {
     functor::ResizeBilinear<Device, T>()(
         context->eigen_device<Device>(), image_data, st.height_scale,
         st.width_scale, half_pixel_centers_, output_data);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ResizeBilinearOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ResizeBilinearOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ResizeBilinearOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ResizeBilinearOp(context);
-      } else {
-        do_ResizeBilinearOp(context);
-      }
-
   }
 
  private:
@@ -365,7 +340,7 @@ class ResizeBilinearOpGrad : public OpKernel {
         context, context->GetAttr("half_pixel_centers", &half_pixel_centers_));
   }
 
-  void do_ResizeBilinearOpGrad(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Validate input.
     ImageResizerGradientState st(align_corners_, half_pixel_centers_);
     st.ValidateAndCreateOutput(context);
@@ -399,30 +374,6 @@ class ResizeBilinearOpGrad : public OpKernel {
                                output_grad_const.template flat<float>(),
                                st.output->template flat<T>());
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ResizeBilinearOpGrad")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ResizeBilinearOpGrad", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ResizeBilinearOpGrad(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ResizeBilinearOpGrad(context);
-      } else {
-        do_ResizeBilinearOpGrad(context);
-      }
-
   }
 
  private:

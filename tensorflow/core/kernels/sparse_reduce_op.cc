@@ -18,7 +18,6 @@ limitations under the License.
 #define EIGEN_USE_THREADS
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -158,7 +157,7 @@ class SparseReduceOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("keep_dims", &keep_dims_));
   }
 
-  void do_SparseReduceOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext *ctx) override {
     const Tensor *indices_t, *values_t, *shape_t, *reduction_axes_t;
     OP_REQUIRES_OK(ctx, ctx->input("input_indices", &indices_t));
     OP_REQUIRES_OK(ctx, ctx->input("input_values", &values_t));
@@ -241,30 +240,6 @@ class SparseReduceOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext *ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseReduceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseReduceOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseReduceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseReduceOp(ctx);
-      } else {
-        do_SparseReduceOp(ctx);
-      }
-
-  }
-
  private:
   // True if the number of dimensions should be maintained.
   bool keep_dims_;
@@ -291,7 +266,7 @@ class SparseReduceSparseOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("keep_dims", &keep_dims_));
   }
 
-  void do_SparseReduceSparseOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext *ctx) override {
     const Tensor *indices_t, *values_t, *shape_t, *reduction_axes_t;
     OP_REQUIRES_OK(ctx, ctx->input("input_indices", &indices_t));
     OP_REQUIRES_OK(ctx, ctx->input("input_values", &values_t));
@@ -361,30 +336,6 @@ class SparseReduceSparseOp : public OpKernel {
     if (!out_dim_sizes.empty()) {
       std::copy(out_dim_sizes.begin(), out_dim_sizes.end(), &out_shape_flat(0));
     }
-  }
-
-void Compute(OpKernelContext *ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseReduceSparseOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseReduceSparseOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseReduceSparseOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseReduceSparseOp(ctx);
-      } else {
-        do_SparseReduceSparseOp(ctx);
-      }
-
   }
 
  private:

@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -27,7 +26,7 @@ class SparseSliceGradOp : public OpKernel {
  public:
   explicit SparseSliceGradOp(OpKernelConstruction *ctx) : OpKernel(ctx) {}
 
-  void do_SparseSliceGradOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext *ctx) override {
     const Tensor *backprop_val_grad, *input_indices, *output_indices, *input_start;
     OP_REQUIRES_OK(ctx, ctx->input("backprop_val_grad", &backprop_val_grad));
     OP_REQUIRES_OK(ctx, ctx->input("input_indices", &input_indices));
@@ -113,30 +112,6 @@ class SparseSliceGradOp : public OpKernel {
         errors::Internal("Elements of backprop_val_grad aren't all propagated. "
                          "Num elements:", backprop_val_grad->NumElements(),
                          ", used: ", j));
-  }
-
-void Compute(OpKernelContext *ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseSliceGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseSliceGradOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseSliceGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseSliceGradOp(ctx);
-      } else {
-        do_SparseSliceGradOp(ctx);
-      }
-
   }
 };
 

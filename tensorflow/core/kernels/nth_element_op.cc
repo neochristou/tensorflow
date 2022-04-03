@@ -20,7 +20,6 @@ limitations under the License.
 #include <iostream>
 #include <vector>
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -38,7 +37,7 @@ class NthElementOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("reverse", &reverse_));
   }
 
-  void do_NthElementOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // The second args is N, which must be a positive scalar.
     const auto& n_in = context->input(1);
     OP_REQUIRES(
@@ -75,30 +74,6 @@ class NthElementOp : public OpKernel {
 
     functor::NthElementFunctor<Device, T> nthElementFunc;
     nthElementFunc(context, input_in, *output_tensor, n, reverse_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NthElementOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NthElementOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NthElementOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NthElementOp(context);
-      } else {
-        do_NthElementOp(context);
-      }
-
   }
 
  private:

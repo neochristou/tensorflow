@@ -16,7 +16,6 @@ limitations under the License.
 #include "unicode/errorcode.h"  // from @icu
 #include "unicode/uscript.h"  // from @icu
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 
 namespace tensorflow {
 
@@ -24,7 +23,7 @@ class UnicodeScriptOp : public OpKernel {
  public:
   explicit UnicodeScriptOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_UnicodeScriptOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(context, context->input("input", &input_tensor));
     const auto& input_flat = input_tensor->flat<int32>();
@@ -45,30 +44,6 @@ class UnicodeScriptOp : public OpKernel {
         status.reset();
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnicodeScriptOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnicodeScriptOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnicodeScriptOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnicodeScriptOp(context);
-      } else {
-        do_UnicodeScriptOp(context);
-      }
-
   }
 };
 

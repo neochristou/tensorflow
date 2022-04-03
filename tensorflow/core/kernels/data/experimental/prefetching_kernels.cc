@@ -18,7 +18,6 @@ limitations under the License.
 #include "tensorflow/core/framework/dataset.h"
 #include "tensorflow/core/framework/function.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_op_kernel.h"
 #include "tensorflow/core/lib/core/threadpool.h"
 #include "tensorflow/core/lib/random/random.h"
@@ -33,7 +32,7 @@ class IteratorGetDeviceOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void do_IteratorGetDeviceOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // NOTE(mrry): We do not currently Validate that the handle
     // corresponds to a real IteratorResource, because that symbol is
     // not exposed from the framework library.
@@ -44,30 +43,6 @@ class IteratorGetDeviceOp : public OpKernel {
     // colocated with it, and so we can simply return the current device's
     // name without looking at the input.
     device_name_t->scalar<tstring>()() = ctx->device()->name();
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("IteratorGetDeviceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("IteratorGetDeviceOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_IteratorGetDeviceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_IteratorGetDeviceOp(ctx);
-      } else {
-        do_IteratorGetDeviceOp(ctx);
-      }
-
   }
 };
 

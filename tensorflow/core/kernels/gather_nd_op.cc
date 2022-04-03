@@ -15,7 +15,6 @@ limitations under the License.
 
 // See docs in ../ops/array_ops.cc.
 #define EIGEN_USE_THREADS
-#include "tensorflow/core/framework/fuzzing.h"
 
 #include "tensorflow/core/kernels/gather_nd_op.h"
 #include "tensorflow/core/framework/bounds_check.h"
@@ -39,7 +38,7 @@ class GatherNdOp : public OpKernel {
     OP_REQUIRES_OK(c, c->MatchSignature({dt, index_t}, {dt}));
   }
 
-  void do_GatherNdOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& params = c->input(0);
     const Tensor& indices = c->input(1);
 
@@ -47,30 +46,6 @@ class GatherNdOp : public OpKernel {
     OP_REQUIRES_OK(
         c, functor::DoGatherNd<Device, T, Index>(c, params, indices, &out));
     c->set_output(0, out);
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GatherNdOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GatherNdOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GatherNdOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GatherNdOp(c);
-      } else {
-        do_GatherNdOp(c);
-      }
-
   }
 };
 

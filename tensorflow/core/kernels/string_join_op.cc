@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -35,7 +34,7 @@ class StringJoinOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("separator", &separator_));
   }
 
-  void do_StringJoinOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList input_list;
     OP_REQUIRES_OK(context, context->input_list("inputs", &input_list));
     TensorShape input_shape;
@@ -70,30 +69,6 @@ class StringJoinOp : public OpKernel {
       }
       output_flat(i) = absl::StrJoin(strings, separator_);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringJoinOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringJoinOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StringJoinOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StringJoinOp(context);
-      } else {
-        do_StringJoinOp(context);
-      }
-
   }
 
  private:

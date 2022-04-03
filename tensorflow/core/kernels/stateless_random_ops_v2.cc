@@ -17,7 +17,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/rng_alg.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -69,7 +68,7 @@ class StatelessRandomOpBase : public OpKernel {
  public:
   explicit StatelessRandomOpBase(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_StatelessRandomOpBase(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // Sanitize input
     const Tensor& shape_t = ctx->input(0);
     const Tensor& key_t = ctx->input(1);
@@ -95,30 +94,6 @@ class StatelessRandomOpBase : public OpKernel {
 
     // Fill in the random numbers
     Fill(ctx, alg, key_t, counter_t, output);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessRandomOpBase")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessRandomOpBase", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatelessRandomOpBase(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatelessRandomOpBase(ctx);
-      } else {
-        do_StatelessRandomOpBase(ctx);
-      }
-
   }
 
   // The part of Compute that depends on device, type, and distribution
@@ -225,7 +200,7 @@ class GetKeyCounterAlgOp : public OpKernel {
  public:
   explicit GetKeyCounterAlgOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_GetKeyCounterAlgOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& seed_t = ctx->input(0);
     OP_REQUIRES(ctx, seed_t.dims() == 1 && seed_t.dim_size(0) == 2,
                 errors::InvalidArgument("seed must have shape [2], not ",
@@ -248,37 +223,13 @@ class GetKeyCounterAlgOp : public OpKernel {
     WriteCounterToMem(counter, counter_output->flat<uint64>().data());
     alg_output->flat<int>()(0) = RNG_ALG_PHILOX;
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GetKeyCounterAlgOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GetKeyCounterAlgOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GetKeyCounterAlgOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GetKeyCounterAlgOp(ctx);
-      } else {
-        do_GetKeyCounterAlgOp(ctx);
-      }
-
-  }
 };
 
 class GetKeyCounterOp : public OpKernel {
  public:
   explicit GetKeyCounterOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_GetKeyCounterOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& seed_t = ctx->input(0);
     OP_REQUIRES(ctx, seed_t.dims() == 1 && seed_t.dim_size(0) == 2,
                 errors::InvalidArgument("seed must have shape [2], not ",
@@ -298,64 +249,16 @@ class GetKeyCounterOp : public OpKernel {
     WriteKeyToMem(key, key_output->flat<uint64>().data());
     WriteCounterToMem(counter, counter_output->flat<uint64>().data());
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GetKeyCounterOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GetKeyCounterOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GetKeyCounterOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GetKeyCounterOp(ctx);
-      } else {
-        do_GetKeyCounterOp(ctx);
-      }
-
-  }
 };
 
 class GetAlgOp : public OpKernel {
  public:
   explicit GetAlgOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_GetAlgOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Tensor* alg_output;
     OP_REQUIRES_OK(ctx, ctx->allocate_output(0, TensorShape({}), &alg_output));
     alg_output->flat<int>()(0) = RNG_ALG_PHILOX;
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GetAlgOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GetAlgOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GetAlgOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GetAlgOp(ctx);
-      } else {
-        do_GetAlgOp(ctx);
-      }
-
   }
 };
 

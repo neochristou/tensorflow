@@ -27,7 +27,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/dense_update_functor.h"
@@ -46,7 +45,7 @@ class CSRSoftmaxOp : public OpKernel {
  public:
   explicit CSRSoftmaxOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_CSRSoftmaxOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const CSRSparseMatrix* logits_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &logits_matrix));
     OP_REQUIRES(
@@ -83,30 +82,6 @@ class CSRSoftmaxOp : public OpKernel {
     output_t.scalar<Variant>()() = std::move(output_matrix);
     ctx->set_output(0, output_t);
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSoftmaxOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSoftmaxOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRSoftmaxOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRSoftmaxOp(ctx);
-      } else {
-        do_CSRSoftmaxOp(ctx);
-      }
-
-  }
 };
 
 #if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
@@ -142,7 +117,7 @@ class CSRSoftmaxGradOp : public OpKernel {
  public:
   explicit CSRSoftmaxGradOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_CSRSoftmaxGradOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const CSRSparseMatrix* softmax_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &softmax_matrix));
     OP_REQUIRES(ctx, softmax_matrix->dtype() == DataTypeToEnum<T>::value,
@@ -214,30 +189,6 @@ class CSRSoftmaxGradOp : public OpKernel {
     Tensor gradient_t(cpu_allocator(), DT_VARIANT, TensorShape({}));
     gradient_t.scalar<Variant>()() = std::move(gradient_matrix);
     ctx->set_output(0, gradient_t);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSoftmaxGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSoftmaxGradOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRSoftmaxGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRSoftmaxGradOp(ctx);
-      } else {
-        do_CSRSoftmaxGradOp(ctx);
-      }
-
   }
 };
 

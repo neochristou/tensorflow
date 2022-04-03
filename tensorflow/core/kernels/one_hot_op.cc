@@ -27,7 +27,6 @@ limitations under the License.
 #include <memory>
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -49,7 +48,7 @@ class OneHotOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("axis", &axis_));
   }
 
-  void do_OneHotOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& indices = ctx->input(0);
     const Tensor& depth = ctx->input(1);
     const Tensor& on_value = ctx->input(2);
@@ -119,30 +118,6 @@ class OneHotOp : public OpKernel {
                                               indices_t, on_value_t,
                                               off_value_t, &output_t);
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("OneHotOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("OneHotOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_OneHotOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_OneHotOp(ctx);
-      } else {
-        do_OneHotOp(ctx);
-      }
-
   }
 
  private:

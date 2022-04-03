@@ -26,7 +26,6 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -62,7 +61,7 @@ class ExtractImagePatchesOp : public UnaryOp<T> {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void do_ExtractImagePatchesOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Input tensor is of the following dimensions:
     // [ batch, in_rows, in_cols, channels ]
     const Tensor& input = context->input(0);
@@ -112,30 +111,6 @@ class ExtractImagePatchesOp : public UnaryOp<T> {
         context->eigen_device<Device>(), input.tensor<T, 4>(), ksize_rows,
         ksize_cols, stride_rows, stride_cols, rate_rows, rate_cols,
         BrainPadding2EigenPadding(padding_), output->tensor<T, 4>());
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ExtractImagePatchesOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ExtractImagePatchesOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ExtractImagePatchesOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ExtractImagePatchesOp(context);
-      } else {
-        do_ExtractImagePatchesOp(context);
-      }
-
   }
 
  private:

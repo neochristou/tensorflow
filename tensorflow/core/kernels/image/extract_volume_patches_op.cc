@@ -32,7 +32,6 @@ when rates are to be added.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -68,7 +67,7 @@ class ExtractVolumePatchesOp : public UnaryOp<T> {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void do_ExtractVolumePatchesOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Input tensor is of the following dimensions:
     // [ batch, in_planes, in_rows, in_cols, channels ]
     const Tensor& input = context->input(0);
@@ -140,30 +139,6 @@ class ExtractVolumePatchesOp : public UnaryOp<T> {
         ksize_rows, ksize_cols, stride_planes, stride_rows, stride_cols,
         /* rate_planes, rate_rows, rate_cols, */
         BrainPadding2EigenPadding(padding_), output->tensor<T, 5>());
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ExtractVolumePatchesOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ExtractVolumePatchesOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ExtractVolumePatchesOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ExtractVolumePatchesOp(context);
-      } else {
-        do_ExtractVolumePatchesOp(context);
-      }
-
   }
 
  private:

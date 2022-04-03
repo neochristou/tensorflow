@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/type_traits.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/cwise_ops.h"
@@ -107,7 +106,7 @@ class QuantizeV2Op : public OpKernel {
         ctx, ctx->GetAttr("ensure_minimum_range", &ensure_minimum_range_));
   }
 
-  void do_QuantizeV2Op(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     const Tensor& input_min_range = ctx->input(1);
     const Tensor& input_max_range = ctx->input(2);
@@ -205,30 +204,6 @@ class QuantizeV2Op : public OpKernel {
                     &output_min_tensor->flat<float>()(i),
                     &output_max_tensor->flat<float>()(i));
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeV2Op", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeV2Op(ctx);
-      } else {
-        do_QuantizeV2Op(ctx);
-      }
-
   }
 
   void QuantizeTensor(OpKernelContext* ctx, const Tensor& input,

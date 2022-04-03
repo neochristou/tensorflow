@@ -27,7 +27,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -161,7 +160,7 @@ class TileOp : public OpKernel {
  public:
   explicit TileOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_TileOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& multiples = context->input(1);
 
@@ -236,30 +235,6 @@ class TileOp : public OpKernel {
             "TileOp : The input data type is not supported, DataType : ",
             DataTypeString(context->input(0).dtype()),
             ", Dimension : ", input_dims));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TileOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TileOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_TileOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_TileOp(context);
-      } else {
-        do_TileOp(context);
-      }
-
   }
 
  private:
@@ -351,7 +326,7 @@ class TileGradientOp : public OpKernel {
  public:
   explicit TileGradientOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_TileGradientOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& multiples = context->input(1);
     OP_REQUIRES(
@@ -432,30 +407,6 @@ class TileGradientOp : public OpKernel {
                                       "dimension is not supported, DataType : ",
                                       DataTypeString(context->input(0).dtype()),
                                       ", Dimension : ", input_dims));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TileGradientOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TileGradientOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_TileGradientOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_TileGradientOp(context);
-      } else {
-        do_TileGradientOp(context);
-      }
-
   }
 
  private:

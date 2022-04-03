@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -82,35 +81,11 @@ class FakeQueueOp : public OpKernel {
         context, context->allocate_temp(DT_STRING, TensorShape({2}), &tensor_));
   }
 
-  void do_FakeQueueOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const ResourceHandle& ref = context->input(0).flat<ResourceHandle>()(0);
     tensor_.flat<tstring>()(0) = ref.container();
     tensor_.flat<tstring>()(1) = ref.name();
     context->set_output_ref(0, &mu_, &tensor_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FakeQueueOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FakeQueueOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FakeQueueOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FakeQueueOp(context);
-      } else {
-        do_FakeQueueOp(context);
-      }
-
   }
 
  private:

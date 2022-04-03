@@ -16,7 +16,6 @@ limitations under the License.
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
@@ -29,32 +28,8 @@ class RiscDivOp : public OpKernel {
  public:
   explicit RiscDivOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_RiscDivOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // TODO(b/171294012): Implement RiscDiv op.
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RiscDivOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RiscDivOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RiscDivOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RiscDivOp(ctx);
-      } else {
-        do_RiscDivOp(ctx);
-      }
-
   }
 };
 

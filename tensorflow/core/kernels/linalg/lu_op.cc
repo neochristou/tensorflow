@@ -17,7 +17,6 @@ limitations under the License.
 #include "third_party/eigen3/Eigen/LU"
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/lib/math/math_util.h"
 #include "tensorflow/core/platform/types.h"
@@ -63,7 +62,7 @@ class LuOp : public OpKernel {
                                                   : static_cast<int64>(cost);
   }
 
-  void do_LuOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OP_REQUIRES(context, context->num_inputs() == 1,
                 errors::InvalidArgument("Expecting exactly one input, got ",
                                         context->num_inputs()));
@@ -124,30 +123,6 @@ class LuOp : public OpKernel {
     Shard(worker_threads.num_threads, worker_threads.workers,
           batch_shape.num_elements(), GetCostPerUnit(input_matrix_shape),
           shard);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LuOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LuOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_LuOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_LuOp(context);
-      } else {
-        do_LuOp(context);
-      }
-
   }
 
   void ComputeTensorSlice(OpKernelContext* context, int64 matrix_index,

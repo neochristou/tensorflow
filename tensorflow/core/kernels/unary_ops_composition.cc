@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/kernels/cwise_ops.h"
 #include "tensorflow/core/kernels/cwise_ops_common.h"
 #include "tensorflow/core/kernels/relu_op_functor.h"
@@ -105,7 +104,7 @@ class UnaryOpsComposition : public OpKernel {
             << "]; cost=" << cost_;
   }
 
-  void do_UnaryOpsComposition(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& in = ctx->input(0);
     Tensor* out = nullptr;
     OP_REQUIRES_OK(
@@ -135,30 +134,6 @@ class UnaryOpsComposition : public OpKernel {
                              kOverheadCycles + cost_);
     device.parallelFor(in.NumElements(), cost, AlignBlockSize,
                        std::move(compute_fn));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnaryOpsComposition")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnaryOpsComposition", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnaryOpsComposition(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnaryOpsComposition(ctx);
-      } else {
-        do_UnaryOpsComposition(ctx);
-      }
-
   }
 
  private:

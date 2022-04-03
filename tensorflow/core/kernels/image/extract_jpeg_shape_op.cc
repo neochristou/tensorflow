@@ -18,7 +18,6 @@ limitations under the License.
 #include <memory>
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -36,7 +35,7 @@ class ExtractJpegShapeOp : public OpKernel {
   explicit ExtractJpegShapeOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_ExtractJpegShapeOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Get input content.
     const Tensor& contents = context->input(0);
     OP_REQUIRES(context, TensorShapeUtils::IsScalar(contents.shape()),
@@ -62,30 +61,6 @@ class ExtractJpegShapeOp : public OpKernel {
     image_shape_data(0) = height;
     image_shape_data(1) = width;
     image_shape_data(2) = components;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ExtractJpegShapeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ExtractJpegShapeOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ExtractJpegShapeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ExtractJpegShapeOp(context);
-      } else {
-        do_ExtractJpegShapeOp(context);
-      }
-
   }
 };
 

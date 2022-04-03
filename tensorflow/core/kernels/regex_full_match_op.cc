@@ -17,7 +17,6 @@ limitations under the License.
 
 #include "re2/re2.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -33,7 +32,7 @@ class RegexFullMatchOp : public OpKernel {
 
   ~RegexFullMatchOp() override {}
 
-  void do_RegexFullMatchOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
     const auto& input_flat = input_tensor->flat<tstring>();
@@ -56,30 +55,6 @@ class RegexFullMatchOp : public OpKernel {
     for (size_t i = 0; i < input_flat.size(); ++i) {
       output_flat(i) = RE2::FullMatch(input_flat(i), *regex);
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RegexFullMatchOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RegexFullMatchOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RegexFullMatchOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RegexFullMatchOp(ctx);
-      } else {
-        do_RegexFullMatchOp(ctx);
-      }
-
   }
 
  private:
@@ -121,7 +96,7 @@ class StaticRegexFullMatchOp : public OpKernel {
                                         ", error: ", re_->error()));
   }
 
-  void do_StaticRegexFullMatchOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
     const auto& input_flat = input_tensor->flat<tstring>();
@@ -133,30 +108,6 @@ class StaticRegexFullMatchOp : public OpKernel {
     for (size_t i = 0; i < input_flat.size(); ++i) {
       output_flat(i) = RE2::FullMatch(input_flat(i), *re_);
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StaticRegexFullMatchOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StaticRegexFullMatchOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StaticRegexFullMatchOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StaticRegexFullMatchOp(ctx);
-      } else {
-        do_StaticRegexFullMatchOp(ctx);
-      }
-
   }
 
  private:

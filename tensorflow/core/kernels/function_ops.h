@@ -18,7 +18,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/function.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 
 namespace tensorflow {
 

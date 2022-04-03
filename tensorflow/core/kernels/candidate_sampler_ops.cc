@@ -22,7 +22,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/kernels/range_sampler.h"
 #include "tensorflow/core/platform/logging.h"
@@ -40,7 +39,7 @@ class BaseCandidateSamplerOp : public OpKernel {
     OP_REQUIRES_OK(context, generator_.Init(context));
   }
 
-  void do_BaseCandidateSamplerOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& true_classes = context->input(0);
     OP_REQUIRES(context, true_classes.dims() == 2,
                 errors::InvalidArgument("true_classes must be a matrix"));
@@ -97,30 +96,6 @@ class BaseCandidateSamplerOp : public OpKernel {
     if (sampler_->NeedsUpdates()) {
       sampler_->Update(true_candidate);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BaseCandidateSamplerOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BaseCandidateSamplerOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BaseCandidateSamplerOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BaseCandidateSamplerOp(context);
-      } else {
-        do_BaseCandidateSamplerOp(context);
-      }
-
   }
 
  protected:
@@ -219,7 +194,7 @@ class ComputeAccidentalHitsOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_true", &num_true_));
   }
 
-  void do_ComputeAccidentalHitsOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& in_true_candidates = context->input(0);
     const TensorShape& in_true_candidates_shape = in_true_candidates.shape();
     OP_REQUIRES(context,
@@ -279,30 +254,6 @@ class ComputeAccidentalHitsOp : public OpKernel {
       out_ids->vec<int64>()(i) = ids[i];
       out_weights->vec<float>()(i) = weights[i];
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ComputeAccidentalHitsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ComputeAccidentalHitsOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ComputeAccidentalHitsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ComputeAccidentalHitsOp(context);
-      } else {
-        do_ComputeAccidentalHitsOp(context);
-      }
-
   }
 
  private:

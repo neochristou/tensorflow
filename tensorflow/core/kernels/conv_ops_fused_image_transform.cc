@@ -26,7 +26,6 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -644,7 +643,7 @@ class FusedResizeConv2DUsingGemmOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void do_FusedResizeConv2DUsingGemmOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Input tensor is of the following dimensions:
     // [ batch, in_rows, in_cols, in_depth ]
     const Tensor& input = context->input(0);
@@ -858,30 +857,6 @@ class FusedResizeConv2DUsingGemmOp : public OpKernel {
                  filter_cols, out_depth, stride_rows, stride_cols, padding_,
                  output->flat<T>().data(), out_rows, out_cols, st, top_padding,
                  bottom_padding, left_padding, right_padding, offset_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedResizeConv2DUsingGemmOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedResizeConv2DUsingGemmOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedResizeConv2DUsingGemmOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedResizeConv2DUsingGemmOp(context);
-      } else {
-        do_FusedResizeConv2DUsingGemmOp(context);
-      }
-
   }
 
  private:

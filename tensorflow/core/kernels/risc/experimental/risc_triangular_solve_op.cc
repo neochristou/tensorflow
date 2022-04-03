@@ -16,7 +16,6 @@ limitations under the License.
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
@@ -28,32 +27,8 @@ class RiscTriangularSolveOp : public OpKernel {
  public:
   explicit RiscTriangularSolveOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_RiscTriangularSolveOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // TODO(b/171294012): Implement RiscTriangularSolve op.
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RiscTriangularSolveOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RiscTriangularSolveOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RiscTriangularSolveOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RiscTriangularSolveOp(ctx);
-      } else {
-        do_RiscTriangularSolveOp(ctx);
-      }
-
   }
 };
 

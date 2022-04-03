@@ -20,7 +20,6 @@ limitations under the License.
 #include "absl/container/flat_hash_map.h"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -79,7 +78,7 @@ class UniqueOp : public OpKernel {
  public:
   explicit UniqueOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_UniqueOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     // TODO(dga):  Make unique polymorphic for returning int32 and int64
     // vectors to support large tensors.
@@ -237,30 +236,6 @@ class UniqueOp : public OpKernel {
         count_output_vec(idx_vec(i))++;
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UniqueOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UniqueOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UniqueOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UniqueOp(context);
-      } else {
-        do_UniqueOp(context);
-      }
-
   }
 };
 

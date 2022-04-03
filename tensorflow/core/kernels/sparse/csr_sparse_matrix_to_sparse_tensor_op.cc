@@ -22,7 +22,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
@@ -70,7 +69,7 @@ class CSRSparseMatrixToSparseTensorCPUOp : public OpKernel {
   explicit CSRSparseMatrixToSparseTensorCPUOp(OpKernelConstruction* c)
       : OpKernel(c) {}
 
-  void do_CSRSparseMatrixToSparseTensorCPUOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) final {
     const CSRSparseMatrix* csr_sparse_matrix;
     OP_REQUIRES_OK(c, ExtractVariantFromInput(c, 0, &csr_sparse_matrix));
     OP_REQUIRES_OK(c, ValidateCSRSparseMatrix(*csr_sparse_matrix,
@@ -131,30 +130,6 @@ class CSRSparseMatrixToSparseTensorCPUOp : public OpKernel {
           csr_sparse_matrix->total_nnz() / batch_size /* cost per unit */,
           shard);
   }
-
-void Compute(OpKernelContext* c) final {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSparseMatrixToSparseTensorCPUOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSparseMatrixToSparseTensorCPUOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRSparseMatrixToSparseTensorCPUOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRSparseMatrixToSparseTensorCPUOp(c);
-      } else {
-        do_CSRSparseMatrixToSparseTensorCPUOp(c);
-      }
-
-  }
 };
 
 template <typename Device, typename T>
@@ -163,7 +138,7 @@ class CSRSparseMatrixToSparseTensorGPUOp : public OpKernel {
   explicit CSRSparseMatrixToSparseTensorGPUOp(OpKernelConstruction* c)
       : OpKernel(c) {}
 
-  void do_CSRSparseMatrixToSparseTensorGPUOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) final {
     const CSRSparseMatrix* csr_sparse_matrix;
     OP_REQUIRES_OK(c, ExtractVariantFromInput(c, 0, &csr_sparse_matrix));
     OP_REQUIRES_OK(c, ValidateCSRSparseMatrix(*csr_sparse_matrix,
@@ -220,30 +195,6 @@ class CSRSparseMatrixToSparseTensorGPUOp : public OpKernel {
     }
 
     *values_t = csr_sparse_matrix->values();
-  }
-
-void Compute(OpKernelContext* c) final {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRSparseMatrixToSparseTensorGPUOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRSparseMatrixToSparseTensorGPUOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRSparseMatrixToSparseTensorGPUOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRSparseMatrixToSparseTensorGPUOp(c);
-      } else {
-        do_CSRSparseMatrixToSparseTensorGPUOp(c);
-      }
-
   }
 };
 

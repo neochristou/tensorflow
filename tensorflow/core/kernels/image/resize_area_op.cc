@@ -21,7 +21,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -144,7 +143,7 @@ class ResizeAreaOp : public OpKernel {
 #undef BOUND_IF_NEEDED
   }
 
-  void do_ResizeAreaOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // The op always did the correct thing with regard to pixel centers, so we
     // always pass false here for half_pixel_centers since ImageResizerState
     // enforces that if align_corners_ is true, half_pixel_centers must be
@@ -190,30 +189,6 @@ class ResizeAreaOp : public OpKernel {
     } else {
       ComputeLoop<-1>(st, x_interps, input_data);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ResizeAreaOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ResizeAreaOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ResizeAreaOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ResizeAreaOp(context);
-      } else {
-        do_ResizeAreaOp(context);
-      }
-
   }
 
   template <int64 kKnownNumChannels>

@@ -24,7 +24,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/dense_update_functor.h"
@@ -45,7 +44,7 @@ class CSRZerosOp : public OpKernel {
     OP_REQUIRES_OK(c, c->GetAttr("type", &dtype_));
   }
 
-  void do_CSRZerosOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& dense_shape_t = c->input(0);
     CSRSparseMatrix matrix;
     functor::CSRSparseMatrixZeros<Device> csr_sparse_matrix_zeros;
@@ -57,30 +56,6 @@ class CSRZerosOp : public OpKernel {
     OP_REQUIRES_OK(
         c, c->allocate_output(0, TensorShape({}), &matrix_t, cpu_alloc));
     matrix_t->scalar<Variant>()() = matrix;
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRZerosOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRZerosOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRZerosOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRZerosOp(c);
-      } else {
-        do_CSRZerosOp(c);
-      }
-
   }
 
  private:

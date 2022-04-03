@@ -24,7 +24,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -61,7 +60,7 @@ class MirrorPadOp : public OpKernel {
 
   ~MirrorPadOp() override = default;
 
-  void do_MirrorPadOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& in0 = context->input(0);
     const Tensor& in1 = context->input(1);
     const int dims = in0.dims();
@@ -141,30 +140,6 @@ class MirrorPadOp : public OpKernel {
                                             in0.shape().DebugString()));
     }
 #undef MIRROR_PAD_CASE
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MirrorPadOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MirrorPadOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MirrorPadOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MirrorPadOp(context);
-      } else {
-        do_MirrorPadOp(context);
-      }
-
   }
 
  private:
@@ -298,7 +273,7 @@ class MirrorPadGradOp : public OpKernel {
 
   ~MirrorPadGradOp() override = default;
 
-  void do_MirrorPadGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& in0 = context->input(0);
     const Tensor& in1 = context->input(1);
     const int dims = in0.dims();
@@ -379,30 +354,6 @@ class MirrorPadGradOp : public OpKernel {
                                             in0.shape().DebugString()));
     }
 #undef MIRROR_PAD_GRAD_CASE
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MirrorPadGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MirrorPadGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MirrorPadGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MirrorPadGradOp(context);
-      } else {
-        do_MirrorPadGradOp(context);
-      }
-
   }
 
  private:

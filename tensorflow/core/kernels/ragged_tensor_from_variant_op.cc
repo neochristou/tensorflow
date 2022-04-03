@@ -16,7 +16,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/variant.h"
@@ -220,7 +219,7 @@ class RaggedTensorFromVariantOp : public OpKernel {
         context, context->GetAttr("output_ragged_rank", &output_ragged_rank_));
   }
 
-  void do_RaggedTensorFromVariantOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Read input Tensor.
     const Tensor& encoded_variant = context->input(0);
     auto input_ragged_rank_ = input_ragged_rank_attr_;
@@ -272,30 +271,6 @@ class RaggedTensorFromVariantOp : public OpKernel {
 
     // Set output.
     ReturnRaggedTensor(context, output_ragged);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedTensorFromVariantOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedTensorFromVariantOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RaggedTensorFromVariantOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RaggedTensorFromVariantOp(context);
-      } else {
-        do_RaggedTensorFromVariantOp(context);
-      }
-
   }
 
  private:

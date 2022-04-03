@@ -21,7 +21,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -42,7 +41,7 @@ class FFTBase : public OpKernel {
  public:
   explicit FFTBase(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_FFTBase(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& in = ctx->input(0);
     const TensorShape& input_shape = in.shape();
     const int fft_rank = Rank();
@@ -129,30 +128,6 @@ class FFTBase : public OpKernel {
     }
 
     DoFFT(ctx, in, fft_shape, out);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FFTBase")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FFTBase", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FFTBase(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FFTBase(ctx);
-      } else {
-        do_FFTBase(ctx);
-      }
-
   }
 
  protected:

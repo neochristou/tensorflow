@@ -20,7 +20,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/framework/types.pb.h"
@@ -93,7 +92,7 @@ class SaveV2 : public OpKernel {
  public:
   explicit SaveV2(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SaveV2(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& prefix = context->input(0);
     const Tensor& tensor_names = context->input(1);
     const Tensor& shape_and_slices = context->input(2);
@@ -159,30 +158,6 @@ class SaveV2 : public OpKernel {
     OP_REQUIRES_OK(context, writer.Finish());
     VLOG(1) << "Done BundleWriter, prefix_string: " << prefix_string;
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SaveV2")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SaveV2", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SaveV2(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SaveV2(context);
-      } else {
-        do_SaveV2(context);
-      }
-
-  }
 };
 REGISTER_KERNEL_BUILDER(Name("SaveV2").Device(DEVICE_CPU), SaveV2);
 
@@ -193,7 +168,7 @@ class RestoreV2 : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("dtypes", &dtypes_));
   }
 
-  void do_RestoreV2(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& prefix = context->input(0);
     const Tensor& tensor_names = context->input(1);
     const Tensor& shape_and_slices = context->input(2);
@@ -232,30 +207,6 @@ class RestoreV2 : public OpKernel {
                                              shape_and_slices, dtypes_));
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RestoreV2")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RestoreV2", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RestoreV2(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RestoreV2(context);
-      } else {
-        do_RestoreV2(context);
-      }
-
-  }
-
  private:
   // Expected dtypes of the to-restore tensors.
   std::vector<DataType> dtypes_;
@@ -271,7 +222,7 @@ class MergeV2Checkpoints : public OpKernel {
                    context->GetAttr("delete_old_dirs", &delete_old_dirs_));
   }
 
-  void do_MergeV2Checkpoints(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& checkpoint_prefixes = context->input(0);
     const Tensor& destination_prefix = context->input(1);
     OP_REQUIRES(context,
@@ -302,30 +253,6 @@ class MergeV2Checkpoints : public OpKernel {
         if (!status.ok()) VLOG(1) << status;
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MergeV2Checkpoints")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MergeV2Checkpoints", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MergeV2Checkpoints(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MergeV2Checkpoints(context);
-      } else {
-        do_MergeV2Checkpoints(context);
-      }
-
   }
 
  private:

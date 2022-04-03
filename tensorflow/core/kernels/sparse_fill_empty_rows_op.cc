@@ -24,7 +24,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -249,32 +248,8 @@ class SparseFillEmptyRowsOp : public OpKernel {
   explicit SparseFillEmptyRowsOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_SparseFillEmptyRowsOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     SparseFillEmptyRowsOpImpl<Device, T, Tindex>(context);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseFillEmptyRowsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseFillEmptyRowsOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseFillEmptyRowsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseFillEmptyRowsOp(context);
-      } else {
-        do_SparseFillEmptyRowsOp(context);
-      }
-
   }
 };
 
@@ -392,7 +367,7 @@ class SparseFillEmptyRowsGradOp : public OpKernel {
   explicit SparseFillEmptyRowsGradOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_SparseFillEmptyRowsGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* reverse_index_map_t;
     const Tensor* grad_values_t;
     OP_REQUIRES_OK(context,
@@ -426,30 +401,6 @@ class SparseFillEmptyRowsGradOp : public OpKernel {
                    functor::SparseFillEmptyRowsGrad<Device, T, Tindex>()(
                        context, reverse_index_map, grad_values, d_values,
                        d_default_value));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseFillEmptyRowsGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseFillEmptyRowsGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseFillEmptyRowsGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseFillEmptyRowsGradOp(context);
-      } else {
-        do_SparseFillEmptyRowsGradOp(context);
-      }
-
   }
 };
 

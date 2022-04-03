@@ -19,7 +19,6 @@ limitations under the License.
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/register_types_traits.h"
 #include "tensorflow/core/framework/shape_inference.h"
@@ -37,7 +36,7 @@ class RollOp : public OpKernel {
  public:
   explicit RollOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_RollOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Grab the input tensor
     const Tensor& input = context->input(0);
     const Tensor& shift = context->input(1);
@@ -107,30 +106,6 @@ class RollOp : public OpKernel {
     functor::Roll<Device, T>()(context, num_elements, num_dims, dim_size,
                                input_flat, output_flat, threshold, dim_range,
                                isd);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RollOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RollOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RollOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RollOp(context);
-      } else {
-        do_RollOp(context);
-      }
-
   }
 };
 

@@ -24,7 +24,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/cwise_ops_common.h"
@@ -167,7 +166,7 @@ class CSRMatMulCPUOp : public CSRMatMulOp<CPUDevice, T> {
 
   ~CSRMatMulCPUOp() override {}
 
-  void do_CSRMatMulCPUOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) final {
     const CSRSparseMatrix* sparse_matrix_a;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &sparse_matrix_a));
     const Tensor& matrix_b = ctx->input(1);
@@ -227,30 +226,6 @@ class CSRMatMulCPUOp : public CSRMatMulOp<CPUDevice, T> {
       functor::maybe_conj_inplace<CPUDevice, T>::run(
           ctx->eigen_device<CPUDevice>(), output);
     }
-  }
-
-void Compute(OpKernelContext* ctx) final {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRMatMulCPUOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRMatMulCPUOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRMatMulCPUOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRMatMulCPUOp(ctx);
-      } else {
-        do_CSRMatMulCPUOp(ctx);
-      }
-
   }
 
  private:
@@ -521,7 +496,7 @@ class CSRMatMulGPUOp : public CSRMatMulOp<GPUDevice, T> {
 
   ~CSRMatMulGPUOp() override {}
 
-  void do_CSRMatMulGPUOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) final {
     const CSRSparseMatrix* a_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &a_matrix));
     const Tensor& b_t = ctx->input(1);
@@ -709,30 +684,6 @@ class CSRMatMulGPUOp : public CSRMatMulOp<GPUDevice, T> {
     if (this->conjugate_output_) {
       functor::maybe_conj_inplace<GPUDevice, T>::run(d, c_t);
     }
-  }
-
-void Compute(OpKernelContext* ctx) final {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRMatMulGPUOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRMatMulGPUOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRMatMulGPUOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRMatMulGPUOp(ctx);
-      } else {
-        do_CSRMatMulGPUOp(ctx);
-      }
-
   }
 };
 

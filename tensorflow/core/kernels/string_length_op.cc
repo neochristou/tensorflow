@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/string_util.h"
 
@@ -28,7 +27,7 @@ class StringLengthOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ParseCharUnit(unit, &unit_));
   }
 
-  void do_StringLengthOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
 
     Tensor* output;
@@ -50,30 +49,6 @@ class StringLengthOp : public OpKernel {
         }
         break;
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringLengthOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringLengthOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StringLengthOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StringLengthOp(context);
-      } else {
-        do_StringLengthOp(context);
-      }
-
   }
 
  private:

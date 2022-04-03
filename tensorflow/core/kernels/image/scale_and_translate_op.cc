@@ -23,7 +23,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -279,7 +278,7 @@ class ScaleAndTranslateOp : public OpKernel {
                                         kernel_type_str));
   }
 
-  void do_ScaleAndTranslateOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() == 4,
                 errors::InvalidArgument("input must be 4-dimensional",
@@ -371,30 +370,6 @@ class ScaleAndTranslateOp : public OpKernel {
         row_weights, col_spans.span_size, col_starts, col_weights, image_data,
         intermediate_data, output_data);
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScaleAndTranslateOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScaleAndTranslateOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ScaleAndTranslateOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ScaleAndTranslateOp(context);
-      } else {
-        do_ScaleAndTranslateOp(context);
-      }
-
-  }
   functor::SamplingKernelType kernel_type_;
   bool antialias_;
 };
@@ -413,7 +388,7 @@ class ScaleAndTranslateGradOp : public OpKernel {
                                         kernel_type_str));
   }
 
-  void do_ScaleAndTranslateGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& original_image = context->input(1);
 
@@ -499,30 +474,6 @@ class ScaleAndTranslateGradOp : public OpKernel {
         context->eigen_device<Device>(), row_spans.span_size, row_starts,
         row_weights, col_spans.span_size, col_starts, col_weights, input_grad,
         intermediate_data, output_grad);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScaleAndTranslateGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScaleAndTranslateGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ScaleAndTranslateGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ScaleAndTranslateGradOp(context);
-      } else {
-        do_ScaleAndTranslateGradOp(context);
-      }
-
   }
 
   functor::SamplingKernelType kernel_type_;

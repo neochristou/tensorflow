@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/variant.h"
 #include "tensorflow/core/framework/variant_encode_decode.h"
 #include "tensorflow/core/kernels/composite_tensor_variant.h"
@@ -35,7 +34,7 @@ class CompositeTensorVariantFromComponents : public OpKernel {
                 errors::InvalidArgument("Error parsing metadata"));
   }
 
-  void do_CompositeTensorVariantFromComponents(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList components_in;
     OP_REQUIRES_OK(context, context->input_list("components", &components_in));
 
@@ -46,30 +45,6 @@ class CompositeTensorVariantFromComponents : public OpKernel {
     std::vector<Tensor> components{components_in.begin(), components_in.end()};
     encoded->flat<Variant>()(0) =
         CompositeTensorVariant(metadata_, absl::MakeSpan(components));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CompositeTensorVariantFromComponents")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CompositeTensorVariantFromComponents", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CompositeTensorVariantFromComponents(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CompositeTensorVariantFromComponents(context);
-      } else {
-        do_CompositeTensorVariantFromComponents(context);
-      }
-
   }
 
  private:
@@ -89,7 +64,7 @@ class CompositeTensorVariantToComponents : public OpKernel {
                    context->GetAttr("Tcomponents", &component_dtypes_));
   }
 
-  void do_CompositeTensorVariantToComponents(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     Tensor encoded_t = context->input(0);
     auto* encoded = encoded_t.flat<Variant>()(0).get<CompositeTensorVariant>();
 
@@ -129,30 +104,6 @@ class CompositeTensorVariantToComponents : public OpKernel {
                                           DataType_Name(component_dtypes_[i])));
       components.set(i, component);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CompositeTensorVariantToComponents")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CompositeTensorVariantToComponents", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CompositeTensorVariantToComponents(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CompositeTensorVariantToComponents(context);
-      } else {
-        do_CompositeTensorVariantToComponents(context);
-      }
-
   }
 
  private:

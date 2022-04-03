@@ -16,7 +16,6 @@ limitations under the License.
 // See docs in ../ops/image_ops.cc.
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -32,7 +31,7 @@ class RandomCropOp : public OpKernel {
     OP_REQUIRES_OK(context, generator_.Init(context));
   }
 
-  void do_RandomCropOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() == 3,
                 errors::InvalidArgument("input must be 3-dimensional",
@@ -100,30 +99,6 @@ class RandomCropOp : public OpKernel {
         }
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RandomCropOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RandomCropOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RandomCropOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RandomCropOp(context);
-      } else {
-        do_RandomCropOp(context);
-      }
-
   }
 
  private:

@@ -28,7 +28,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -130,7 +129,7 @@ class WhereCPUOp : public OpKernel {
  public:
   explicit WhereCPUOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_WhereCPUOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
 
     OP_REQUIRES(
@@ -189,30 +188,6 @@ class WhereCPUOp : public OpKernel {
             "elements and writing them.  When counting, saw ",
             num_true_t(), " elements; but when writing their indices, saw ",
             found_true, " elements."));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("WhereCPUOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("WhereCPUOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_WhereCPUOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_WhereCPUOp(context);
-      } else {
-        do_WhereCPUOp(context);
-      }
-
   }
 
  private:

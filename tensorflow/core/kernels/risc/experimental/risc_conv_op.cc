@@ -16,7 +16,6 @@ limitations under the License.
 #include "tensorflow/core/framework/common_shape_fns.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
@@ -33,32 +32,8 @@ class RiscConvOp : public OpKernel {
     // TODO(b/171294012): Implement RiscConv op.
   }
 
-  void do_RiscConvOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // TODO(b/171294012): Implement RiscConv op.
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RiscConvOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RiscConvOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RiscConvOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RiscConvOp(context);
-      } else {
-        do_RiscConvOp(context);
-      }
-
   }
 };
 

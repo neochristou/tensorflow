@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/meta_support.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -36,7 +35,7 @@ class QuantizedBiasAddOp : public OpKernel {
   explicit QuantizedBiasAddOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_QuantizedBiasAddOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& bias = context->input(1);
     const float input_min = context->input(2).flat<float>()(0);
@@ -91,30 +90,6 @@ class QuantizedBiasAddOp : public OpKernel {
     Tensor* output_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &output_max));
     output_max->flat<float>()(0) = total_max;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedBiasAddOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedBiasAddOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedBiasAddOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedBiasAddOp(context);
-      } else {
-        do_QuantizedBiasAddOp(context);
-      }
-
   }
 };
 

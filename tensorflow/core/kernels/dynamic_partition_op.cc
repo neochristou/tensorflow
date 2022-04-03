@@ -18,7 +18,6 @@ limitations under the License.
 #include <vector>
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -88,7 +87,7 @@ class DynamicPartitionOp : public DynamicPartitionOp_Shared {
  public:
   explicit DynamicPartitionOp(OpKernelConstruction* c)
       : DynamicPartitionOp_Shared(c) {}
-  void do_DynamicPartitionOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor* data;
     const Tensor* partitions;
     OpOutputList outputs;
@@ -156,30 +155,6 @@ class DynamicPartitionOp : public DynamicPartitionOp_Shared {
         output_index[p]++;
       }
     }
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DynamicPartitionOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DynamicPartitionOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DynamicPartitionOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DynamicPartitionOp(c);
-      } else {
-        do_DynamicPartitionOp(c);
-      }
-
   }
 };
 

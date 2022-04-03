@@ -16,7 +16,6 @@ limitations under the License.
 // See docs in ../ops/audio_ops.cc
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -36,7 +35,7 @@ class DecodeWavOp : public OpKernel {
                    context->GetAttr("desired_samples", &desired_samples_));
   }
 
-  void do_DecodeWavOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& contents = context->input(0);
     OP_REQUIRES(context, TensorShapeUtils::IsScalar(contents.shape()),
                 errors::InvalidArgument("contents must be scalar, got shape ",
@@ -100,30 +99,6 @@ class DecodeWavOp : public OpKernel {
     OP_REQUIRES_OK(context, context->allocate_output(1, TensorShape({}),
                                                      &sample_rate_output));
     sample_rate_output->flat<int32>()(0) = decoded_sample_rate;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeWavOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeWavOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DecodeWavOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DecodeWavOp(context);
-      } else {
-        do_DecodeWavOp(context);
-      }
-
   }
 
  private:

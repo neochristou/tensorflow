@@ -1,4 +1,3 @@
-#include "tensorflow/core/framework/fuzzing.h"
 /* Copyright 2015 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +52,7 @@ class ParseExampleOp : public OpKernel {
     OP_REQUIRES_OK(ctx, attrs_.Init(ctx, op_version_));
   }
 
-  void do_ParseExampleOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* names;
     const Tensor* serialized;
     std::vector<StringPiece> dense_keys_t;
@@ -95,30 +94,6 @@ class ParseExampleOp : public OpKernel {
       OP_REQUIRES_OK(ctx, ParseExampleScalar(config, serialized, ctx, &result));
     }
     OP_REQUIRES_OK(ctx, WriteOutput(result, ctx));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParseExampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParseExampleOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParseExampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParseExampleOp(ctx);
-      } else {
-        do_ParseExampleOp(ctx);
-      }
-
   }
 
  protected:
@@ -326,7 +301,7 @@ class ParseSingleExampleOp : public OpKernel {
     metrics::RecordParseSparseFeature(attrs_.sparse_keys.size());
   }
 
-  void do_ParseSingleExampleOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* serialized;
     OpInputList dense_defaults;
 
@@ -409,30 +384,6 @@ class ParseSingleExampleOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParseSingleExampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParseSingleExampleOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParseSingleExampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParseSingleExampleOp(ctx);
-      } else {
-        do_ParseSingleExampleOp(ctx);
-      }
-
-  }
-
  protected:
   ParseSingleExampleAttrs attrs_;
 };
@@ -452,7 +403,7 @@ class ParseSequenceExampleOp : public OpKernel {
                                       attrs_.feature_list_sparse_keys.size());
   }
 
-  void do_ParseSequenceExampleOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* debug_name;
     const Tensor* serialized;
     OpInputList context_dense_defaults;
@@ -530,30 +481,6 @@ class ParseSequenceExampleOp : public OpKernel {
 
     OP_REQUIRES_OK(ctx, WriteOutput(context_result, feature_list_result,
                                     dense_feature_lengths, ctx));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParseSequenceExampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParseSequenceExampleOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParseSequenceExampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParseSequenceExampleOp(ctx);
-      } else {
-        do_ParseSequenceExampleOp(ctx);
-      }
-
   }
 
  protected:
@@ -854,7 +781,7 @@ class ParseSingleSequenceExampleOp : public OpKernel {
     OP_REQUIRES_OK(ctx, attrs_.Init(ctx));
   }
 
-  void do_ParseSingleSequenceExampleOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* debug_name;
     const Tensor* serialized;
     OpInputList context_dense_keys;
@@ -1256,30 +1183,6 @@ class ParseSingleSequenceExampleOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParseSingleSequenceExampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParseSingleSequenceExampleOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParseSingleSequenceExampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParseSingleSequenceExampleOp(ctx);
-      } else {
-        do_ParseSingleSequenceExampleOp(ctx);
-      }
-
-  }
-
  protected:
   ParseSingleSequenceExampleAttrs attrs_;
   absl::once_flag flag_;
@@ -1298,7 +1201,7 @@ class DecodeJSONExampleOp : public OpKernel {
         "type.googleapis.com", protobuf::DescriptorPool::generated_pool()));
   }
 
-  void do_DecodeJSONExampleOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* json_examples;
     OP_REQUIRES_OK(ctx, ctx->input("json_examples", &json_examples));
     Tensor* binary_examples;
@@ -1317,30 +1220,6 @@ class DecodeJSONExampleOp : public OpKernel {
                   errors::InvalidArgument("Error while parsing JSON: ",
                                           string(status.error_message())));
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeJSONExampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeJSONExampleOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DecodeJSONExampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DecodeJSONExampleOp(ctx);
-      } else {
-        do_DecodeJSONExampleOp(ctx);
-      }
-
   }
 
  private:

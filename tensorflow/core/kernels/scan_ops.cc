@@ -24,7 +24,6 @@ limitations under the License.
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
@@ -42,7 +41,7 @@ class ScanOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("exclusive", &exclusive_));
   }
 
-  void do_ScanOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     const Tensor& tensor_axis = ctx->input(1);
 
@@ -81,30 +80,6 @@ class ScanOp : public OpKernel {
     functor::Scan<Device, Reducer, T>()(d, input.shaped<T, 3>(reduced_shape),
                                         output->shaped<T, 3>(reduced_shape),
                                         reducer, reverse_, exclusive_);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScanOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScanOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ScanOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ScanOp(ctx);
-      } else {
-        do_ScanOp(ctx);
-      }
-
   }
 
  private:

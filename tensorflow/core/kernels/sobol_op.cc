@@ -24,7 +24,6 @@ limitations under the License.
 #include "sobol_data.h"
 #include "tensorflow/core/framework/device_base.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/core/threadpool.h"
 #include "tensorflow/core/platform/platform_strings.h"
 
@@ -134,7 +133,7 @@ class SobolSampleOp : public OpKernel {
   explicit SobolSampleOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_SobolSampleOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     int32_t dim = context->input(0).scalar<int32_t>()();
     int32_t num_results = context->input(1).scalar<int32_t>()();
     int32_t skip = context->input(2).scalar<int32_t>()();
@@ -170,30 +169,6 @@ class SobolSampleOp : public OpKernel {
           CalculateSobolSample<T>(dim, end - start /* num_results */, skip,
                                   start, output_flat);
         });
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SobolSampleOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SobolSampleOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SobolSampleOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SobolSampleOp(context);
-      } else {
-        do_SobolSampleOp(context);
-      }
-
   }
 };
 

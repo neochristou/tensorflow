@@ -16,7 +16,6 @@ limitations under the License.
 // See docs in ../ops/audio_ops.cc
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -37,7 +36,7 @@ class AudioSpectrogramOp : public OpKernel {
                    context->GetAttr("magnitude_squared", &magnitude_squared_));
   }
 
-  void do_AudioSpectrogramOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() == 2,
                 errors::InvalidArgument("input must be 2-dimensional",
@@ -112,30 +111,6 @@ class AudioSpectrogramOp : public OpKernel {
         }
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AudioSpectrogramOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AudioSpectrogramOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_AudioSpectrogramOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_AudioSpectrogramOp(context);
-      } else {
-        do_AudioSpectrogramOp(context);
-      }
-
   }
 
  private:

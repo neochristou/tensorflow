@@ -19,7 +19,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/platform/env.h"
@@ -29,7 +28,7 @@ namespace tensorflow {
 class MatchingFilesOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
-  void do_MatchingFilesOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* patterns_t;
     // NOTE(ringwalt): Changing the input name "pattern" to "patterns" would
     // break existing graphs.
@@ -64,30 +63,6 @@ class MatchingFilesOp : public OpKernel {
       }
       std::sort(&output(0), &output(0) + num_files);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MatchingFilesOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MatchingFilesOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MatchingFilesOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MatchingFilesOp(context);
-      } else {
-        do_MatchingFilesOp(context);
-      }
-
   }
 };
 

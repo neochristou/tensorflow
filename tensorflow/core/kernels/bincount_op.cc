@@ -19,7 +19,6 @@ limitations under the License.
 #define EIGEN_USE_THREADS
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/bincount_op.h"
@@ -206,7 +205,7 @@ class BincountOp : public OpKernel {
  public:
   explicit BincountOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_BincountOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& arr_t = ctx->input(0);
     const Tensor& size_tensor = ctx->input(1);
     OP_REQUIRES(ctx, size_tensor.dims() == 0,
@@ -227,30 +226,6 @@ class BincountOp : public OpKernel {
     OP_REQUIRES_OK(ctx,
                    functor::BincountFunctor<Device, int32_t, T, false>::Compute(
                        ctx, arr, weights, output, size));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BincountOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BincountOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BincountOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BincountOp(ctx);
-      } else {
-        do_BincountOp(ctx);
-      }
-
   }
 };
 
@@ -284,7 +259,7 @@ class DenseBincountOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_DenseBincountOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& data = ctx->input(0);
     OP_REQUIRES(ctx, data.dims() <= 2,
                 errors::InvalidArgument(
@@ -336,30 +311,6 @@ class DenseBincountOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DenseBincountOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DenseBincountOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DenseBincountOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DenseBincountOp(ctx);
-      } else {
-        do_DenseBincountOp(ctx);
-      }
-
-  }
-
  private:
   bool binary_output_;
 };
@@ -405,7 +356,7 @@ class SparseBincountOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_SparseBincountOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& indices = ctx->input(0);
     const auto values = ctx->input(1).flat<Tidx>();
     const Tensor& dense_shape = ctx->input(2);
@@ -461,30 +412,6 @@ class SparseBincountOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseBincountOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseBincountOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseBincountOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseBincountOp(ctx);
-      } else {
-        do_SparseBincountOp(ctx);
-      }
-
-  }
-
  private:
   bool binary_output_;
 };
@@ -510,7 +437,7 @@ class RaggedBincountOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_RaggedBincountOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const auto splits = ctx->input(0).flat<int64_t>();
     const auto values = ctx->input(1).flat<Tidx>();
     const Tensor& size_t = ctx->input(2);
@@ -558,30 +485,6 @@ class RaggedBincountOp : public OpKernel {
         }
       }
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedBincountOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedBincountOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RaggedBincountOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RaggedBincountOp(ctx);
-      } else {
-        do_RaggedBincountOp(ctx);
-      }
-
   }
 
  private:

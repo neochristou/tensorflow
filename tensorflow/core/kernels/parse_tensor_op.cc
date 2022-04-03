@@ -16,7 +16,6 @@ limitations under the License.
 // See docs in ../ops/parsing_ops.cc.
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor.pb.h"
@@ -32,7 +31,7 @@ class ParseTensorOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("out_type", &out_type_));
   }
 
-  void do_ParseTensorOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& serialized = ctx->input(0);
 
     OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(serialized.shape()),
@@ -61,30 +60,6 @@ class ParseTensorOp : public OpKernel {
     ctx->set_output(0, output);
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParseTensorOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParseTensorOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParseTensorOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParseTensorOp(ctx);
-      } else {
-        do_ParseTensorOp(ctx);
-      }
-
-  }
-
  private:
   DataType out_type_;
 };
@@ -96,7 +71,7 @@ class SerializeTensorOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
 
-  void do_SerializeTensorOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor = context->input(0);
     TensorProto proto;
     if (tensor.dtype() == DT_STRING) {
@@ -108,30 +83,6 @@ class SerializeTensorOp : public OpKernel {
     OP_REQUIRES_OK(context,
                    context->allocate_output(0, TensorShape({}), &proto_string));
     CHECK(SerializeToTString(proto, &proto_string->scalar<tstring>()()));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SerializeTensorOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SerializeTensorOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SerializeTensorOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SerializeTensorOp(context);
-      } else {
-        do_SerializeTensorOp(context);
-      }
-
   }
 };
 

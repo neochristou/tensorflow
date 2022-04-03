@@ -17,7 +17,6 @@ limitations under the License.
 
 #include <vector>
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/util/sparse/sparse_tensor.h"
 
@@ -30,7 +29,7 @@ class SparseSplitOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("num_split", &num_split_));
   }
 
-  void do_SparseSplitOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const int64 axis_input = context->input(0).scalar<int64>()();
     const Tensor& input_indices = context->input(1);
     const Tensor& input_values = context->input(2);
@@ -94,30 +93,6 @@ class SparseSplitOp : public OpKernel {
         shape->vec<int64>()(dim) = output_shape[dim];
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseSplitOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseSplitOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseSplitOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseSplitOp(context);
-      } else {
-        do_SparseSplitOp(context);
-      }
-
   }
 
  private:

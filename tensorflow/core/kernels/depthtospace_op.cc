@@ -26,7 +26,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -63,7 +62,7 @@ class DepthToSpaceOp : public OpKernel {
     }
   }
 
-  void do_DepthToSpaceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const int dims = input.dims();
 
@@ -136,30 +135,6 @@ class DepthToSpaceOp : public OpKernel {
       functor::DepthToSpaceOpFunctor<Device, T, FORMAT_NHWC> functor;
       functor(context->eigen_device<Device>(), Tinput, block_size_, Toutput);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DepthToSpaceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DepthToSpaceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DepthToSpaceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DepthToSpaceOp(context);
-      } else {
-        do_DepthToSpaceOp(context);
-      }
-
   };
 
  private:

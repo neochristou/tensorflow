@@ -23,7 +23,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -52,7 +51,7 @@ class AdjustHueOpBase : public OpKernel {
   virtual void DoCompute(OpKernelContext* context,
                          const ComputeOptions& options) = 0;
 
-  void do_AdjustHueOpBase(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& delta = context->input(1);
     OP_REQUIRES(context, input.dims() >= 3,
@@ -80,30 +79,6 @@ class AdjustHueOpBase : public OpKernel {
       options.channel_count = channel_count;
       DoCompute(context, options);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AdjustHueOpBase")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AdjustHueOpBase", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_AdjustHueOpBase(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_AdjustHueOpBase(context);
-      } else {
-        do_AdjustHueOpBase(context);
-      }
-
   }
 };
 

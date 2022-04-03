@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #define EIGEN_USE_THREADS
-#include "tensorflow/core/framework/fuzzing.h"
 
 #include "tensorflow/core/kernels/conditional_accumulator_base_op.h"
 

@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "absl/strings/escaping.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/reader_base.h"
 #include "tensorflow/core/framework/reader_base.pb.h"
 #include "tensorflow/core/framework/reader_op_kernel.h"
@@ -101,7 +100,7 @@ REGISTER_KERNEL_BUILDER(Name("WholeFileReaderV2").Device(DEVICE_CPU),
 class ReadFileOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
-  void do_ReadFileOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* input;
     OP_REQUIRES_OK(context, context->input("filename", &input));
     OP_REQUIRES(context, TensorShapeUtils::IsScalar(input->shape()),
@@ -116,30 +115,6 @@ class ReadFileOp : public OpKernel {
                    ReadEntireFile(context->env(), input->scalar<tstring>()(),
                                   &output->scalar<tstring>()()));
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReadFileOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReadFileOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ReadFileOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ReadFileOp(context);
-      } else {
-        do_ReadFileOp(context);
-      }
-
-  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("ReadFile").Device(DEVICE_CPU), ReadFileOp);
@@ -147,7 +122,7 @@ REGISTER_KERNEL_BUILDER(Name("ReadFile").Device(DEVICE_CPU), ReadFileOp);
 class WriteFileOp : public OpKernel {
  public:
   using OpKernel::OpKernel;
-  void do_WriteFileOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* filename_input;
     const Tensor* contents_input;
     OP_REQUIRES_OK(context, context->input("filename", &filename_input));
@@ -168,30 +143,6 @@ class WriteFileOp : public OpKernel {
     OP_REQUIRES_OK(context,
                    WriteStringToFile(context->env(), filename,
                                      contents_input->scalar<tstring>()()));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("WriteFileOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("WriteFileOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_WriteFileOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_WriteFileOp(context);
-      } else {
-        do_WriteFileOp(context);
-      }
-
   }
 };
 

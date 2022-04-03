@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -81,7 +80,7 @@ class KmeansPlusPlusInitializationOp : public OpKernel {
                        {DT_FLOAT, DT_INT64, DT_INT64, DT_INT64}, {DT_FLOAT}));
   }
 
-  void do_KmeansPlusPlusInitializationOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& points_tensor = context->input(0);
     const Tensor& num_to_sample_tensor = context->input(1);
     const Tensor& seed_tensor = context->input(2);
@@ -206,30 +205,6 @@ class KmeansPlusPlusInitializationOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("KmeansPlusPlusInitializationOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("KmeansPlusPlusInitializationOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_KmeansPlusPlusInitializationOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_KmeansPlusPlusInitializationOp(context);
-      } else {
-        do_KmeansPlusPlusInitializationOp(context);
-      }
-
-  }
-
  private:
   // Returns a column vector with the i-th element set to half the squared
   // euclidean distance between the i-th row of xs, and y. Precomputed norms for
@@ -259,7 +234,7 @@ class KMC2ChainInitializationOp : public OpKernel {
                    context->MatchSignature({DT_FLOAT, DT_INT64}, {DT_INT64}));
   }
 
-  void do_KMC2ChainInitializationOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& distances_tensor = context->input(0);
     const Tensor& seed_tensor = context->input(1);
     OP_REQUIRES(context, TensorShapeUtils::IsVector(distances_tensor.shape()),
@@ -297,30 +272,6 @@ class KMC2ChainInitializationOp : public OpKernel {
     // Return the last state of the Markov chain as the new center.
     output() = selected_index;
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("KMC2ChainInitializationOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("KMC2ChainInitializationOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_KMC2ChainInitializationOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_KMC2ChainInitializationOp(context);
-      } else {
-        do_KMC2ChainInitializationOp(context);
-      }
-
-  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("KMC2ChainInitialization").Device(DEVICE_CPU),
@@ -336,7 +287,7 @@ class NearestNeighborsOp : public OpKernel {
                                            {DT_INT64, DT_FLOAT}));
   }
 
-  void do_NearestNeighborsOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& points_tensor = context->input(0);
     const Tensor& centers_tensor = context->input(1);
     const Tensor& k_tensor = context->input(2);
@@ -469,30 +420,6 @@ class NearestNeighborsOp : public OpKernel {
     }
     work(0, units_per_thread);
     counter.Wait();
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NearestNeighborsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NearestNeighborsOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NearestNeighborsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NearestNeighborsOp(context);
-      } else {
-        do_NearestNeighborsOp(context);
-      }
-
   }
 
  private:

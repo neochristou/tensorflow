@@ -22,7 +22,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -40,7 +39,7 @@ class SparseConcatOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("concat_dim", &concat_dim_attr_));
   }
 
-  void do_SparseConcatOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList inds;
     OP_REQUIRES_OK(context, context->input_list("indices", &inds));
     const int N = inds.size();
@@ -169,30 +168,6 @@ class SparseConcatOp : public OpKernel {
     for (int j = 0; j < concat.dims(); ++j) {
       output_shape(j) = concat_shape[j];
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseConcatOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseConcatOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseConcatOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseConcatOp(context);
-      } else {
-        do_SparseConcatOp(context);
-      }
-
   }
 
  private:

@@ -1,4 +1,3 @@
-#include "tensorflow/core/framework/fuzzing.h"
 /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +91,7 @@ class ComputeBatchSizeOp : public OpKernel {
  public:
   explicit ComputeBatchSizeOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_ComputeBatchSizeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     DatasetBase* dataset;
     OP_REQUIRES_OK(ctx, GetDatasetFromVariantTensor(ctx->input(0), &dataset));
 
@@ -112,30 +111,6 @@ class ComputeBatchSizeOp : public OpKernel {
     Tensor* result;
     OP_REQUIRES_OK(ctx, ctx->allocate_output(0, TensorShape({}), &result));
     result->scalar<int64>()() = batch_size;
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ComputeBatchSizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ComputeBatchSizeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ComputeBatchSizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ComputeBatchSizeOp(ctx);
-      } else {
-        do_ComputeBatchSizeOp(ctx);
-      }
-
   }
 
  private:

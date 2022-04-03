@@ -19,7 +19,6 @@
 
 #include "tensorflow/core/framework/device_base.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -102,7 +101,7 @@ class BoostedTreesCreateQuantileStreamResourceOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr(kMaxElementsName, &max_elements_));
   }
 
-  void do_BoostedTreesCreateQuantileStreamResourceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Only create one, if one does not exist already. Report status for all
     // other exceptions. If one already exists, it unrefs the new one.
     // An epsilon value of zero could cause performance issues and is therefore,
@@ -129,30 +128,6 @@ class BoostedTreesCreateQuantileStreamResourceOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesCreateQuantileStreamResourceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesCreateQuantileStreamResourceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BoostedTreesCreateQuantileStreamResourceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BoostedTreesCreateQuantileStreamResourceOp(context);
-      } else {
-        do_BoostedTreesCreateQuantileStreamResourceOp(context);
-      }
-
-  }
-
  private:
   // An upper bound on the number of entries that the summaries might have
   // for a feature.
@@ -171,7 +146,7 @@ class BoostedTreesMakeQuantileSummariesOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr(kNumFeaturesName, &num_features_));
   }
 
-  void do_BoostedTreesMakeQuantileSummariesOp(OpKernelContext *context){
+  void Compute(OpKernelContext* const context) override {
     // Read float features list;
     OpInputList float_features_list;
     OP_REQUIRES_OK(
@@ -233,30 +208,6 @@ class BoostedTreesMakeQuantileSummariesOp : public OpKernel {
         *context->device()->tensorflow_cpu_worker_threads();
     Shard(worker_threads.num_threads, worker_threads.workers, num_features_,
           kCostPerUnit, do_quantile_summary_gen);
-  }
-
-void Compute(OpKernelContext* const context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesMakeQuantileSummariesOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesMakeQuantileSummariesOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BoostedTreesMakeQuantileSummariesOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BoostedTreesMakeQuantileSummariesOp(context);
-      } else {
-        do_BoostedTreesMakeQuantileSummariesOp(context);
-      }
-
   }
 
  private:
@@ -562,7 +513,7 @@ class BoostedTreesBucketizeOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr(kNumFeaturesName, &num_features_));
   }
 
-  void do_BoostedTreesBucketizeOp(OpKernelContext *context){
+  void Compute(OpKernelContext* const context) override {
     // Read float features list;
     OpInputList float_features_list;
     OP_REQUIRES_OK(
@@ -618,30 +569,6 @@ class BoostedTreesBucketizeOp : public OpKernel {
         *context->device()->tensorflow_cpu_worker_threads();
     Shard(worker_threads.num_threads, worker_threads.workers, num_features_,
           kCostPerUnit, do_quantile_get_quantiles);
-  }
-
-void Compute(OpKernelContext* const context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BoostedTreesBucketizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BoostedTreesBucketizeOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BoostedTreesBucketizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BoostedTreesBucketizeOp(context);
-      } else {
-        do_BoostedTreesBucketizeOp(context);
-      }
-
   }
 
  private:

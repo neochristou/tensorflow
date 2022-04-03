@@ -21,7 +21,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/type_traits.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/meta_support.h"
@@ -37,7 +36,7 @@ class RequantizeOp : public OpKernel {
  public:
   explicit RequantizeOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_RequantizeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     const float input_min_float = ctx->input(1).flat<float>()(0);
     const float input_max_float = ctx->input(2).flat<float>()(0);
@@ -91,30 +90,6 @@ class RequantizeOp : public OpKernel {
 
     output_min->flat<float>().setConstant(requested_output_min_float);
     output_max->flat<float>().setConstant(requested_output_max_float);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RequantizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RequantizeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RequantizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RequantizeOp(ctx);
-      } else {
-        do_RequantizeOp(ctx);
-      }
-
   }
 };
 

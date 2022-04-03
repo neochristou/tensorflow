@@ -30,7 +30,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -1396,33 +1395,9 @@ class FusedBatchNormOp : public FusedBatchNormOpBase<Device, T, U> {
   explicit FusedBatchNormOp(OpKernelConstruction* context)
       : FusedBatchNormOpBase<Device, T, U>(context) {}
 
-  void do_FusedBatchNormOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     FusedBatchNormOpBase<Device, T, U>::ComputeWithReservedSpace(context,
                                                                  false);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedBatchNormOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedBatchNormOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedBatchNormOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedBatchNormOp(context);
-      } else {
-        do_FusedBatchNormOp(context);
-      }
-
   }
 };
 
@@ -1432,32 +1407,8 @@ class FusedBatchNormOpV3 : public FusedBatchNormOpBase<Device, T, U> {
   explicit FusedBatchNormOpV3(OpKernelConstruction* context)
       : FusedBatchNormOpBase<Device, T, U>(context) {}
 
-  void do_FusedBatchNormOpV3(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     FusedBatchNormOpBase<Device, T, U>::ComputeWithReservedSpace(context, true);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedBatchNormOpV3")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedBatchNormOpV3", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedBatchNormOpV3(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedBatchNormOpV3(context);
-      } else {
-        do_FusedBatchNormOpV3(context);
-      }
-
   }
 };
 
@@ -1470,32 +1421,8 @@ class FusedBatchNormOpEx : public FusedBatchNormOpBase<Device, T, U> {
       : FusedBatchNormOpBase<Device, T, U>(context,
                                            kWithSideInputAndActivation) {}
 
-  void do_FusedBatchNormOpEx(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     FusedBatchNormOpBase<Device, T, U>::ComputeWithReservedSpace(context, true);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedBatchNormOpEx")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedBatchNormOpEx", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedBatchNormOpEx(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedBatchNormOpEx(context);
-      } else {
-        do_FusedBatchNormOpEx(context);
-      }
-
   }
 };
 
@@ -1627,33 +1554,9 @@ class FusedBatchNormGradOp : public FusedBatchNormGradOpBase<Device, T, U> {
   explicit FusedBatchNormGradOp(OpKernelConstruction* context)
       : FusedBatchNormGradOpBase<Device, T, U>(context) {}
 
-  void do_FusedBatchNormGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     FusedBatchNormGradOpBase<Device, T, U>::ComputeWithReservedSpace(context,
                                                                      false);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedBatchNormGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedBatchNormGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedBatchNormGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedBatchNormGradOp(context);
-      } else {
-        do_FusedBatchNormGradOp(context);
-      }
-
   }
 };
 
@@ -1663,33 +1566,9 @@ class FusedBatchNormGradOpV3 : public FusedBatchNormGradOpBase<Device, T, U> {
   explicit FusedBatchNormGradOpV3(OpKernelConstruction* context)
       : FusedBatchNormGradOpBase<Device, T, U>(context) {}
 
-  void do_FusedBatchNormGradOpV3(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     FusedBatchNormGradOpBase<Device, T, U>::ComputeWithReservedSpace(context,
                                                                      true);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedBatchNormGradOpV3")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedBatchNormGradOpV3", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedBatchNormGradOpV3(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedBatchNormGradOpV3(context);
-      } else {
-        do_FusedBatchNormGradOpV3(context);
-      }
-
   }
 };
 

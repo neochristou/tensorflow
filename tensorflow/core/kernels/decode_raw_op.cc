@@ -18,7 +18,6 @@ limitations under the License.
 #include <algorithm>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -41,7 +40,7 @@ class DecodeRawOp : public OpKernel {
     convert_data_endianness_ = host_is_little_endian != data_is_little_endian;
   }
 
-  void do_DecodeRawOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const auto& input = context->input(0);
     int64 str_size = -1;
     auto flat_in = input.flat<tstring>();
@@ -111,30 +110,6 @@ class DecodeRawOp : public OpKernel {
         out_data += added_dim;
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeRawOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeRawOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DecodeRawOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DecodeRawOp(context);
-      } else {
-        do_DecodeRawOp(context);
-      }
-
   }
 
  private:

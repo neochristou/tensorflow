@@ -27,7 +27,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -585,7 +584,7 @@ class NonMaxSuppressionOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("iou_threshold", &iou_threshold_));
   }
 
-  void do_NonMaxSuppressionOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [num_boxes, 4]
     const Tensor& boxes = context->input(0);
     // scores: [num_boxes]
@@ -614,30 +613,6 @@ class NonMaxSuppressionOp : public OpKernel {
                                  dummy_soft_nms_sigma, similarity_fn);
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionOp(context);
-      } else {
-        do_NonMaxSuppressionOp(context);
-      }
-
-  }
-
  private:
   float iou_threshold_;
 };
@@ -648,7 +623,7 @@ class NonMaxSuppressionV2Op : public OpKernel {
   explicit NonMaxSuppressionV2Op(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_NonMaxSuppressionV2Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [num_boxes, 4]
     const Tensor& boxes = context->input(0);
     // scores: [num_boxes]
@@ -684,30 +659,6 @@ class NonMaxSuppressionV2Op : public OpKernel {
                              iou_threshold_val, score_threshold_val,
                              dummy_soft_nms_sigma, similarity_fn);
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionV2Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionV2Op(context);
-      } else {
-        do_NonMaxSuppressionV2Op(context);
-      }
-
-  }
 };
 
 template <typename Device, typename T>
@@ -716,7 +667,7 @@ class NonMaxSuppressionV3Op : public OpKernel {
   explicit NonMaxSuppressionV3Op(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_NonMaxSuppressionV3Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [num_boxes, 4]
     const Tensor& boxes = context->input(0);
     // scores: [num_boxes]
@@ -763,30 +714,6 @@ class NonMaxSuppressionV3Op : public OpKernel {
                              iou_threshold_val, score_threshold_val,
                              dummy_soft_nms_sigma, similarity_fn);
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionV3Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionV3Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionV3Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionV3Op(context);
-      } else {
-        do_NonMaxSuppressionV3Op(context);
-      }
-
-  }
 };
 
 template <typename Device, typename T>
@@ -798,7 +725,7 @@ class NonMaxSuppressionV4Op : public OpKernel {
                                              &pad_to_max_output_size_));
   }
 
-  void do_NonMaxSuppressionV4Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [num_boxes, 4]
     const Tensor& boxes = context->input(0);
     // scores: [num_boxes]
@@ -854,30 +781,6 @@ class NonMaxSuppressionV4Op : public OpKernel {
     num_outputs_t->scalar<int32>().setConstant(num_valid_outputs);
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionV4Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionV4Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionV4Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionV4Op(context);
-      } else {
-        do_NonMaxSuppressionV4Op(context);
-      }
-
-  }
-
  private:
   bool pad_to_max_output_size_;
 };
@@ -891,7 +794,7 @@ class NonMaxSuppressionV5Op : public OpKernel {
                                              &pad_to_max_output_size_));
   }
 
-  void do_NonMaxSuppressionV5Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [num_boxes, 4]
     const Tensor& boxes = context->input(0);
     // scores: [num_boxes]
@@ -958,30 +861,6 @@ class NonMaxSuppressionV5Op : public OpKernel {
     num_outputs_t->scalar<int32>().setConstant(num_valid_outputs);
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionV5Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionV5Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionV5Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionV5Op(context);
-      } else {
-        do_NonMaxSuppressionV5Op(context);
-      }
-
-  }
-
  private:
   bool pad_to_max_output_size_;
 };
@@ -992,7 +871,7 @@ class NonMaxSuppressionWithOverlapsOp : public OpKernel {
   explicit NonMaxSuppressionWithOverlapsOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_NonMaxSuppressionWithOverlapsOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // overlaps: [num_boxes, num_boxes]
     const Tensor& overlaps = context->input(0);
     // scores: [num_boxes]
@@ -1032,30 +911,6 @@ class NonMaxSuppressionWithOverlapsOp : public OpKernel {
                                  overlap_threshold_val, score_threshold_val,
                                  dummy_soft_nms_sigma, similarity_fn);
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NonMaxSuppressionWithOverlapsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NonMaxSuppressionWithOverlapsOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NonMaxSuppressionWithOverlapsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NonMaxSuppressionWithOverlapsOp(context);
-      } else {
-        do_NonMaxSuppressionWithOverlapsOp(context);
-      }
-
-  }
 };
 
 template <typename Device>
@@ -1067,7 +922,7 @@ class CombinedNonMaxSuppressionOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("clip_boxes", &clip_boxes_));
   }
 
-  void do_CombinedNonMaxSuppressionOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // boxes: [batch_size, num_anchors, q, 4]
     const Tensor& boxes = context->input(0);
     // scores: [batch_size, num_anchors, num_classes]
@@ -1129,30 +984,6 @@ class CombinedNonMaxSuppressionOp : public OpKernel {
                                max_size_per_class, max_total_size_per_batch,
                                score_threshold_val, iou_threshold_val,
                                pad_per_class_, clip_boxes_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CombinedNonMaxSuppressionOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CombinedNonMaxSuppressionOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CombinedNonMaxSuppressionOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CombinedNonMaxSuppressionOp(context);
-      } else {
-        do_CombinedNonMaxSuppressionOp(context);
-      }
-
   }
 
  private:

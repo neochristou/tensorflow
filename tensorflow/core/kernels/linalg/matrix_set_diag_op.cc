@@ -25,7 +25,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -52,7 +51,7 @@ class MatrixSetDiagOp : public OpKernel {
     }
   }
 
-  void do_MatrixSetDiagOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& diag = context->input(1);
 
@@ -168,30 +167,6 @@ class MatrixSetDiagOp : public OpKernel {
         context, context->eigen_device<Device>(), input_reshaped, diag_reshaped,
         output_reshaped, lower_diag_index, upper_diag_index, max_diag_len,
         left_align_superdiagonal_, left_align_subdiagonal_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MatrixSetDiagOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MatrixSetDiagOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MatrixSetDiagOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MatrixSetDiagOp(context);
-      } else {
-        do_MatrixSetDiagOp(context);
-      }
-
   }
 
  private:

@@ -27,7 +27,6 @@ limitations under the License.
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -263,7 +262,7 @@ class MaxPoolingGradOp : public OpKernel {
     }
   }
 
-  void do_MaxPoolingGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
     const Tensor& tensor_out = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -333,30 +332,6 @@ class MaxPoolingGradOp : public OpKernel {
     SpatialMaxPoolWithArgMaxHelper<CPUDevice, T, int64>(
         context, &tensor_out_dup, &tensor_out_arg_max, output, tensor_in,
         out_backprop, params, true);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingGradOp(context);
-      } else {
-        do_MaxPoolingGradOp(context);
-      }
-
   }
 
  private:
@@ -512,7 +487,7 @@ class MaxPoolingGradGradOp : public OpKernel {
     }
   }
 
-  void do_MaxPoolingGradGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
     const Tensor& tensor_out = context->input(1);
     const Tensor& out_grad_backprop = context->input(2);
@@ -568,30 +543,6 @@ class MaxPoolingGradGradOp : public OpKernel {
 
     SpatialMaxPoolGradGrad(context, output, tensor_in, tensor_out,
                            out_grad_backprop, params, padding_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingGradGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingGradGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingGradGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingGradGradOp(context);
-      } else {
-        do_MaxPoolingGradGradOp(context);
-      }
-
   }
 
  private:
@@ -846,7 +797,7 @@ class MaxPoolingNoMaskOp : public OpKernel {
             "Explicit padding is not supported for MaxPoolingNoMaskOp."));
   }
 
-  void do_MaxPoolingNoMaskOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
 
     PoolParameters params{context,
@@ -867,30 +818,6 @@ class MaxPoolingNoMaskOp : public OpKernel {
 
     LaunchMaxPoolingNoMask<Device, T>::launch(context, params, tensor_in,
                                               output);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingNoMaskOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingNoMaskOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingNoMaskOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingNoMaskOp(context);
-      } else {
-        do_MaxPoolingNoMaskOp(context);
-      }
-
   }
 
  private:
@@ -930,7 +857,7 @@ class MaxPoolingNoMaskV2Op : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("padding", &padding_));
   }
 
-  void do_MaxPoolingNoMaskV2Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
 
     std::vector<int32> ksize = ksize_;
@@ -974,30 +901,6 @@ class MaxPoolingNoMaskV2Op : public OpKernel {
 
     LaunchMaxPoolingNoMask<Device, T>::launch(context, params, tensor_in,
                                               output);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingNoMaskV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingNoMaskV2Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingNoMaskV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingNoMaskV2Op(context);
-      } else {
-        do_MaxPoolingNoMaskV2Op(context);
-      }
-
   }
 
  private:
@@ -1045,7 +948,7 @@ class MaxPoolingWithArgmaxOp : public OpKernel {
                                    &propagate_nans_));
   }
 
-  void do_MaxPoolingWithArgmaxOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
     OP_REQUIRES(context, tensor_in.dims() == 4,
                 errors::InvalidArgument("tensor_in must be 4-dimensional (2)"));
@@ -1073,30 +976,6 @@ class MaxPoolingWithArgmaxOp : public OpKernel {
     LaunchMaxPoolingWithArgmax<Device, T, Targmax>::launch(
         context, params, tensor_in, output, argmax, propagate_nans_,
         include_batch_in_index_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingWithArgmaxOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingWithArgmaxOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingWithArgmaxOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingWithArgmaxOp(context);
-      } else {
-        do_MaxPoolingWithArgmaxOp(context);
-      }
-
   }
 
  private:
@@ -1194,7 +1073,7 @@ class MaxPoolingGradWithArgmaxOp : public OpKernel {
                                              &include_batch_in_index_));
   }
 
-  void do_MaxPoolingGradWithArgmaxOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
     const Tensor& grad_in = context->input(1);
     const Tensor& argmax = context->input(2);
@@ -1220,30 +1099,6 @@ class MaxPoolingGradWithArgmaxOp : public OpKernel {
 
     LaunchMaxPoolingGradWithArgmax<Device, T>::launch(
         context, params, grad_in, argmax, grad_out, include_batch_in_index_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingGradWithArgmaxOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingGradWithArgmaxOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingGradWithArgmaxOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingGradWithArgmaxOp(context);
-      } else {
-        do_MaxPoolingGradWithArgmaxOp(context);
-      }
-
   }
 
  private:
@@ -1278,7 +1133,7 @@ class MaxPoolingGradGradWithArgmaxOp : public OpKernel {
                                              &include_batch_in_index_));
   }
 
-  void do_MaxPoolingGradGradWithArgmaxOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& tensor_in = context->input(0);
     const Tensor& grad_in = context->input(1);
     const Tensor& argmax = context->input(2);
@@ -1303,30 +1158,6 @@ class MaxPoolingGradGradWithArgmaxOp : public OpKernel {
 
     LaunchMaxPoolingGradGradWithArgmax<Device, T>::launch(
         context, params, grad_in, argmax, grad_out, include_batch_in_index_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MaxPoolingGradGradWithArgmaxOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MaxPoolingGradGradWithArgmaxOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MaxPoolingGradGradWithArgmaxOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MaxPoolingGradGradWithArgmaxOp(context);
-      } else {
-        do_MaxPoolingGradGradWithArgmaxOp(context);
-      }
-
   }
 
  private:

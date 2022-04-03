@@ -24,7 +24,6 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_shape_util.h"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -319,7 +318,7 @@ class Conv2DBackpropFilterOp : public OpKernel {
     }
   }
 
-  void do_Conv2DBackpropFilterOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& filter_sizes = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -364,30 +363,6 @@ class Conv2DBackpropFilterOp : public OpKernel {
     launcher_(context, use_cudnn_, cudnn_use_autotune_, out_backprop, input,
               dilation_rows, dilation_cols, stride_rows, stride_cols, padding_,
               explicit_paddings_, filter_backprop, data_format_);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv2DBackpropFilterOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv2DBackpropFilterOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_Conv2DBackpropFilterOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_Conv2DBackpropFilterOp(context);
-      } else {
-        do_Conv2DBackpropFilterOp(context);
-      }
-
   }
 
  private:
@@ -451,7 +426,7 @@ class Conv2DCustomBackpropFilterOp : public OpKernel {
     }
   }
 
-  void do_Conv2DCustomBackpropFilterOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& filter_sizes = context->input(1);
     const Tensor& out_backprop = context->input(2);
@@ -635,30 +610,6 @@ class Conv2DCustomBackpropFilterOp : public OpKernel {
       input_data += input_offset * shard_limit;
       out_backprop_data += output_offset * shard_limit;
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("Conv2DCustomBackpropFilterOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("Conv2DCustomBackpropFilterOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_Conv2DCustomBackpropFilterOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_Conv2DCustomBackpropFilterOp(context);
-      } else {
-        do_Conv2DCustomBackpropFilterOp(context);
-      }
-
   }
 
  private:

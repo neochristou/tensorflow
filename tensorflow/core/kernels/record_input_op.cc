@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -54,37 +53,13 @@ class RecordInputOp : public OpKernel {
     batch_size_ = batch_size;
   }
 
-  void do_RecordInputOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Tensor out(DT_STRING, {batch_size_});
     auto t_out = out.flat<tstring>();
     for (int i = 0; i < batch_size_; ++i) {
       OP_REQUIRES_OK(ctx, yielder_->YieldOne(&t_out(i)));
     }
     ctx->set_output(0, out);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RecordInputOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RecordInputOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RecordInputOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RecordInputOp(ctx);
-      } else {
-        do_RecordInputOp(ctx);
-      }
-
   }
 
  private:

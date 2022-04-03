@@ -16,7 +16,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/tensor_types.h"
@@ -29,7 +28,7 @@ class QuantizedReshapeOp : public ReshapeOp {
  public:
   explicit QuantizedReshapeOp(OpKernelConstruction* c) : ReshapeOp(c) {}
 
-  void do_QuantizedReshapeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     // This call processes inputs 1 and 2 to write output 0.
     ReshapeOp::Compute(ctx);
     if (!ctx->status().ok()) {
@@ -62,30 +61,6 @@ class QuantizedReshapeOp : public ReshapeOp {
     Tensor* output_max = nullptr;
     OP_REQUIRES_OK(ctx, ctx->allocate_output(2, TensorShape({}), &output_max));
     output_max->flat<float>()(0) = input_max_float;
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedReshapeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedReshapeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedReshapeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedReshapeOp(ctx);
-      } else {
-        do_QuantizedReshapeOp(ctx);
-      }
-
   }
 };
 

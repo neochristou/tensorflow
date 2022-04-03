@@ -29,7 +29,6 @@ limitations under the License.
 #include <memory>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/rng_alg.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -334,7 +333,7 @@ class RandomBinomialOp : public OpKernel {
   explicit RandomBinomialOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_RandomBinomialOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& alg_tensor = ctx->input(1);
     const Tensor& shape_tensor = ctx->input(2);
     const Tensor& counts_tensor = ctx->input(3);
@@ -433,30 +432,6 @@ class RandomBinomialOp : public OpKernel {
                      samples_tensor->flat<U>());
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RandomBinomialOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RandomBinomialOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RandomBinomialOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RandomBinomialOp(ctx);
-      } else {
-        do_RandomBinomialOp(ctx);
-      }
-
-  }
-
  private:
   TF_DISALLOW_COPY_AND_ASSIGN(RandomBinomialOp);
 };
@@ -471,7 +446,7 @@ class StatelessRandomBinomialOp : public OpKernel {
   explicit StatelessRandomBinomialOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_StatelessRandomBinomialOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& shape_tensor = ctx->input(0);
     const Tensor& seed_tensor = ctx->input(1);
     const Tensor& counts_tensor = ctx->input(2);
@@ -541,30 +516,6 @@ class StatelessRandomBinomialOp : public OpKernel {
                      samples_per_batch, num_elements, bcast,
                      counts_tensor.flat<T>(), probs_tensor.flat<T>(), philox,
                      samples_tensor->flat<U>());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessRandomBinomialOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessRandomBinomialOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatelessRandomBinomialOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatelessRandomBinomialOp(ctx);
-      } else {
-        do_StatelessRandomBinomialOp(ctx);
-      }
-
   }
 
  private:

@@ -26,7 +26,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -207,36 +206,12 @@ class BatchToSpaceNDOp : public OpKernel {
   explicit BatchToSpaceNDOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_BatchToSpaceNDOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& orig_input_tensor = context->input(0);
     const Tensor& orig_block_shape = context->input(1);
     const Tensor& orig_crops = context->input(2);
     BatchToSpaceOpCompute<Device, T>(context, orig_input_tensor,
                                      orig_block_shape, orig_crops);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BatchToSpaceNDOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BatchToSpaceNDOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BatchToSpaceNDOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BatchToSpaceNDOp(context);
-      } else {
-        do_BatchToSpaceNDOp(context);
-      }
-
   }
 };
 
@@ -254,7 +229,7 @@ class BatchToSpaceOp : public OpKernel {
     block_shape_vec(1) = block_size_;
   }
 
-  void do_BatchToSpaceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& in0 = context->input(0);
     const Tensor& in1 = context->input(1);
     const int dims = in0.dims();
@@ -266,30 +241,6 @@ class BatchToSpaceOp : public OpKernel {
                 errors::InvalidArgument("Input rank should be: ", kRequiredDims,
                                         "instead of: ", dims));
     BatchToSpaceOpCompute<Device, T>(context, in0, block_shape_, in1);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BatchToSpaceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BatchToSpaceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BatchToSpaceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BatchToSpaceOp(context);
-      } else {
-        do_BatchToSpaceOp(context);
-      }
-
   }
 
  private:

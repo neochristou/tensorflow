@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/core/stringpiece.h"
 #include "tensorflow/core/lib/gtl/map_util.h"
 #include "tensorflow/core/lib/random/distribution_sampler.h"
@@ -261,7 +260,7 @@ class NegTrainOp : public OpKernel {
 
   ~NegTrainOp() override { delete sampler_; }
 
-  void do_NegTrainOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Tensor w_in = ctx->mutable_input(0, false);
     OP_REQUIRES(ctx, TensorShapeUtils::IsMatrix(w_in.shape()),
                 errors::InvalidArgument("Must be a matrix"));
@@ -344,30 +343,6 @@ class NegTrainOp : public OpKernel {
       // Applies the gradient on v_in.
       v_in += Tbuf;
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("NegTrainOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("NegTrainOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_NegTrainOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_NegTrainOp(ctx);
-      } else {
-        do_NegTrainOp(ctx);
-      }
-
   }
 
  private:

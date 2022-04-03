@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/kernels/histogram_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/core/threadpool.h"
@@ -81,7 +80,7 @@ class HistogramFixedWidthOp : public OpKernel {
  public:
   explicit HistogramFixedWidthOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_HistogramFixedWidthOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& values_tensor = ctx->input(0);
     const Tensor& value_range_tensor = ctx->input(1);
     const Tensor& nbins_tensor = ctx->input(2);
@@ -116,30 +115,6 @@ class HistogramFixedWidthOp : public OpKernel {
     OP_REQUIRES_OK(
         ctx, functor::HistogramFixedWidthFunctor<Device, T, Tout>::Compute(
                  ctx, values, value_range, nbins, out));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("HistogramFixedWidthOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("HistogramFixedWidthOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_HistogramFixedWidthOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_HistogramFixedWidthOp(ctx);
-      } else {
-        do_HistogramFixedWidthOp(ctx);
-      }
-
   }
 };
 

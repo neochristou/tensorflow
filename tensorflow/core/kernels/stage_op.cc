@@ -20,7 +20,6 @@ limitations under the License.
 #include <vector>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -203,7 +202,7 @@ class StageOp : public OpKernel {
  public:
   explicit StageOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_StageOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Buffer* buf = nullptr;
     OP_REQUIRES_OK(ctx, GetBuffer(ctx, def(), &buf));
     core::ScopedUnref scope(buf);
@@ -213,30 +212,6 @@ class StageOp : public OpKernel {
       tuple.push_back(ctx->input(i));
     }
     OP_REQUIRES_OK(ctx, buf->Put(&tuple));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StageOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StageOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StageOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StageOp(ctx);
-      } else {
-        do_StageOp(ctx);
-      }
-
   }
 };
 
@@ -252,7 +227,7 @@ class UnstageOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void do_UnstageOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Buffer* buf = nullptr;
     OP_REQUIRES_OK(ctx, GetBuffer(ctx, def(), &buf));
     core::ScopedUnref scope(buf);
@@ -269,30 +244,6 @@ class UnstageOp : public OpKernel {
       ctx->set_output(i, tuple[i]);
     }
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnstageOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnstageOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnstageOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnstageOp(ctx);
-      } else {
-        do_UnstageOp(ctx);
-      }
-
-  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("Unstage").Device(DEVICE_CPU), UnstageOp);
@@ -307,7 +258,7 @@ class StagePeekOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void do_StagePeekOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Buffer* buf = nullptr;
     OP_REQUIRES_OK(ctx, GetBuffer(ctx, def(), &buf));
     core::ScopedUnref scope(buf);
@@ -326,30 +277,6 @@ class StagePeekOp : public OpKernel {
       ctx->set_output(i, tuple[i]);
     }
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StagePeekOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StagePeekOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StagePeekOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StagePeekOp(ctx);
-      } else {
-        do_StagePeekOp(ctx);
-      }
-
-  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("StagePeek").Device(DEVICE_CPU), StagePeekOp);
@@ -365,7 +292,7 @@ class StageSizeOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void do_StageSizeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Buffer* buf = nullptr;
     OP_REQUIRES_OK(ctx, GetBuffer(ctx, def(), &buf));
     core::ScopedUnref scope(buf);
@@ -376,30 +303,6 @@ class StageSizeOp : public OpKernel {
 
     // Set it to the actual size
     size->scalar<int32>().setConstant(buf->Size());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StageSizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StageSizeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StageSizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StageSizeOp(ctx);
-      } else {
-        do_StageSizeOp(ctx);
-      }
-
   }
 };
 
@@ -416,36 +319,12 @@ class StageClearOp : public OpKernel {
 
   // Using this op in such a way that it blocks forever
   // is an error.  As such cancellation is not handled.
-  void do_StageClearOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     Buffer* buf = nullptr;
     OP_REQUIRES_OK(ctx, GetBuffer(ctx, def(), &buf));
     core::ScopedUnref scope(buf);
 
     buf->Clear();
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StageClearOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StageClearOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StageClearOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StageClearOp(ctx);
-      } else {
-        do_StageClearOp(ctx);
-      }
-
   }
 };
 

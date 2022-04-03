@@ -16,7 +16,6 @@ limitations under the License.
 // See docs in ../ops/parsing_ops.cc.
 #include <vector>
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -54,7 +53,7 @@ class DecodeCSVOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("na_value", &na_value_));
   }
 
-  void do_DecodeCSVOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* records;
     OpInputList record_defaults;
 
@@ -196,30 +195,6 @@ class DecodeCSVOp : public OpKernel {
         }
       }
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DecodeCSVOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DecodeCSVOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DecodeCSVOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DecodeCSVOp(ctx);
-      } else {
-        do_DecodeCSVOp(ctx);
-      }
-
   }
 
  private:

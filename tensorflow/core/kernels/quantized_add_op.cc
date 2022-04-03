@@ -24,7 +24,6 @@ limitations under the License.
 #endif
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/meta_support.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
@@ -455,7 +454,7 @@ class QuantizedAddOp : public OpKernel {
  public:
   explicit QuantizedAddOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_QuantizedAddOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& x = context->input(0);
     const Tensor& y = context->input(1);
     const float min_x = context->input(2).flat<float>()(0);
@@ -570,30 +569,6 @@ class QuantizedAddOp : public OpKernel {
     Tensor* z_max = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(2, {}, &z_max));
     z_max->flat<float>()(0) = max_z_value;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedAddOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedAddOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedAddOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedAddOp(context);
-      } else {
-        do_QuantizedAddOp(context);
-      }
-
   }
 };
 

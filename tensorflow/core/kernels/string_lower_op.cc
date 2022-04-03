@@ -21,7 +21,6 @@ limitations under the License.
 #include "unicode/unistr.h"  // from @icu
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/core/status.h"
@@ -39,7 +38,7 @@ class StringLowerOp : public OpKernel {
                     encoding_));
   }
 
-  void do_StringLowerOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
     Tensor* output_tensor;
@@ -62,30 +61,6 @@ class StringLowerOp : public OpKernel {
         us.toUTF8String(output(i));
       }
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StringLowerOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StringLowerOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StringLowerOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StringLowerOp(ctx);
-      } else {
-        do_StringLowerOp(ctx);
-      }
-
   }
 
  private:

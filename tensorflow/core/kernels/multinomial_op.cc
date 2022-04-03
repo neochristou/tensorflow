@@ -25,7 +25,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -226,34 +225,10 @@ class StatefulMultinomialOp : public MultinomialOp<Device, T, OutputType> {
     OP_REQUIRES_OK(ctx, generator_.Init(ctx));
   }
 
-  void do_StatefulMultinomialOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& logits_t = ctx->input(0);
     const Tensor& num_samples_t = ctx->input(1);
     this->DoCompute(ctx, logits_t, num_samples_t, &generator_);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatefulMultinomialOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatefulMultinomialOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatefulMultinomialOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatefulMultinomialOp(ctx);
-      } else {
-        do_StatefulMultinomialOp(ctx);
-      }
-
   }
 
  private:
@@ -306,7 +281,7 @@ class StatelessMultinomialOp : public MultinomialOp<Device, T, OutputType> {
   explicit StatelessMultinomialOp(OpKernelConstruction* ctx)
       : MultinomialOp<Device, T, OutputType>(ctx) {}
 
-  void do_StatelessMultinomialOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& logits_t = ctx->input(0);
     const Tensor& num_samples_t = ctx->input(1);
 
@@ -323,30 +298,6 @@ class StatelessMultinomialOp : public MultinomialOp<Device, T, OutputType> {
     generator.Init(counter, key);
 
     this->DoCompute(ctx, logits_t, num_samples_t, &generator);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessMultinomialOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessMultinomialOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatelessMultinomialOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatelessMultinomialOp(ctx);
-      } else {
-        do_StatelessMultinomialOp(ctx);
-      }
-
   }
 
  private:

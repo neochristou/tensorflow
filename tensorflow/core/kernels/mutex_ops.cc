@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #define EIGEN_USE_THREADS
-#include "tensorflow/core/framework/fuzzing.h"
 
 #include <deque>
 #include <utility>

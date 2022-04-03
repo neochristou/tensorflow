@@ -17,7 +17,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/save_restore_tensor.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/gtl/array_slice.h"
 #include "tensorflow/core/platform/logging.h"
@@ -40,33 +39,9 @@ class RestoreOp : public OpKernel {
       preferred_shard_ = preferred_shard;
     }
   }
-  void do_RestoreOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     RestoreTensor(context, &checkpoint::OpenTableTensorSliceReader,
                   preferred_shard_, false, 0);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RestoreOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RestoreOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RestoreOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RestoreOp(context);
-      } else {
-        do_RestoreOp(context);
-      }
-
   }
 
  private:
@@ -90,33 +65,9 @@ class RestoreSliceOp : public OpKernel {
       preferred_shard_ = preferred_shard;
     }
   }
-  void do_RestoreSliceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     RestoreTensor(context, &checkpoint::OpenTableTensorSliceReader,
                   preferred_shard_, true, 0);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RestoreSliceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RestoreSliceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RestoreSliceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RestoreSliceOp(context);
-      } else {
-        do_RestoreSliceOp(context);
-      }
-
   }
 
  private:

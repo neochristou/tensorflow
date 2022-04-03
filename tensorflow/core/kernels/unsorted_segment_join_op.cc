@@ -20,7 +20,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/lib/core/errors.h"
@@ -81,7 +80,7 @@ class UnsortedSegmentJoinOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("separator", &separator_));
   }
 
-  void do_UnsortedSegmentJoinOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const TensorShape& input_shape = input.shape();
     const int32 input_dims = input_shape.dims();
@@ -146,30 +145,6 @@ class UnsortedSegmentJoinOp : public OpKernel {
         output_flat(output_index).append(flat_input(offset));
       }
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnsortedSegmentJoinOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnsortedSegmentJoinOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnsortedSegmentJoinOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnsortedSegmentJoinOp(context);
-      } else {
-        do_UnsortedSegmentJoinOp(context);
-      }
-
   }
 
  private:

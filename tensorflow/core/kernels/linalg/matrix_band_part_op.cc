@@ -29,7 +29,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -50,7 +49,7 @@ class MatrixBandPartOp : public OpKernel {
   explicit MatrixBandPartOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_MatrixBandPartOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const TensorShape& input_shape = input.shape();
     // Preliminary validation of sizes.
@@ -105,30 +104,6 @@ class MatrixBandPartOp : public OpKernel {
     functor::MatrixBandPartFunctor<Device, T> fn;
     fn(context, context->eigen_device<Device>(), num_lower, num_upper,
        input_reshaped, output_reshaped);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("MatrixBandPartOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("MatrixBandPartOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_MatrixBandPartOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_MatrixBandPartOp(context);
-      } else {
-        do_MatrixBandPartOp(context);
-      }
-
   }
 
  private:

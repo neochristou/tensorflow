@@ -17,7 +17,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/save_restore_tensor.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/lib/gtl/array_slice.h"
 #include "tensorflow/core/lib/strings/stringprintf.h"
@@ -31,32 +30,8 @@ class SaveOp : public OpKernel {
  public:
   explicit SaveOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SaveOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     SaveTensors(context, &checkpoint::CreateTableTensorSliceBuilder, false);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SaveOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SaveOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SaveOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SaveOp(context);
-      } else {
-        do_SaveOp(context);
-      }
-
   }
 };
 
@@ -66,32 +41,8 @@ class SaveSlicesOp : public OpKernel {
  public:
   explicit SaveSlicesOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SaveSlicesOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     SaveTensors(context, &checkpoint::CreateTableTensorSliceBuilder, true);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SaveSlicesOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SaveSlicesOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SaveSlicesOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SaveSlicesOp(context);
-      } else {
-        do_SaveSlicesOp(context);
-      }
-
   }
 };
 
@@ -101,7 +52,7 @@ class ShardedFilenameOp : public OpKernel {
  public:
   explicit ShardedFilenameOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_ShardedFilenameOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     static const char* input_names[3] = {"basename", "shard", "num_shards"};
     for (int i = 0; i < ctx->num_inputs(); ++i) {
       OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(ctx->input(i).shape()),
@@ -115,30 +66,6 @@ class ShardedFilenameOp : public OpKernel {
         "%s-%05d-of-%05d", ctx->input(0).scalar<tstring>()().c_str(),
         ctx->input(1).scalar<int32>()(), ctx->input(2).scalar<int32>()());
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ShardedFilenameOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ShardedFilenameOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ShardedFilenameOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ShardedFilenameOp(ctx);
-      } else {
-        do_ShardedFilenameOp(ctx);
-      }
-
-  }
 };
 
 REGISTER_KERNEL_BUILDER(Name("ShardedFilename").Device(DEVICE_CPU),
@@ -148,7 +75,7 @@ class ShardedFilespecOp : public OpKernel {
  public:
   explicit ShardedFilespecOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_ShardedFilespecOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     static const char* input_names[2] = {"basename", "num_shards"};
     for (int i = 0; i < ctx->num_inputs(); ++i) {
       OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(ctx->input(i).shape()),
@@ -161,30 +88,6 @@ class ShardedFilespecOp : public OpKernel {
     out->scalar<tstring>()() = strings::Printf(
         "%s-\?\?\?\?\?-of-%05d", ctx->input(0).scalar<tstring>()().c_str(),
         ctx->input(1).scalar<int32>()());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ShardedFilespecOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ShardedFilespecOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ShardedFilespecOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ShardedFilespecOp(ctx);
-      } else {
-        do_ShardedFilespecOp(ctx);
-      }
-
   }
 };
 REGISTER_KERNEL_BUILDER(Name("ShardedFilespec").Device(DEVICE_CPU),

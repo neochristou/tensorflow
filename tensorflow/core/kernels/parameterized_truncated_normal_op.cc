@@ -29,7 +29,6 @@ limitations under the License.
 #include <memory>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -617,7 +616,7 @@ class ParameterizedTruncatedNormalOp : public OpKernel {
     OP_REQUIRES_OK(context, generator_.Init(context));
   }
 
-  void do_ParameterizedTruncatedNormalOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& shape_tensor = ctx->input(0);
     const Tensor& means_tensor = ctx->input(1);
     const Tensor& stddevs_tensor = ctx->input(2);
@@ -725,30 +724,6 @@ class ParameterizedTruncatedNormalOp : public OpKernel {
                  maxvals_tensor.flat<T>(), rng, samples_tensor->flat<T>());
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ParameterizedTruncatedNormalOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ParameterizedTruncatedNormalOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ParameterizedTruncatedNormalOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ParameterizedTruncatedNormalOp(ctx);
-      } else {
-        do_ParameterizedTruncatedNormalOp(ctx);
-      }
-
-  }
-
  private:
   GuardedPhiloxRandom generator_;
 
@@ -765,7 +740,7 @@ class StatelessParameterizedTruncatedNormal : public OpKernel {
   explicit StatelessParameterizedTruncatedNormal(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_StatelessParameterizedTruncatedNormal(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& shape_tensor = ctx->input(0);
     const Tensor& seed_tensor = ctx->input(1);
     const Tensor& means_tensor = ctx->input(2);
@@ -838,30 +813,6 @@ class StatelessParameterizedTruncatedNormal : public OpKernel {
                  samples_per_batch, num_elements, bcast, means_tensor.flat<T>(),
                  stddevs_tensor.flat<T>(), minvals_tensor.flat<T>(),
                  maxvals_tensor.flat<T>(), philox, samples_tensor->flat<T>());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatelessParameterizedTruncatedNormal")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatelessParameterizedTruncatedNormal", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatelessParameterizedTruncatedNormal(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatelessParameterizedTruncatedNormal(ctx);
-      } else {
-        do_StatelessParameterizedTruncatedNormal(ctx);
-      }
-
   }
 
  private:

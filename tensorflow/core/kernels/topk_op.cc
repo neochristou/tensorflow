@@ -24,7 +24,6 @@ limitations under the License.
 #include <vector>
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -49,7 +48,7 @@ class TopK : public OpKernel {
     }
   }
 
-  void do_TopK(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     int k = k_;
     if (num_inputs() >= 2) {
       const auto& k_in = context->input(1);
@@ -101,30 +100,6 @@ class TopK : public OpKernel {
     Status s = functor::TopKFunctor<Device, T>::Compute(
         context, sorted_, k, input, num_rows, num_cols, values, indices);
     OP_REQUIRES_OK(context, s);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TopK")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TopK", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_TopK(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_TopK(context);
-      } else {
-        do_TopK(context);
-      }
-
   }
 
  private:

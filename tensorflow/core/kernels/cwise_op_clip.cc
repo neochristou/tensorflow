@@ -29,7 +29,7 @@ class ClipOp : public OpKernel {
  public:
   explicit ClipOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_ClipOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& in0 = ctx->input(0);
     const Tensor& in1 = ctx->input(1);
     const Tensor& in2 = ctx->input(2);
@@ -72,30 +72,6 @@ class ClipOp : public OpKernel {
                                                 out_flat);
       }
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ClipOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ClipOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ClipOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ClipOp(ctx);
-      } else {
-        do_ClipOp(ctx);
-      }
-
   }
 };
 

@@ -25,7 +25,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/type_traits.h"
 #include "tensorflow/core/framework/types.h"
@@ -71,7 +70,7 @@ class QuantizeAndDequantizeV2Op : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("narrow_range", &narrow_range_));
   }
 
-  void do_QuantizeAndDequantizeV2Op(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     OP_REQUIRES(
         ctx, axis_ >= -1,
@@ -131,30 +130,6 @@ class QuantizeAndDequantizeV2Op : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeAndDequantizeV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeAndDequantizeV2Op", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeAndDequantizeV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeAndDequantizeV2Op(ctx);
-      } else {
-        do_QuantizeAndDequantizeV2Op(ctx);
-      }
-
-  }
-
  private:
   int num_bits_;
   int axis_;
@@ -177,7 +152,7 @@ class QuantizeAndDequantizeV4GradientOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("axis", &axis_));
   }
 
-  void do_QuantizeAndDequantizeV4GradientOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& gradient = ctx->input(0);
     const Tensor& input = ctx->input(1);
     Tensor* input_backprop = nullptr;
@@ -246,30 +221,6 @@ class QuantizeAndDequantizeV4GradientOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeAndDequantizeV4GradientOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeAndDequantizeV4GradientOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeAndDequantizeV4GradientOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeAndDequantizeV4GradientOp(ctx);
-      } else {
-        do_QuantizeAndDequantizeV4GradientOp(ctx);
-      }
-
-  }
-
  private:
   int axis_;
 };
@@ -292,7 +243,7 @@ class QuantizeAndDequantizeV3Op : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("axis", &axis_));
   }
 
-  void do_QuantizeAndDequantizeV3Op(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     OP_REQUIRES(ctx, axis_ < input.dims(),
                 errors::InvalidArgument(
@@ -359,30 +310,6 @@ class QuantizeAndDequantizeV3Op : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeAndDequantizeV3Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeAndDequantizeV3Op", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeAndDequantizeV3Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeAndDequantizeV3Op(ctx);
-      } else {
-        do_QuantizeAndDequantizeV3Op(ctx);
-      }
-
-  }
-
  private:
   int axis_;
   bool signed_input_;
@@ -411,7 +338,7 @@ class QuantizeAndDequantizeOp : public OpKernel {
     }
   }
 
-  void do_QuantizeAndDequantizeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
 
     Tensor* output = nullptr;
@@ -428,30 +355,6 @@ class QuantizeAndDequantizeOp : public OpKernel {
     functor(ctx->eigen_device<Device>(), input.flat<T>(), signed_input_,
             num_bits_, range_given_, &input_min_tensor, &input_max_tensor,
             ROUND_HALF_TO_EVEN, /*narrow_range=*/false, output->flat<T>());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeAndDequantizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeAndDequantizeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeAndDequantizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeAndDequantizeOp(ctx);
-      } else {
-        do_QuantizeAndDequantizeOp(ctx);
-      }
-
   }
 
  private:

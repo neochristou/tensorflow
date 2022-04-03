@@ -33,7 +33,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -171,7 +170,7 @@ class FusedMatMulOp : public OpKernel {
                                 &fused_computation_, &fused_computation_args_));
   }
 
-  void do_FusedMatMulOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& a = ctx->input(0);
     const Tensor& b = ctx->input(1);
 
@@ -218,30 +217,6 @@ class FusedMatMulOp : public OpKernel {
     auto launch = LaunchFusedMatMulOp<Device, T>();
     launch(ctx, a, b, dim_pair, fused_computation_, fused_computation_args_,
            out);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("FusedMatMulOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("FusedMatMulOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_FusedMatMulOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_FusedMatMulOp(ctx);
-      } else {
-        do_FusedMatMulOp(ctx);
-      }
-
   }
 
  private:

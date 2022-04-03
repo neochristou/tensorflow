@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
@@ -158,7 +157,7 @@ class QuantizedConcatOp : public OpKernel {
     }
   }
 
-  void do_QuantizedConcatOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* concat_dim_tensor = nullptr;
     OP_REQUIRES_OK(context, context->input("concat_dim", &concat_dim_tensor));
     OP_REQUIRES(
@@ -230,30 +229,6 @@ class QuantizedConcatOp : public OpKernel {
     OP_REQUIRES_OK(context,
                    context->allocate_output(2, {}, &output_max_tensor));
     output_max_tensor->flat<float>()(0) = output_max;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedConcatOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedConcatOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedConcatOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedConcatOp(context);
-      } else {
-        do_QuantizedConcatOp(context);
-      }
-
   }
 };
 

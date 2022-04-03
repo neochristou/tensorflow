@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/variant.h"
 #include "tensorflow/core/framework/variant_encode_decode.h"
@@ -142,7 +141,7 @@ class AsStringOp : public OpKernel {
     }
   }
 
-  void do_AsStringOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(context, context->input("input", &input_tensor));
     const DataType& dtype = input_tensor->dtype();
@@ -220,30 +219,6 @@ class AsStringOp : public OpKernel {
     }
 
 #undef ENCODE_TYPE
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AsStringOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AsStringOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_AsStringOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_AsStringOp(context);
-      } else {
-        do_AsStringOp(context);
-      }
-
   }
 
  private:

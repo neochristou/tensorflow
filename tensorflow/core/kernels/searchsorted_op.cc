@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -83,7 +82,7 @@ class UpperBoundOp : public OpKernel {
  public:
   explicit UpperBoundOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_UpperBoundOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& sorted_inputs_t = ctx->input(0);
     const Tensor& values_t = ctx->input(1);
 
@@ -121,30 +120,6 @@ class UpperBoundOp : public OpKernel {
                  ctx, sorted_inputs, values, sorted_inputs_t.dim_size(0),
                  sorted_inputs_t.dim_size(1), values_t.dim_size(1), &output));
   }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UpperBoundOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UpperBoundOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UpperBoundOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UpperBoundOp(ctx);
-      } else {
-        do_UpperBoundOp(ctx);
-      }
-
-  }
 };
 
 template <typename Device, typename T, typename OutType>
@@ -152,7 +127,7 @@ class LowerBoundOp : public OpKernel {
  public:
   explicit LowerBoundOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_LowerBoundOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& sorted_inputs_t = ctx->input(0);
     const Tensor& values_t = ctx->input(1);
 
@@ -189,30 +164,6 @@ class LowerBoundOp : public OpKernel {
         ctx, functor::LowerBoundFunctor<Device, T, OutType>::Compute(
                  ctx, sorted_inputs, values, sorted_inputs_t.dim_size(0),
                  sorted_inputs_t.dim_size(1), values_t.dim_size(1), &output));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LowerBoundOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LowerBoundOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_LowerBoundOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_LowerBoundOp(ctx);
-      } else {
-        do_LowerBoundOp(ctx);
-      }
-
   }
 };
 

@@ -20,7 +20,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -202,7 +201,7 @@ class SplitOpCPU : public SplitOpBase<CPUDevice, T> {
   typedef SplitOpBase<CPUDevice, T> Base;
   explicit SplitOpCPU(OpKernelConstruction* c) : Base(c) {}
 
-  void do_SplitOpCPU(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     bool done = false;
     Base::ComputeEasyCases(context, &done);
     if (!context->status().ok() || done) {
@@ -261,30 +260,6 @@ class SplitOpCPU : public SplitOpBase<CPUDevice, T> {
           split_dim_size, suffix_dim_size, make_sizes, reshape_result,
           num_split, split_dim_output_size);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SplitOpCPU")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SplitOpCPU", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SplitOpCPU(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SplitOpCPU(context);
-      } else {
-        do_SplitOpCPU(context);
-      }
-
   }
 };
 

@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/platform/macros.h"
 #include "tensorflow/core/platform/types.h"
 #include "tensorflow/core/util/bcast.h"
@@ -28,7 +27,7 @@ class BCastArgsOp : public OpKernel {
  public:
   explicit BCastArgsOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_BCastArgsOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     OP_REQUIRES(
         ctx, ctx->num_inputs() == 2,
         errors::Unimplemented("Broadcast for n-ary operations (n > 2)"));
@@ -50,30 +49,6 @@ class BCastArgsOp : public OpKernel {
                     "Incompatible shapes: [", absl::StrJoin(shapes[0], ","),
                     "] vs. [", absl::StrJoin(shapes[1], ","), "]"));
     Output(ctx, 0, bcast.output_shape());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BCastArgsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BCastArgsOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BCastArgsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BCastArgsOp(ctx);
-      } else {
-        do_BCastArgsOp(ctx);
-      }
-
   }
 
   bool IsExpensive() override { return false; }
@@ -101,7 +76,7 @@ class BCastGradArgsOp : public OpKernel {
  public:
   explicit BCastGradArgsOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
 
-  void do_BCastGradArgsOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     OP_REQUIRES(
         ctx, ctx->num_inputs() == 2,
         errors::Unimplemented("Broadcast for n-ary operations (n > 2)"));
@@ -124,30 +99,6 @@ class BCastGradArgsOp : public OpKernel {
                     "] vs. [", absl::StrJoin(shapes[1], ","), "]"));
     Output(ctx, 0, bcast.grad_x_reduce_idx());
     Output(ctx, 1, bcast.grad_y_reduce_idx());
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("BCastGradArgsOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("BCastGradArgsOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_BCastGradArgsOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_BCastGradArgsOp(ctx);
-      } else {
-        do_BCastGradArgsOp(ctx);
-      }
-
   }
 
   bool IsExpensive() override { return false; }

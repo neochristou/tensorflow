@@ -18,7 +18,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/sparse_tensor_dense_add_op.h"
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -72,7 +71,7 @@ class SparseTensorDenseAddOp : public OpKernel {
  public:
   explicit SparseTensorDenseAddOp(OpKernelConstruction *ctx) : OpKernel(ctx) {}
 
-  void do_SparseTensorDenseAddOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext *ctx) override {
     const Tensor *a_indices_t, *a_values_t, *a_shape_t, *b;
     OP_REQUIRES_OK(ctx, ctx->input("a_indices", &a_indices_t));
     OP_REQUIRES_OK(ctx, ctx->input("a_values", &a_values_t));
@@ -118,30 +117,6 @@ class SparseTensorDenseAddOp : public OpKernel {
                                     ndims));
 #undef NDIMS_CASE
     }
-  }
-
-void Compute(OpKernelContext *ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseTensorDenseAddOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseTensorDenseAddOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseTensorDenseAddOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseTensorDenseAddOp(ctx);
-      } else {
-        do_SparseTensorDenseAddOp(ctx);
-      }
-
   }
 };
 

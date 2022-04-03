@@ -22,7 +22,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -43,7 +42,7 @@ class AdjustContrastOp : public OpKernel {
   explicit AdjustContrastOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_AdjustContrastOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& factor = context->input(1);
     const Tensor& min_value = context->input(2);
@@ -83,30 +82,6 @@ class AdjustContrastOp : public OpKernel {
           max_value.scalar<float>(), mean_values.shaped<float, 4>(shape),
           output->shaped<float, 4>(shape));
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AdjustContrastOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AdjustContrastOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_AdjustContrastOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_AdjustContrastOp(context);
-      } else {
-        do_AdjustContrastOp(context);
-      }
-
   }
 };
 
@@ -178,7 +153,7 @@ class AdjustContrastOpV2Base : public OpKernel {
     int64 channels = 0;
   };
 
-  void do_AdjustContrastOpV2Base(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& factor = context->input(1);
     OP_REQUIRES(context, input.dims() >= 3,
@@ -208,30 +183,6 @@ class AdjustContrastOpV2Base : public OpKernel {
       options.channels = channels;
       DoCompute(context, options);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("AdjustContrastOpV2Base")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("AdjustContrastOpV2Base", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_AdjustContrastOpV2Base(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_AdjustContrastOpV2Base(context);
-      } else {
-        do_AdjustContrastOpV2Base(context);
-      }
-
   }
 
   virtual void DoCompute(OpKernelContext* context,

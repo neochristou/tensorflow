@@ -25,7 +25,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/ops_util.h"
@@ -157,7 +156,7 @@ class SliceOp : public OpKernel {
  public:
   explicit SliceOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SliceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     gtl::InlinedVector<int64, 4> begin;
     gtl::InlinedVector<int64, 4> size;
     const Tensor& input = context->input(0);
@@ -214,30 +213,6 @@ class SliceOp : public OpKernel {
           context, false,
           errors::Unimplemented("SliceOp : Unhandled input dimensions"));
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SliceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SliceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SliceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SliceOp(context);
-      } else {
-        do_SliceOp(context);
-      }
-
   }
 
  private:

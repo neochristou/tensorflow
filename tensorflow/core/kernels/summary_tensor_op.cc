@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/summary.pb.h"
@@ -31,7 +30,7 @@ class SummaryTensorOpV2 : public OpKernel {
   explicit SummaryTensorOpV2(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_SummaryTensorOpV2(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& tag = c->input(0);
     OP_REQUIRES(c, TensorShapeUtils::IsScalar(tag.shape()),
                 errors::InvalidArgument("tag must be scalar"));
@@ -56,30 +55,6 @@ class SummaryTensorOpV2 : public OpKernel {
     OP_REQUIRES_OK(c, c->allocate_output(0, TensorShape({}), &summary_tensor));
     CHECK(SerializeToTString(s, &summary_tensor->scalar<tstring>()()));
   }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SummaryTensorOpV2")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SummaryTensorOpV2", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SummaryTensorOpV2(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SummaryTensorOpV2(c);
-      } else {
-        do_SummaryTensorOpV2(c);
-      }
-
-  }
 };
 
 #define REGISTER(T)                                                      \
@@ -101,7 +76,7 @@ class SummaryTensorOp : public OpKernel {
  public:
   explicit SummaryTensorOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SummaryTensorOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& tensor = c->input(0);
 
     Summary s;
@@ -118,30 +93,6 @@ class SummaryTensorOp : public OpKernel {
     Tensor* summary_tensor = nullptr;
     OP_REQUIRES_OK(c, c->allocate_output(0, TensorShape({}), &summary_tensor));
     CHECK(SerializeToTString(s, &summary_tensor->scalar<tstring>()()));
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SummaryTensorOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SummaryTensorOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SummaryTensorOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SummaryTensorOp(c);
-      } else {
-        do_SummaryTensorOp(c);
-      }
-
   }
 };
 

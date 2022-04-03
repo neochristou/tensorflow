@@ -22,7 +22,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/variant_op_registry.h"
 #include "tensorflow/core/kernels/cwise_ops.h"
@@ -43,7 +42,7 @@ class CSRMulOp : public OpKernel {
  public:
   explicit CSRMulOp(OpKernelConstruction* c) : OpKernel(c) {}
 
-  void do_CSRMulOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) final {
     const CSRSparseMatrix* a_matrix;
     OP_REQUIRES_OK(ctx, ExtractVariantFromInput(ctx, 0, &a_matrix));
     const Tensor& b_t = ctx->input(1);
@@ -94,30 +93,6 @@ class CSRMulOp : public OpKernel {
     }
     c_t.scalar<Variant>()() = std::move(c_matrix);
     ctx->set_output(0, c_t);
-  }
-
-void Compute(OpKernelContext* ctx) final {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("CSRMulOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("CSRMulOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_CSRMulOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_CSRMulOp(ctx);
-      } else {
-        do_CSRMulOp(ctx);
-      }
-
   }
 };
 

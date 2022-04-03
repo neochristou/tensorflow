@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/lib/core/errors.h"
@@ -121,7 +120,7 @@ class ReduceJoinOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("separator", &separator_));
   }
 
-  void do_ReduceJoinOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const auto input_flat = input.flat<tstring>();
     const TensorShape& input_shape = input.shape();
@@ -175,30 +174,6 @@ class ReduceJoinOp : public OpKernel {
       }
       output_flat(output_index) = absl::StrJoin(curr_strings, separator_);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReduceJoinOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReduceJoinOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ReduceJoinOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ReduceJoinOp(context);
-      } else {
-        do_ReduceJoinOp(context);
-      }
-
   }
 
  private:

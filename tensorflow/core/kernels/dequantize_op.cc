@@ -19,7 +19,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/type_traits.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/meta_support.h"
@@ -90,7 +89,7 @@ class DequantizeOp : public OpKernel {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("axis", &axis_));
   }
 
-  void do_DequantizeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     const Tensor& input_min_tensor = ctx->input(1);
     const Tensor& input_max_tensor = ctx->input(2);
@@ -151,30 +150,6 @@ class DequantizeOp : public OpKernel {
         out_ptr[i] = static_cast<S>(in_ptr[i]);
       }
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DequantizeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DequantizeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DequantizeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DequantizeOp(ctx);
-      } else {
-        do_DequantizeOp(ctx);
-      }
-
   }
 
   void DequantizeTensor(OpKernelContext* ctx, const Tensor& input,

@@ -14,7 +14,6 @@ limitations under the License.
 ==============================================================================*/
 
 #define EIGEN_USE_THREADS
-#include "tensorflow/core/framework/fuzzing.h"
 
 #if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 #define EIGEN_USE_GPU
@@ -41,7 +40,7 @@ class SelectOp : public OpKernel {
  public:
   explicit SelectOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SelectOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* cond = &ctx->input(0);
     const Tensor* then = &ctx->input(1);
     const Tensor* else_ = &ctx->input(2);
@@ -59,30 +58,6 @@ class SelectOp : public OpKernel {
     } else {
       ComputeElementwise(ctx, cond, then, else_);
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SelectOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SelectOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SelectOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SelectOp(ctx);
-      } else {
-        do_SelectOp(ctx);
-      }
-
   }
 
  protected:
@@ -167,7 +142,7 @@ class SelectV2Op : public OpKernel {
  public:
   explicit SelectV2Op(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SelectV2Op(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* cond = &ctx->input(0);
     const Tensor* then = &ctx->input(1);
     const Tensor* else_ = &ctx->input(2);
@@ -261,30 +236,6 @@ class SelectV2Op : public OpKernel {
             ctx->input(1).shape().DebugString(), " is not supported yet."));
         break;
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SelectV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SelectV2Op", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SelectV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SelectV2Op(ctx);
-      } else {
-        do_SelectV2Op(ctx);
-      }
-
   }
 
  private:

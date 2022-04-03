@@ -24,7 +24,6 @@ limitations under the License.
 
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -67,7 +66,7 @@ class ScatterNdOp : public OpKernel {
     OP_REQUIRES_OK(c, c->MatchSignature({index_t, dt, index_t}, {dt}));
   }
 
-  void do_ScatterNdOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& indices = c->input(0);
     const Tensor& updates = c->input(1);
     const Tensor& shape_input = c->input(2);
@@ -131,30 +130,6 @@ class ScatterNdOp : public OpKernel {
                c, indices, updates, shape, &out, true /*allocate*/));
     c->set_output(0, out);
   }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ScatterNdOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ScatterNdOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ScatterNdOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ScatterNdOp(c);
-      } else {
-        do_ScatterNdOp(c);
-      }
-
-  }
 };
 
 template <typename Device, typename T, typename Index,
@@ -167,7 +142,7 @@ class TensorScatterOp : public OpKernel {
     OP_REQUIRES_OK(c, c->MatchSignature({dt, index_t, dt}, {dt}));
   }
 
-  void do_TensorScatterOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& input = c->input(0);
     const Tensor& indices = c->input(1);
     const Tensor& updates = c->input(2);
@@ -248,30 +223,6 @@ class TensorScatterOp : public OpKernel {
 
       c->set_output(0, *forwarded_input);
     }
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("TensorScatterOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("TensorScatterOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_TensorScatterOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_TensorScatterOp(c);
-      } else {
-        do_TensorScatterOp(c);
-      }
-
   }
 };
 

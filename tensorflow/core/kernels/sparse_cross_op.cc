@@ -24,7 +24,6 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -733,7 +732,7 @@ class SparseCrossOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("internal_type", &internal_type_));
   }
 
-  void do_SparseCrossOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList indices_list_in;
     OP_REQUIRES_OK(context, context->input_list("indices", &indices_list_in));
     OpInputList values_list_in;
@@ -788,30 +787,6 @@ class SparseCrossOp : public OpKernel {
           kCostPerUnit, do_work);
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseCrossOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseCrossOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseCrossOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseCrossOp(context);
-      } else {
-        do_SparseCrossOp(context);
-      }
-
-  }
-
  private:
   int64 num_buckets_;
   uint64 hash_key_;
@@ -822,7 +797,7 @@ class SparseCrossV2Op : public OpKernel {
  public:
   explicit SparseCrossV2Op(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SparseCrossV2Op(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList indices_list_in;
     OP_REQUIRES_OK(context, context->input_list("indices", &indices_list_in));
     OpInputList values_list_in;
@@ -877,30 +852,6 @@ class SparseCrossV2Op : public OpKernel {
     Shard(worker_threads->num_threads, worker_threads->workers, batch_size,
           kCostPerUnit, do_work);
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseCrossV2Op")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseCrossV2Op", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseCrossV2Op(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseCrossV2Op(context);
-      } else {
-        do_SparseCrossV2Op(context);
-      }
-
-  }
 };
 
 class SparseCrossHashedOp : public OpKernel {
@@ -908,7 +859,7 @@ class SparseCrossHashedOp : public OpKernel {
   explicit SparseCrossHashedOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_SparseCrossHashedOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     OpInputList indices_list_in;
     OP_REQUIRES_OK(context, context->input_list("indices", &indices_list_in));
     OpInputList values_list_in;
@@ -973,30 +924,6 @@ class SparseCrossHashedOp : public OpKernel {
     const int kCostPerUnit = 5000 * indices_list_in.size();
     Shard(worker_threads->num_threads, worker_threads->workers, batch_size,
           kCostPerUnit, do_work);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseCrossHashedOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseCrossHashedOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseCrossHashedOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseCrossHashedOp(context);
-      } else {
-        do_SparseCrossHashedOp(context);
-      }
-
   }
 };
 

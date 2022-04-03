@@ -27,7 +27,6 @@ limitations under the License.
 #include <vector>
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -122,7 +121,7 @@ class ReverseSequenceOp : public OpKernel {
                 errors::InvalidArgument("Invalid seq_dim ", seq_dim_));
   }
 
-  void do_ReverseSequenceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const Tensor& seq_lengths = context->input(1);
 
@@ -161,30 +160,6 @@ class ReverseSequenceOp : public OpKernel {
                         "ReverseSequenceOp : Unhandled input dimensions: ",
                         input_dims));
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("ReverseSequenceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("ReverseSequenceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_ReverseSequenceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_ReverseSequenceOp(context);
-      } else {
-        do_ReverseSequenceOp(context);
-      }
-
   }
 
  private:

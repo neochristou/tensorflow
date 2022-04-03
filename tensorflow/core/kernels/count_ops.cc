@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "absl/container/flat_hash_map.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/op_requires.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -96,7 +95,7 @@ class DenseCount : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_DenseCount(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& data = context->input(0);
     const Tensor& weights = context->input(1);
     bool use_weights = weights.NumElements() > 0;
@@ -160,30 +159,6 @@ class DenseCount : public OpKernel {
                                             is_1d, context));
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DenseCount")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DenseCount", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DenseCount(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DenseCount(context);
-      } else {
-        do_DenseCount(context);
-      }
-
-  }
-
  private:
   int maxlength_;
   int minlength_;
@@ -199,7 +174,7 @@ class SparseCount : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_SparseCount(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& indices = context->input(0);
     const Tensor& values = context->input(1);
     const Tensor& shape = context->input(2);
@@ -290,30 +265,6 @@ class SparseCount : public OpKernel {
                                             is_1d, context));
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseCount")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseCount", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseCount(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseCount(context);
-      } else {
-        do_SparseCount(context);
-      }
-
-  }
-
  private:
   int maxlength_;
   int minlength_;
@@ -330,7 +281,7 @@ class RaggedCount : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("binary_output", &binary_output_));
   }
 
-  void do_RaggedCount(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& splits = context->input(0);
     const Tensor& values = context->input(1);
     const Tensor& weights = context->input(2);
@@ -390,30 +341,6 @@ class RaggedCount : public OpKernel {
     int num_output_values = GetOutputSize(max_value, maxlength_, minlength_);
     OP_REQUIRES_OK(context, OutputSparse<W>(per_batch_counts, num_output_values,
                                             is_1d, context));
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RaggedCount")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RaggedCount", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RaggedCount(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RaggedCount(context);
-      } else {
-        do_RaggedCount(context);
-      }
-
   }
 
  private:

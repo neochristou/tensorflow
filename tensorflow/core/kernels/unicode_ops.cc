@@ -37,7 +37,6 @@ limitations under the License.
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -272,7 +271,7 @@ class UnicodeTranscodeOp : public OpKernel {
                     input_encoding_));
   }
 
-  void do_UnicodeTranscodeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
 
@@ -311,30 +310,6 @@ class UnicodeTranscodeOp : public OpKernel {
       ctx->CtxFailure(
           errors::InvalidArgument("Invalid formatting on input string"));
     }
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnicodeTranscodeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnicodeTranscodeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnicodeTranscodeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnicodeTranscodeOp(ctx);
-      } else {
-        do_UnicodeTranscodeOp(ctx);
-      }
-
   }
 
  private:
@@ -426,7 +401,7 @@ class UnicodeDecodeBaseOp : public OpKernel {
     *next_row_split += 1;
   }
 
-  void do_UnicodeDecodeBaseOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor* input_tensor;
     OP_REQUIRES_OK(ctx, ctx->input("input", &input_tensor));
 
@@ -496,30 +471,6 @@ class UnicodeDecodeBaseOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnicodeDecodeBaseOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnicodeDecodeBaseOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnicodeDecodeBaseOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnicodeDecodeBaseOp(ctx);
-      } else {
-        do_UnicodeDecodeBaseOp(ctx);
-      }
-
-  }
-
  private:
   string input_encoding_;
   ErrorOptions error_options_;
@@ -575,7 +526,7 @@ class UnicodeEncodeOp : public OpKernel {
    * a single rank 1 tensor of splits which determine where each string begins
    * and ends from the provided code points.
    */
-  void do_UnicodeEncodeOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     // Get inputs
     const Tensor& input_tensor = context->input(0);
     const auto input_tensor_flat = input_tensor.flat<int32>();
@@ -639,30 +590,6 @@ class UnicodeEncodeOp : public OpKernel {
       Encode(encoding_, unicode_string, &result);
       output_tensor_flat(i - 1) = std::move(result);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("UnicodeEncodeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("UnicodeEncodeOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_UnicodeEncodeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_UnicodeEncodeOp(context);
-      } else {
-        do_UnicodeEncodeOp(context);
-      }
-
   }
 
  private:

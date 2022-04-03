@@ -24,7 +24,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -43,7 +42,7 @@ class PopulationCountOp : public OpKernel {
   explicit PopulationCountOp(OpKernelConstruction* context)
       : OpKernel(context) {}
 
-  void do_PopulationCountOp(OpKernelContext *c){
+  void Compute(OpKernelContext* c) override {
     const Tensor& input_t = c->input(0);
     Tensor* output_t;
     OP_REQUIRES_OK(c, c->allocate_output(0, input_t.shape(), &output_t));
@@ -53,30 +52,6 @@ class PopulationCountOp : public OpKernel {
 
     functor::PopulationCount<Device, T> popcnt;
     popcnt(c, input, output);
-  }
-
-void Compute(OpKernelContext* c) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("PopulationCountOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("PopulationCountOp", c);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_PopulationCountOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_PopulationCountOp(c);
-      } else {
-        do_PopulationCountOp(c);
-      }
-
   }
 };
 

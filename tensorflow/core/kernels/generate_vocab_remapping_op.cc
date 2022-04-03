@@ -18,7 +18,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/kernel_def_builder.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/lookup_table_init_op.h"
@@ -46,7 +45,7 @@ class GenerateVocabRemappingOp : public OpKernel {
                    context->GetAttr("old_vocab_size", &old_vocab_size_));
   }
 
-  void do_GenerateVocabRemappingOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor* new_vocab_file_tensor;
     OP_REQUIRES_OK(context,
                    context->input("new_vocab_file", &new_vocab_file_tensor));
@@ -163,30 +162,6 @@ class GenerateVocabRemappingOp : public OpKernel {
                    context->allocate_output("num_present", TensorShape({}),
                                             &num_present_t));
     num_present_t->scalar<int>()() = num_present;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("GenerateVocabRemappingOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("GenerateVocabRemappingOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_GenerateVocabRemappingOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_GenerateVocabRemappingOp(context);
-      } else {
-        do_GenerateVocabRemappingOp(context);
-      }
-
   }
 
  private:

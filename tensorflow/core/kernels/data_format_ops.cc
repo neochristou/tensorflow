@@ -23,7 +23,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/platform/errors.h"
@@ -99,7 +98,7 @@ class DataFormatDimMapOp : public OpKernel {
     }
   }
 
-  void do_DataFormatDimMapOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     Tensor* output;
     OP_REQUIRES_OK(context,
@@ -107,30 +106,6 @@ class DataFormatDimMapOp : public OpKernel {
     functor::DataFormatDimMap<Device, T>()(context->eigen_device<Device>(),
                                            input.flat<T>(), output->flat<T>(),
                                            dst_idx_.vec<int>());
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DataFormatDimMapOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DataFormatDimMapOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DataFormatDimMapOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DataFormatDimMapOp(context);
-      } else {
-        do_DataFormatDimMapOp(context);
-      }
-
   }
 
   Tensor dst_idx_;
@@ -163,7 +138,7 @@ class DataFormatVecPermuteOp : public OpKernel {
     dst_format_ = dst_format;
   }
 
-  void do_DataFormatVecPermuteOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     OP_REQUIRES(context, input.dims() == 1 || input.dims() == 2,
                 errors::InvalidArgument(
@@ -216,30 +191,6 @@ class DataFormatVecPermuteOp : public OpKernel {
     functor::DataFormatVecPermute<Device, T>()(context->eigen_device<Device>(),
                                                input.flat<T>(),
                                                output->flat<T>(), dst_idx);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("DataFormatVecPermuteOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("DataFormatVecPermuteOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_DataFormatVecPermuteOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_DataFormatVecPermuteOp(context);
-      } else {
-        do_DataFormatVecPermuteOp(context);
-      }
-
   }
 
  private:

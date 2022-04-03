@@ -22,7 +22,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/type_traits.h"
 #include "tensorflow/core/framework/types.h"
 #include "tensorflow/core/kernels/meta_support.h"
@@ -39,7 +38,7 @@ class QuantizeDownAndShrinkRangeOp : public OpKernel {
   explicit QuantizeDownAndShrinkRangeOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void do_QuantizeDownAndShrinkRangeOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& input = ctx->input(0);
     const float input_min_float = ctx->input(1).flat<float>()(0);
     const float input_max_float = ctx->input(2).flat<float>()(0);
@@ -96,30 +95,6 @@ class QuantizeDownAndShrinkRangeOp : public OpKernel {
 
     output_min->flat<float>().setConstant(actual_min_float);
     output_max->flat<float>().setConstant(actual_max_float);
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizeDownAndShrinkRangeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizeDownAndShrinkRangeOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizeDownAndShrinkRangeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizeDownAndShrinkRangeOp(ctx);
-      } else {
-        do_QuantizeDownAndShrinkRangeOp(ctx);
-      }
-
   }
 };
 

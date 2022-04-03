@@ -27,7 +27,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bounds_check.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/dense_update_functor.h"
@@ -91,7 +90,7 @@ class StridedSliceOp : public OpKernel {
                    context->GetAttr("shrink_axis_mask", &shrink_axis_mask));
   }
 
-  void do_StridedSliceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     TensorShape processing_shape, final_shape;
     bool is_identity = true;
     bool slice_dim0 = true;
@@ -181,30 +180,6 @@ class StridedSliceOp : public OpKernel {
     }
   }
 
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StridedSliceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StridedSliceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StridedSliceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StridedSliceOp(context);
-      } else {
-        do_StridedSliceOp(context);
-      }
-
-  }
-
  private:
   int32 begin_mask, end_mask;
   int32 ellipsis_mask, new_axis_mask, shrink_axis_mask;
@@ -223,7 +198,7 @@ class StridedSliceGradOp : public OpKernel {
                    context->GetAttr("shrink_axis_mask", &shrink_axis_mask));
   }
 
-  void do_StridedSliceGradOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     TensorShape processing_shape, final_shape;
     bool is_identity = true;
     bool slice_dim0 = true;
@@ -297,30 +272,6 @@ class StridedSliceGradOp : public OpKernel {
     HANDLE_DIM(8);
 
 #undef HANDLE_DIM
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StridedSliceGradOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StridedSliceGradOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StridedSliceGradOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StridedSliceGradOp(context);
-      } else {
-        do_StridedSliceGradOp(context);
-      }
-
   }
 
  private:

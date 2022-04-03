@@ -23,7 +23,6 @@ limitations under the License.
 #include <utility>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_util.h"
@@ -81,7 +80,7 @@ class SparseReorderOp : public OpKernel {
  public:
   explicit SparseReorderOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_SparseReorderOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input_ind = context->input(0);
     OP_REQUIRES(context, TensorShapeUtils::IsMatrix(input_ind.shape()),
                 errors::InvalidArgument(
@@ -102,30 +101,6 @@ class SparseReorderOp : public OpKernel {
 
     functor::SparseReorderFunctor<Device, T>()(context, input_ind, input_val,
                                                input_shape_in);
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SparseReorderOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SparseReorderOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SparseReorderOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SparseReorderOp(context);
-      } else {
-        do_SparseReorderOp(context);
-      }
-
   }
 };
 

@@ -15,7 +15,6 @@ limitations under the License.
 #include <memory>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/resource_op_kernel.h"
 #include "tensorflow/core/framework/stats_aggregator.h"
 #include "tensorflow/core/framework/summary.pb.h"
@@ -278,7 +277,7 @@ class StatsAggregatorSetSummaryWriterOp : public OpKernel {
   explicit StatsAggregatorSetSummaryWriterOp(OpKernelConstruction* ctx)
       : OpKernel(ctx) {}
 
-  void do_StatsAggregatorSetSummaryWriterOp(OpKernelContext *ctx){
+  void Compute(OpKernelContext* ctx) override {
     const Tensor& resource_handle_t = ctx->input(0);
     OP_REQUIRES(ctx, TensorShapeUtils::IsScalar(resource_handle_t.shape()),
                 errors::InvalidArgument("resource_handle must be a scalar"));
@@ -296,30 +295,6 @@ class StatsAggregatorSetSummaryWriterOp : public OpKernel {
         ctx, LookupResource(ctx, HandleFromInput(ctx, 1), &summary_resource));
     TF_CHECK_OK(
         resource->stats_aggregator()->SetSummaryWriter(summary_resource.get()));
-  }
-
-void Compute(OpKernelContext* ctx) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("StatsAggregatorSetSummaryWriterOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("StatsAggregatorSetSummaryWriterOp", ctx);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_StatsAggregatorSetSummaryWriterOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_StatsAggregatorSetSummaryWriterOp(ctx);
-      } else {
-        do_StatsAggregatorSetSummaryWriterOp(ctx);
-      }
-
   }
 };
 

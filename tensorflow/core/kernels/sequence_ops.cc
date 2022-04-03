@@ -18,7 +18,6 @@ limitations under the License.
 #include <cmath>
 
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -33,7 +32,7 @@ class RangeOp : public OpKernel {
  public:
   explicit RangeOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_RangeOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& start_in = context->input(0);
     const Tensor& limit_in = context->input(1);
     const Tensor& delta_in = context->input(2);
@@ -86,30 +85,6 @@ class RangeOp : public OpKernel {
       val += delta;
     }
   }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("RangeOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("RangeOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_RangeOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_RangeOp(context);
-      } else {
-        do_RangeOp(context);
-      }
-
-  }
 };
 
 #define REGISTER_KERNEL(DEV, TYPE)                           \
@@ -148,7 +123,7 @@ class LinSpaceOp : public OpKernel {
  public:
   explicit LinSpaceOp(OpKernelConstruction* context) : OpKernel(context) {}
 
-  void do_LinSpaceOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& start_in = context->input(0);
     const Tensor& stop_in = context->input(1);
     const Tensor& num_in = context->input(2);
@@ -177,30 +152,6 @@ class LinSpaceOp : public OpKernel {
       // Ensure final value == stop; float arithmetic won't guarantee this.
       flat(num - 1) = stop;
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("LinSpaceOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("LinSpaceOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_LinSpaceOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_LinSpaceOp(context);
-      } else {
-        do_LinSpaceOp(context);
-      }
-
   }
 };
 

@@ -20,7 +20,6 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
@@ -53,7 +52,7 @@ class SoftmaxOp : public OpKernel {
     log_ = absl::StartsWith(type_string(), "Log");
   }
 
-  void do_SoftmaxOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& logits_in = context->input(0);
     OP_REQUIRES(context, TensorShapeUtils::IsVectorOrHigher(logits_in.shape()),
                 errors::InvalidArgument("logits must have >= 1 dimension, got ",
@@ -66,30 +65,6 @@ class SoftmaxOp : public OpKernel {
       functor(context->eigen_device<Device>(), logits_in.flat_inner_dims<T>(),
               softmax_out->flat_inner_dims<T>(), log_);
     }
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("SoftmaxOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("SoftmaxOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_SoftmaxOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_SoftmaxOp(context);
-      } else {
-        do_SoftmaxOp(context);
-      }
-
   }
 
  private:

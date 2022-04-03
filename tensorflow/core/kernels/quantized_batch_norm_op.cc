@@ -18,7 +18,6 @@ limitations under the License.
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/numeric_op.h"
 #include "tensorflow/core/framework/op_kernel.h"
-#include "tensorflow/core/framework/fuzzing.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/kernels/quantization_utils.h"
@@ -172,7 +171,7 @@ class QuantizedBatchNormOp : public OpKernel {
                                              &scale_after_normalization_));
   }
 
-  void do_QuantizedBatchNormOp(OpKernelContext *context){
+  void Compute(OpKernelContext* context) override {
     const Tensor& input = context->input(0);
     const auto& input_min_tensor = context->input(1);
     OP_REQUIRES(context, input_min_tensor.NumElements() == 1,
@@ -282,30 +281,6 @@ class QuantizedBatchNormOp : public OpKernel {
     OP_REQUIRES_OK(context,
                    context->allocate_output(2, {}, &output_max_tensor));
     output_max_tensor->flat<float>()(0) = output_max;
-  }
-
-void Compute(OpKernelContext* context) override {
-
-    if (!tffuzzing::already_fuzzing && !tffuzzing::was_fuzzed("QuantizedBatchNormOp")) {
-
-        tffuzzing::already_fuzzing = true;
-
-        tffuzzing::Fuzzer fuzzer = tffuzzing::Fuzzer("QuantizedBatchNormOp", context);
-        OpKernelContext *fuzz_ctx;
-
-        while (fuzzer.has_more_mutations(true)) {
-          fuzz_ctx = fuzzer.get_fuzzed_context();
-          fuzzer.mut_start_time();
-          do_QuantizedBatchNormOp(fuzz_ctx);
-          fuzzer.mut_end_time(fuzz_ctx);
-        }
-
-        tffuzzing::already_fuzzing = false;
-        do_QuantizedBatchNormOp(context);
-      } else {
-        do_QuantizedBatchNormOp(context);
-      }
-
   }
 
  private:
