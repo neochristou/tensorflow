@@ -383,7 +383,6 @@ namespace tffuzzing {
 
     crashes_filename = std::string(results_dir) + "/" + cur_fname + "_crashes.log";
     crashes_logger_filename = crashes_filename;
-    crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
 
     // Handle the case where mutations were already done for this test
     // by just giving back one mutation so that the test doesn't crash
@@ -403,10 +402,11 @@ namespace tffuzzing {
       next_mutations_indices(false);
     }
 
-    crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
 
     /* If we weren't killed, also log the crash */
     if (!do_resume) {
+      crashes_file.open(crashes_logger_filename, std::ios::out | std::ios::app);
+      crashes_file.rdbuf()->pubsetbuf(nullptr, 0);
       log_current_mutation(crashes_file);
     }
 
