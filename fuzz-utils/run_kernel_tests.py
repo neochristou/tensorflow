@@ -8,14 +8,13 @@ from multiprocessing import Manager, Pool
 
 TF_BASE = "/media/ivysyn/tensorflow/"
 NUM_PARALLEL_PROCESSES = 4
-MAX_RESTARTS = 10
+MAX_RESTARTS = 3
 TIME_LIMIT = 900
 RESULTS_PATH = "/media/tf-fuzzing/results/"
 PYTHON_TEST_FOLDER = TF_BASE + "tensorflow/python/"
 CC_TEST_FOLDER = TF_BASE + "bazel-out/k8-opt/bin/tensorflow/core/kernels/"
 TEST_DURATION_FILE = "/media/tf-fuzzing/test_durations.txt"
-BAZEL_TEST_ARGS = ["--test_output=all", "--cache_test_results=no",
-                   "--runs_per_test=20", "--flaky_test_attempts=10"]
+BAZEL_TEST_ARGS = ["--test_output=all", "--cache_test_results=no", "--runs_per_test=20", "--flaky_test_attempts=10"]
 
 EXCLUDE_TESTS = [
     # Opens connection, gets confused because of fuzzing
@@ -27,9 +26,9 @@ EXCLUDE_TESTS = [
 tests_to_run = glob(PYTHON_TEST_FOLDER + "**/*_test*.py", recursive=True)
 print(f"Python tests: {len(tests_to_run) - len(EXCLUDE_TESTS)}")
 
-# cc_tests = glob(CC_TEST_FOLDER + "*_test")
-# print(f"CPP tests: {len(cc_tests)}")
-# tests_to_run += cc_tests
+cc_tests = glob(CC_TEST_FOLDER + "*_test")
+print(f"CPP tests: {len(cc_tests)}")
+tests_to_run += cc_tests
 
 for t in EXCLUDE_TESTS:
     tests_to_run.remove(t)
@@ -50,7 +49,7 @@ def execute(test):
     if PYTHON_TEST_FOLDER in test_path:
         args = ["python3", test]
     elif CC_TEST_FOLDER in test_path:
-        test_name = os.path.basename(test).replace('_test', '')
+        test_name = os.path.basename(test).replace("_test", "")
         bazel_test = "//tensorflow/core/kernels:" + test_name
         args = ["bazel", "test", bazel_test] + BAZEL_TEST_ARGS
 
@@ -58,11 +57,7 @@ def execute(test):
 
     start_time = time.time()
     try:
-        proc = subprocess.Popen(
-            args,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,)
         pid = proc.pid
         proc.wait(timeout=TIME_LIMIT)
         retcode = proc.returncode
@@ -100,9 +95,8 @@ def proc_finished(results):
 
         if len(killed_mutfile) != 0:
             killed_mutfile = killed_mutfile[0]
-            killed_filename = killed_mutfile.replace(
-                "_mutations.log", ".killed")
-            killed_filename = '.'.join(killed_filename.split('.')[:-1])
+            killed_filename = killed_mutfile.replace("_mutations.log", ".killed")
+            killed_filename = ".".join(killed_filename.split(".")[:-1])
             os.remove(killed_mutfile)
             with open(killed_filename, "w"):
                 pass
@@ -118,8 +112,7 @@ def proc_finished(results):
         restart_count[test] += 1
 
         if restart_count[test] <= MAX_RESTARTS:
-            logging.debug(
-                f"Test {test} crashed with exit code {exitcode}, requeueing")
+            logging.debug(f"Test {test} crashed with exit code {exitcode}, requeueing")
             tests_to_run.append(test)
     else:
         done_tests.add(test)
@@ -129,7 +122,6 @@ if __name__ == "__main__":
 
     # logging.basicConfig(level=logging.INFO)
     logging.basicConfig(level=logging.DEBUG)
-    # lock = Lock()
     manager = Manager()
     pool = Pool(processes=NUM_PARALLEL_PROCESSES)
     last_finished = 0
@@ -139,10 +131,7 @@ if __name__ == "__main__":
         while len(tests_to_run) > 0:
 
             test_to_run = tests_to_run.pop()
-            p = pool.apply_async(execute, args=(
-                test_to_run,), callback=proc_finished, error_callback=proc_finished)
-
-            # logging.info(f"Total crashes: {len(crashes_set)}")
+            p = pool.apply_async(execute, args=(test_to_run,), callback=proc_finished, error_callback=proc_finished)
 
         time.sleep(10)
         finished = len(done_tests)

@@ -177,6 +177,11 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
     return;
   }
 
+  if (OpName.contains("AdjustHueOpBase")) {
+    llvm::outs() << "Skipping " << OpName << " (AdjustHueOp)\n";
+    return;
+  }
+
   if (SourceFile == KERNEL_DIR + "batch_kernels.cc") {
     llvm::outs() << "Skipping " << OpName << " (batch kernel)\n";
     return;
