@@ -1,0 +1,8 @@
+T=DT_DOUBLE
+Tensor<type: int64 shape: [1024000,2] values: [0 0][0...]...>
+Tensor<type: double shape: [1024000] values: 1 1 1...>
+Tensor<type: int64 shape: [2] values: 8193 1024000>
+Tensor<type: int64 shape: [2] values: 1 0>
+Tensor<type: int64 shape: [2] values: 8192 1024000>
+
+--------------------------------------

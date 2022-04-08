@@ -1,0 +1,4 @@
+end="\n", output_stream="log(warning)"
+Tensor<type: string shape: [] values: bar>
+
+--------------------------------------

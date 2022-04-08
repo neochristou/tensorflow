@@ -1,0 +1,6 @@
+T=[DT_INT32, DT_INT32, DT_FLOAT], _lower_using_switch_merge=false, _num_original_outputs=3, _read_only_resource_inputs=[], _stateful_parallelism=false, body=while_1_body_2110[], cond=while_1_cond_2109[], output_shapes=[[], [], []], parallel_iterations=10, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [] values: 0>
+Tensor<type: int32 shape: [] values: -1>
+Tensor<type: float shape: [] values: 2>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+T=DT_FLOAT, data_format="NDHWC", ksize=[1, 2, 2, 2, 1], padding="SAME", strides=[1, 2, 2, 2, 1]
+Tensor<type: float shape: [1,2,2,4,3] values: [[[[1 2 3]]]]...>
+
+--------------------------------------

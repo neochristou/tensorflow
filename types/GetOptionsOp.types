@@ -1,0 +1,4 @@
+
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::DatasetVariantWrapper value: PrefetchDatasetOp::Dataset>>
+
+--------------------------------------

@@ -1,0 +1,7 @@
+T=DT_QINT32, align_corners=false, half_pixel_centers=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: qint32 shape: [1,1,128,1] values: ? ? ?...>
+Tensor<type: int32 shape: [2] values: 1 256>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [] values: 256>
+
+--------------------------------------

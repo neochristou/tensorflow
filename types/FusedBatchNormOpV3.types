@@ -1,0 +1,8 @@
+T=DT_FLOAT, U=DT_FLOAT, _XlaHasReferenceVars=false, data_format="NHWC", epsilon=0.001, exponential_avg_factor=0.1, is_training=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [10,4,4,3] values: [[[100.184631 100.774811 100.590179]]]...>
+Tensor<type: float shape: [3] values: 0.987534046 0.9869802 0.986591518>
+Tensor<type: float shape: [3] values: 0.00676002633 0.00660982914 0.0057037>
+Tensor<type: float shape: [3] values: 19.1041603 19.0959835 19.0981464>
+Tensor<type: float shape: [3] values: 0.821198285 0.825616241 0.826812625>
+
+--------------------------------------

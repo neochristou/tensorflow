@@ -1,0 +1,6 @@
+T=DT_FLOAT, Taxis=DT_INT32, Tshift=DT_INT32
+Tensor<type: float shape: [5] values: 0 1 2...>
+Tensor<type: int32 shape: [] values: 3>
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

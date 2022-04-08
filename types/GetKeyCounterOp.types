@@ -1,0 +1,4 @@
+Tseed=DT_INT32
+Tensor<type: int32 shape: [2] values: 1 2>
+
+--------------------------------------

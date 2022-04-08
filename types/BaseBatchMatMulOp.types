@@ -1,0 +1,5 @@
+T=DT_FLOAT, transpose_a=false, transpose_b=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [4,1] values: [2][2][2]...>
+Tensor<type: float shape: [1,4] values: [3 3 3...]...>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+T=[DT_INT32], placeholder="%s", summarize=3, template="First tensor: %s"
+Tensor<type: int32 shape: [7] values: 1 2 3...>
+
+--------------------------------------

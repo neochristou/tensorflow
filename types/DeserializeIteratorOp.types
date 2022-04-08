@@ -1,0 +1,5 @@
+_XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:1"
+Resource
+Tensor<type: variant shape: [1] values: Variant<type: tensorflow::Iterator value: IteratorStateVariant<type_name: tensorflow::Iterator metadata: Iterator::Root::Range@@60d899aa0d8ce4351e7c3b419e92d25b|Iterator::Root::Range:next tensors: Tensor<type: int64 shape: [] values: 1>>>>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+T=DT_INT32
+Tensor<type: float shape: [2,4] values: [0.1 0.3 0.2...]...>
+Tensor<type: int32 shape: [2] values: 2 4>
+Tensor<type: int32 shape: [] values: 2>
+
+--------------------------------------

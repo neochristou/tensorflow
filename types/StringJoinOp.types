@@ -1,0 +1,5 @@
+N=2, _XlaHasReferenceVars=false, separator="", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: /tmp/extension_type_teste8qs34a3mb8f30j4/variables/variables>
+Tensor<type: string shape: [] values: _temp/part>
+
+--------------------------------------

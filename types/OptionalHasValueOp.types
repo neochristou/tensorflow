@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, _class=["loc:@import/while/body/_1/while/cond/then/_47/while/cond/OptionalGetValue"], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::data::Optional value: OptionalVariant<values: (Tensor<type: int64 shape: [] values: 0>)>>>
+
+--------------------------------------

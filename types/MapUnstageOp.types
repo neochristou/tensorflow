@@ -1,0 +1,5 @@
+_XlaHasReferenceVars=false, _class=["loc:@MapStagingArea_put"], capacity=0, container="", dtypes=[DT_FLOAT, DT_FLOAT], memory_limit=0, shared_name="MapStagingArea", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [] values: 0>
+Tensor<type: int32 shape: [2] values: 0 1>
+
+--------------------------------------

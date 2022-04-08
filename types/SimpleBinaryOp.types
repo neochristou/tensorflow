@@ -1,0 +1,5 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [16,32] values: [0.687448144 0.139469802 0.482840449...]...>
+Tensor<type: float shape: [16,32] values: [0.141168535 0.0354574472 0.249620885...]...>
+
+--------------------------------------

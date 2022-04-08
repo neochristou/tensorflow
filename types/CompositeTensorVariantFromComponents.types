@@ -1,0 +1,5 @@
+Tcomponents=[DT_INT32, DT_INT64], _XlaHasReferenceVars=false, metadata="\n=\010\00...TensorSpec", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [1] values: 1>
+Tensor<type: int64 shape: [2] values: 0 1>
+
+--------------------------------------

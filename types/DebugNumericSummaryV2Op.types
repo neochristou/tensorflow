@@ -1,0 +1,4 @@
+T=DT_HALF, _XlaHasReferenceVars=false, output_dtype=DT_DOUBLE, tensor_debug_mode=3, tensor_id=247, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: half shape: [100,100] values: [0 0 0...]...>
+
+--------------------------------------

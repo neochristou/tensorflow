@@ -1,0 +1,4 @@
+T=DT_INT32, _XlaHasReferenceVars=false, circular_buffer_size=1000, debug_urls=["file:///tmp/tmp57d4oz7z"], op_name="x", output_slot=0, tensor_debug_mode=7, tfdbg_context_id="deadbeaf", tfdbg_run_id="", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [] values: 10>
+
+--------------------------------------

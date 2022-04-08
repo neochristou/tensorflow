@@ -1,0 +1,4 @@
+num_sampled=5, num_true=2, seed=87654321, seed2=1503137960, unique=true
+Tensor<type: int64 shape: [3,2] values: [1 2][0...]...>
+
+--------------------------------------

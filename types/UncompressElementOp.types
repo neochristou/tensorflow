@@ -1,0 +1,11 @@
+_XlaHasReferenceVars=false, output_shapes=[[]], output_types=[DT_INT32], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow.data.CompressedElement value: data: "\004\014\001\000\000\000"
+component_metadata {
+  dtype: DT_INT32
+  tensor_shape {
+  }
+  tensor_size_bytes: 4
+}
+>>
+
+--------------------------------------

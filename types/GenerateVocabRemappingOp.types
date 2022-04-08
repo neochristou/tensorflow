@@ -1,0 +1,5 @@
+_XlaHasReferenceVars=false, new_vocab_offset=0, num_new_vocab=3, old_vocab_size=-1, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: /tmp/checkpoint_ops_test4rspd7es/tmp3rgqxbh2/keyword.txt>
+Tensor<type: string shape: [] values: /tmp/checkpoint_ops_test4rspd7es/tmp3rgqxbh2/keyword.txt>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, output_shapes=[[1,10,10]], output_types=[DT_FLOAT], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::data::Optional value: OptionalVariant<values: (Tensor<type: float shape: [1,10,10] values: [[0 0 0...]]...>)>>>
+
+--------------------------------------

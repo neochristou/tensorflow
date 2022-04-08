@@ -1,0 +1,7 @@
+T=DT_FLOAT, ctc_merge_repeated=true, ignore_longer_outputs_than_inputs=false, preprocess_collapse_repeated=false
+Tensor<type: float shape: [2,2,3] values: [[0.554979503 -0.636879683 -0.956390321]]...>
+Tensor<type: int64 shape: [4,2] values: [0 0][0...]...>
+Tensor<type: int32 shape: [4] values: 0 1 1...>
+Tensor<type: int32 shape: [2] values: 2 2>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+T=DT_FLOAT, Tindices=DT_INT32
+Tensor<type: int32 shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: int32 shape: [1] values: 1>
+
+--------------------------------------

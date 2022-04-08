@@ -1,0 +1,7 @@
+_XlaHasReferenceVars=false, num_features=2, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [6] values: 1.2 12.1 0.3...>
+Tensor<type: float shape: [6] values: 2.3 1.2 1.1...>
+Tensor<type: float shape: [4] values: 0.3 0.6 1.2...>
+Tensor<type: float shape: [4] values: 0.8 1.2 2.3...>
+
+--------------------------------------

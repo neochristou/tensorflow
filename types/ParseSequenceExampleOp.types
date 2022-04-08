@@ -1,0 +1,13 @@
+Ncontext_sparse=0, Nfeature_list_dense=3, Nfeature_list_sparse=0, Tcontext_dense=[DT_FLOAT], _XlaHasReferenceVars=false, context_dense_shapes=[[]], context_ragged_split_types=[], context_ragged_value_types=[], context_sparse_types=[], feature_list_dense_shapes=[[1,3], [], [5]], feature_list_dense_types=[DT_INT64, DT_INT64, DT_FLOAT], feature_list_ragged_split_types=[], feature_list_ragged_value_types=[], feature_list_sparse_types=[], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [2] values: \0224\n2\n\001a\022-\n\020\032\016\n\014ÿÿÿÿÿÿÿÿÿ\001\000\001\n\007\032\005\n\003\002\003\004\n\007\032\005\n\003\005\006\007\n\007\032\005\n\003\010\t\n \n\017\n\r\n\001c\022\010\022\006\n\004\000\000à@\022\036\n\016\n\001a\022\t\n\007\032\005\n\003\025\002\013\n\014\n\001b\022\007\n\005\032\003\n\001\005>
+Tensor<type: string shape: [2] values: in1 in2>
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [1] values: c>
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [3] values: a b d>
+Tensor<type: string shape: [0] values: >
+Tensor<type: bool shape: [3] values: 0 1 1>
+Tensor<type: float shape: [] values: -1>
+
+--------------------------------------

@@ -1,0 +1,5 @@
+T=DT_COMPLEX64, Tidx=DT_INT32, exclusive=true, reverse=false
+Tensor<type: complex64 shape: [4,1] values: ? ? ?...>
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

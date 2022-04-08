@@ -1,0 +1,5 @@
+Tsplits=DT_INT64, left_pad="LP", ngram_widths=[3], pad_width=-1, preserve_short_sequences=false, right_pad="RP", separator="|"
+Tensor<type: string shape: [6] values: a b c...>
+Tensor<type: int64 shape: [3] values: 0 4 6>
+
+--------------------------------------

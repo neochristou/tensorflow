@@ -1,0 +1,5 @@
+T=DT_UINT8
+Tensor<type: uint8 shape: [] values: 3>
+Tensor<type: bool shape: [] values: 1>
+
+--------------------------------------

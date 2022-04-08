@@ -1,0 +1,7 @@
+T=DT_FLOAT, Tidx=DT_INT32, binary_output=true
+Tensor<type: int64 shape: [6] values: 0 0 0...>
+Tensor<type: int32 shape: [7] values: 3 0 1...>
+Tensor<type: int32 shape: [] values: 6>
+Tensor<type: float shape: [0] values: >
+
+--------------------------------------

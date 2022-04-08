@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, out_type=DT_INT32, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Resource
+
+--------------------------------------

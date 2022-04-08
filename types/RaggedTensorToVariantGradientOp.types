@@ -1,0 +1,6 @@
+Tsplits=DT_INT64, Tvalues=DT_FLOAT, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: RaggedTensorVariant value: RaggedTensorVariant(dtype=float, ragged_rank=1, splits_dtype=int64>>
+Tensor<type: int64 shape: [4] values: 0 4 7...>
+Tensor<type: int32 shape: [1] values: 8>
+
+--------------------------------------

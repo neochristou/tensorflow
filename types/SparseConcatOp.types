@@ -1,0 +1,9 @@
+N=2, T=DT_STRING, concat_dim=1
+Tensor<type: int64 shape: [4,3] values: [0 0 0]...>
+Tensor<type: int64 shape: [6,3] values: [0 0 0]...>
+Tensor<type: string shape: [4] values: a0 a1 c0...>
+Tensor<type: string shape: [6] values: b0 b1 d0...>
+Tensor<type: int64 shape: [3] values: 3 2 2>
+Tensor<type: int64 shape: [3] values: 3 2 2>
+
+--------------------------------------

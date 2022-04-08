@@ -1,0 +1,5 @@
+T=DT_HALF, Tpaddings=DT_INT32, mode="REFLECT", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: half shape: [1,10,10,1] values: [[[1][2][3]]]...>
+Tensor<type: int32 shape: [4,2] values: [0 0][0...]...>
+
+--------------------------------------

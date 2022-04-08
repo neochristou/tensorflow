@@ -1,0 +1,6 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, out_type=DT_VARIANT, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [2,2] values: [0 1][10...]...>
+Tensor<type: float shape: [2] values: 3 5>
+Tensor<type: int64 shape: [2] values: 100 100>
+
+--------------------------------------

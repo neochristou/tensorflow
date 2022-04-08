@@ -1,0 +1,5 @@
+T=DT_FLOAT, align_corners=true, half_pixel_centers=false
+Tensor<type: float shape: [1,8,16,1] values: [[[1][0][0]]]...>
+Tensor<type: float shape: [1,4,6,1] values: [[[0][1][2]]]...>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+key=[98765, 132], num_buckets=10
+Tensor<type: string shape: [3] values: a b c>
+
+--------------------------------------

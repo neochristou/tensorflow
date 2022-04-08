@@ -1,0 +1,4 @@
+chroma_downsampling=true, density_unit="in", format="", optimize_size=false, progressive=false, quality=95, x_density=300, xmp_metadata="", y_density=300
+Tensor<type: uint8 shape: [200,256,3] values: [[0 0 0]]...>
+
+--------------------------------------

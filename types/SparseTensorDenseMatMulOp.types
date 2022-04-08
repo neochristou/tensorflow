@@ -1,0 +1,7 @@
+T=DT_FLOAT, Tindices=DT_INT64, adjoint_a=false, adjoint_b=false
+Tensor<type: int64 shape: [3,2] values: [1 2][2...]...>
+Tensor<type: float shape: [3] values: 0 8 -2>
+Tensor<type: int64 shape: [2] values: 4 5>
+Tensor<type: float shape: [5,1] values: [1][1][1]...>
+
+--------------------------------------

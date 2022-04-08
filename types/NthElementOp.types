@@ -1,0 +1,5 @@
+T=DT_FLOAT, reverse=false
+Tensor<type: float shape: [1] values: 0.184634328>
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

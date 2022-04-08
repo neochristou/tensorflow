@@ -1,0 +1,7 @@
+T=DT_FLOAT
+Tensor<type: int64 shape: [1,1] values: [0]>
+Tensor<type: float shape: [1] values: 1618>
+Tensor<type: int64 shape: [1] values: 1>
+Tensor<type: float shape: [2,1] values: [17][19]>
+
+--------------------------------------

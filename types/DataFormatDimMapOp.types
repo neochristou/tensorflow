@@ -1,0 +1,4 @@
+T=DT_INT32, dst_format="NCHW", src_format="NHWC"
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

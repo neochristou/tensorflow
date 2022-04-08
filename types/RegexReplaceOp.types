@@ -1,0 +1,6 @@
+_XlaHasReferenceVars=false, replace_global=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [2] values: abc 1>
+Tensor<type: string shape: [] values: >
+Tensor<type: string shape: [] values: x>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, errors="replace", input_encoding="UTF-16", output_encoding="UTF-8", replace_control_characters=false, replacement_char=65533, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: þÿ\000*>
+
+--------------------------------------

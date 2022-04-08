@@ -1,0 +1,5 @@
+T=DT_FLOAT, bad_color=Tensor<type: uint8 shape: [4] values: 255 0 0...>, max_images=3
+Tensor<type: string shape: [] values: tag>
+Tensor<type: float shape: [5,2,1,1] values: [[[0]][[0]]][[[0]]]...>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+Index=DT_INT32, T=DT_FLOAT, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [16,64] values: [-0.808016658 -0.633873 0.607361376...]...>
+Tensor<type: int32 shape: [2] values: 0 32>
+Tensor<type: int32 shape: [2] values: 16 32>
+
+--------------------------------------

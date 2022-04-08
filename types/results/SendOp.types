@@ -1,0 +1,4 @@
+T=DT_FLOAT, client_terminated=true, recv_device="/device:CPU:0", send_device="/device:CPU:0", send_device_incarnation=-3150810883824874845, tensor_name="spectrogram_op:0"
+Tensor<type: float shape: [1,1,5] values: [[0 1 2...]]...>
+
+--------------------------------------

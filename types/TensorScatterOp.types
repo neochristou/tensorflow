@@ -1,0 +1,6 @@
+T=DT_INT32, Tindices=DT_INT32, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [8] values: 1 1 1...>
+Tensor<type: int32 shape: [4,1] values: [4][3][1]...>
+Tensor<type: int32 shape: [4] values: 9 10 11...>
+
+--------------------------------------

@@ -1,0 +1,5 @@
+_XlaHasReferenceVars=false, key_dtype=DT_FLOAT, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::TensorMap value: TensorMap>>
+Tensor<type: float shape: [] values: 11>
+
+--------------------------------------

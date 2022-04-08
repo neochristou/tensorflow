@@ -1,0 +1,5 @@
+T=DT_INT32, Tshape=DT_INT32
+Tensor<type: int32 shape: [] values: 100000>
+Tensor<type: int32 shape: [1] values: 1>
+
+--------------------------------------

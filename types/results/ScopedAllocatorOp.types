@@ -1,0 +1,3 @@
+T=DT_FLOAT, expected_call_count=1, id=120, sa_name="test", shape=[8], shapes=[[8]]
+
+--------------------------------------

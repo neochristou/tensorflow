@@ -1,0 +1,5 @@
+Tsplits=DT_INT32, errors="strict", output_encoding="UTF-8", replacement_char=65533
+Tensor<type: int32 shape: [5] values: 72 101 2147483647...>
+Tensor<type: int32 shape: [2] values: 0 5>
+
+--------------------------------------

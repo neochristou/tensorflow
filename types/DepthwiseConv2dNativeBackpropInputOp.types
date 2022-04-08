@@ -1,0 +1,6 @@
+T=DT_FLOAT, data_format="NHWC", dilations=[1, 1, 1, 1], explicit_paddings=[], padding="SAME", strides=[1, 1, 1, 1]
+Tensor<type: int32 shape: [4] values: 4 5 5...>
+Tensor<type: float shape: [1,1,48,2] values: [[[0.184634328 0.77481091][0.590182185...]]]...>
+Tensor<type: float shape: [4,5,5,96] values: [[[0.656411588 0.921819627 0.94383...]]]...>
+
+--------------------------------------

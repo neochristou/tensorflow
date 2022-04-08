@@ -1,0 +1,5 @@
+keep_dims=true, separator=""
+Tensor<type: string shape: [2] values: foo bar>
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

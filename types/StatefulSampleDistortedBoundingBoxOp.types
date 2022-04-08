@@ -1,0 +1,6 @@
+T=DT_INT32, area_range=[0.05, 1], aspect_ratio_range=[0.75, 1.33], max_attempts=100, seed=0, seed2=0, use_image_if_no_bounding_boxes=false
+Tensor<type: int32 shape: [3] values: 40 50 1>
+Tensor<type: float shape: [1,1,4] values: [[0 0 1...]]...>
+Tensor<type: float shape: [] values: 0.1>
+
+--------------------------------------

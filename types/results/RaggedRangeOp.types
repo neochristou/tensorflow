@@ -1,0 +1,6 @@
+T=DT_INT32, Tsplits=DT_INT64
+Tensor<type: int32 shape: [4] values: 0 5 8...>
+Tensor<type: int32 shape: [4] values: 8 7 8...>
+Tensor<type: int32 shape: [4] values: 2 1 1...>
+
+--------------------------------------

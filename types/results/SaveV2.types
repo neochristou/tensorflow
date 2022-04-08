@@ -1,0 +1,19 @@
+dtypes=[DT_BOOL, DT_INT32, DT_FLOAT, DT_DOUBLE, DT_QINT8, DT_QINT32, DT_UINT8, DT_INT8, DT_INT16, DT_INT64, DT_COMPLEX64, DT_COMPLEX128, DT_HALF]
+Tensor<type: string shape: [] values: /home/neo/.cache/bazel/_bazel_neo/393d995a358fc7b156deb55ee2581794/execroot/org_tensorflow/_tmp/cabe59659763801e14589f8046f424c6/tensor_simple>
+Tensor<type: string shape: [13] values: tensor_bool tensor_int tensor_float...>
+Tensor<type: string shape: [13] values:   ...>
+Tensor<type: bool shape: [2] values: 0 1>
+Tensor<type: int32 shape: [10] values: 1 2 3...>
+Tensor<type: float shape: [2,4] values: [0 0.1 0.2...]...>
+Tensor<type: double shape: [2,4] values: [0 0.05 0.1...]...>
+Tensor<type: qint8 shape: [3,2] values: [0 1][2...]...>
+Tensor<type: qint32 shape: [2,3] values: ? ? ?...>
+Tensor<type: uint8 shape: [11] values: 1 2 3...>
+Tensor<type: int8 shape: [7] values: -7 -6 -5...>
+Tensor<type: int16 shape: [7] values: -8 -7 -6...>
+Tensor<type: int64 shape: [9] values: -9 -8 -7...>
+Tensor<type: complex64 shape: [2,3] values: ? ? ?...>
+Tensor<type: complex128 shape: [2,3] values: ? ? ?...>
+Tensor<type: half shape: [2,4] values: [0 0.5 1...]...>
+
+--------------------------------------

@@ -1,0 +1,3 @@
+_XlaHasReferenceVars=false, capacity=0, container="", dtypes=[DT_UINT8], memory_limit=524288, shared_name="StagingArea", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+
+--------------------------------------

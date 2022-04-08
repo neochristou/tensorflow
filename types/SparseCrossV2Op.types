@@ -1,0 +1,13 @@
+N=3, _XlaHasReferenceVars=false, dense_types=[], sparse_types=[DT_STRING, DT_STRING, DT_STRING], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [0,2] values: >
+Tensor<type: int64 shape: [0,2] values: >
+Tensor<type: int64 shape: [0,2] values: >
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [0] values: >
+Tensor<type: string shape: [0] values: >
+Tensor<type: int64 shape: [2] values: 0 0>
+Tensor<type: int64 shape: [2] values: 0 0>
+Tensor<type: int64 shape: [2] values: 0 0>
+Tensor<type: string shape: [] values: _X_>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+RAGGED_RANK=2, Tsplits=DT_INT64, Tvalues=DT_INT32, batched_input=true
+Tensor<type: int64 shape: [4] values: 0 2 3...>
+Tensor<type: int64 shape: [4] values: 0 0 0...>
+Tensor<type: int32 shape: [0] values: >
+
+--------------------------------------

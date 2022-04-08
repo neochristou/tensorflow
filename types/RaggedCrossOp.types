@@ -1,0 +1,5 @@
+Nsparse=0, dense_types=[], hash_key=956888297470, hashed_output=false, input_order="R", num_buckets=0, out_row_splits_type=DT_INT64, out_values_type=DT_STRING, ragged_splits_types=[DT_INT64], ragged_values_types=[DT_STRING], sparse_values_types=[]
+Tensor<type: string shape: [3] values: a b c>
+Tensor<type: int64 shape: [4] values: 0 1 2...>
+
+--------------------------------------

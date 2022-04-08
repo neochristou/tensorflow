@@ -1,0 +1,5 @@
+T=DT_COMPLEX64, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: complex64 shape: [5,11] values: ? ? ?...>
+Tensor<type: int64 shape: [31,2] values: [0 0][0...]...>
+
+--------------------------------------

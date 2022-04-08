@@ -1,0 +1,5 @@
+Tindices=DT_INT32, Tparams=DT_FLOAT
+Tensor<type: float shape: [5] values: 0 1 2...>
+Tensor<type: int32 shape: [2,1] values: [3][4]>
+
+--------------------------------------

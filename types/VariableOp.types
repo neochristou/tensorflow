@@ -1,0 +1,3 @@
+_XlaHasReferenceVars=true, _class=["loc:@x/Assign"], container="", dtype=DT_FLOAT, shape=[], shared_name="", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+
+--------------------------------------

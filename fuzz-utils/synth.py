@@ -8,11 +8,13 @@ import os
 from tensorflow import raw_ops
 
 TF_PATH = "/media/ivysyn/tensorflow/"
-# CRASHFILES_PATH = TF_PATH + "crashes/"
-CRASHFILES_PATH = "/media/tf-fuzzing/results/"
+CRASHFILES_PATH = TF_PATH + "crashes/"
+# CRASHFILES_PATH = "/media/tf-fuzzing/results/"
 REPRODUCE_PATH_BASE = TF_PATH + "synthesized/"
 KERNEL_REGS_FILE = TF_PATH + "fuzz-utils/kernel_regs.txt"
 CRASH_DELIM = "--------------------------------------\n"
+TYPES_PATH = TF_PATH + "types/"
+RES_PATH = TYPES_PATH + "to_ops/"
 
 
 def get_tensor_type(dtype):
@@ -53,7 +55,7 @@ def handle_value_edge_cases(value):
     if value.count(".") > 1:
         value = "." + value.split(".")[1]
 
-    if value[0] == "0" and "." not in value and len(value) > 1:
+    if len(value) > 1 and value[0] == "0" and "." not in value:
         value = value[1:]
 
     return value
@@ -107,7 +109,7 @@ def parse_attrs(attrs):
         attr_name = attr[0]
         attr_value = attr[1]
 
-        if attr_name in ("dtype", "index_type", "output_dtype", "out_type", "Tsplits"):
+        if attr_name in ("dtype", "dt", "index_type", "output_dtype", "out_type", ) or attr_name.startswith("T"):
             attr_value = get_tensor_type(attr_value)
 
         if attr_name in ("dtypes",):
@@ -173,6 +175,9 @@ def synthesize_args(crashing_args, param_names, attrs):
             else:
                 value = "True"
 
+        if tensor_type == "variant":
+            return None
+
         fuzz_tensor = f"{param_name} = tf.constant({value}, shape={tensor_shape}, dtype=tf.{get_tf_type(tensor_type)})"
         input_args.append(fuzz_tensor)
 
@@ -181,35 +186,35 @@ def synthesize_args(crashing_args, param_names, attrs):
 
 def synthesize_file(crash, kernel_name, op_name):
 
+    if op_name is None:
+        print(f"No op name registered for {kernel_name}")
+        return -1
+
     synth_file = []
     synth_file.append("# " + kernel_name + "\n")
-
     synth_file.append("import tensorflow as tf\n")
 
     crashing_args = crash.split("\n")
-    if op_name is None:
-        print(f"No op name registered for {kernel_name}")
-        return -1, ""
-
     attrs = parse_attrs(crashing_args[0])
 
     crashing_args = crashing_args[1:]
+
     if len(crashing_args) == 0:
-        return -3, ""
+        return -3
 
     try:
         param_names = get_function_param_names(op_name)
     except AttributeError:
         # No raw op for this
         print(f"No raw op found for {kernel_name}, skipping")
-        return -1, ""
+        return -1
 
     input_args = synthesize_args(crashing_args, param_names, attrs)
 
     if input_args is None:
-        # Contains bad type
-        # print(f"Bad type in {kernel_name}, skipping")
-        return -2, ""
+        # Contains unsupported type
+        # print(f"unsupported type in {kernel_name}, skipping")
+        return -2
 
     synth_file.extend(input_args)
 
@@ -218,42 +223,51 @@ def synthesize_file(crash, kernel_name, op_name):
 
     synth_file.append(f"tf.raw_ops.{op_name}({', '.join(kwargs)})")
 
-    return "\n".join(synth_file), op_name
+    return "\n".join(synth_file)
 
 
-def get_kernel_name(filename):
+def get_kernel_name(filename, ext):
     crash_filename = filename.split("/")[-1]
     kernel_name = crash_filename.replace(
-        CRASHFILES_PATH, "").replace("_crashes.log", "")
+        CRASHFILES_PATH, "").replace(ext, "")
     return kernel_name
 
 
-def save_synth_file(synth_file, op_name, reproduce_path):
+def save_synth_file(synth_file, op_name, reproduce_path, gettypes=False):
     # Get the hash of the synthesized file to make sure we only
     # have unique reproduced files
     filehash = hashlib.md5(synth_file.encode()).hexdigest()
-    out_filename = reproduce_path + op_name + "_" + filehash + ".py"
+    out_filename = reproduce_path + op_name
+
+    if not gettypes:
+        out_filename += "_" + filehash
+
+    out_filename += ".py"
 
     # No duplicates
     if not os.path.isfile(out_filename):
         with open(out_filename, "w") as f:
-            f.write(synth_file)
+            f.write(synth_file + "\n")
             f.close()
 
 
 def main():
 
     successful = set()
+    empty = set()
+    successful_ops = set()
     all_kernels = set()
     no_raw_op = set()
     empty_crash_logs = set()
-    bad_type = set()
+    synth_failed = set()
+    unsupported_type = set()
     other_errors = set()
+    no_args = set()
 
     args_parser = argparse.ArgumentParser(
         description="Parse and transform Pytorch native files")
-    args_parser.add_argument("--perf", dest="perf", action="store_true",
-                             default=False, help="Synth performance logs")
+    args_parser.add_argument("--gettypes", dest="gettypes", action="store_true",
+                             default=False)
 
     args = args_parser.parse_args()
 
@@ -264,71 +278,96 @@ def main():
             kernel_name, op_name = reg.split(" ")
             kernel_regs[kernel_name] = op_name
 
-    ext = ".duration" if args.perf else "*_crashes.log"
-    reproduce_path = REPRODUCE_PATH_BASE
-    if args.perf:
-        reproduce_path += "performance/"
-    else:
-        reproduce_path += "all-crashes/"
-    reproduce_path += "all/"
+    ext = ".types" if args.gettypes else "_crashes.log"
+    logged_files = glob.glob(
+        TYPES_PATH + "*types") if args.gettypes else glob.glob(CRASHFILES_PATH + "*_crashes.log")
 
-    for crash_filename in glob.glob(CRASHFILES_PATH + ext):
+    if args.gettypes:
+        reproduce_path = TYPES_PATH + "to_ops/"
+    else:
+        reproduce_path = REPRODUCE_PATH_BASE + "all-crashes/all/"
+
+    for crash_filename in logged_files:
+
+        kernel_name = get_kernel_name(crash_filename, ext)
+
+        op_name = None
+        if kernel_name in kernel_regs:
+            op_name = kernel_regs[kernel_name]
+        elif kernel_name.endswith("Base"):
+            b_kernel_name = kernel_name.replace("Base", "")
+            if b_kernel_name in kernel_regs:
+                op_name = kernel_regs[b_kernel_name]
+
+        all_kernels.add(kernel_name)
 
         # Ignore empty files
         if os.path.getsize(crash_filename) == 0:
+            empty.add(kernel_name)
             continue
-
-        kernel_name = get_kernel_name(crash_filename)
 
         with open(crash_filename, "r") as crash_file:
             try:
                 crashes = list(
                     filter(None, crash_file.read().split(CRASH_DELIM)))
-            except UnicodeDecodeError:
+            except UnicodeDecodeError as e:
                 other_errors.add(kernel_name)
                 continue
 
-        all_kernels.add(kernel_name)
+        if len(crashes) == 0:
+            empty.add(kernel_name)
+            continue
+
+        if len(crashes) == 1 and crashes[0] == '\n\n':
+            empty.add(kernel_name)
+            continue
 
         for crash in crashes:
-            crash = crash.strip()
+
+            crash = crash.rstrip()
 
             if len(crash) == 0:
                 print("Skipping empty crash for", kernel_name)
                 continue
 
-            if kernel_name in kernel_regs:
-                op_name = kernel_regs[kernel_name]
-            else:
-                op_name = None
-            synth_file, op_name = synthesize_file(crash, kernel_name, op_name)
+            synth_file = synthesize_file(crash, kernel_name, op_name)
 
             if synth_file is None:
+                synth_failed.add(kernel_name)
                 continue
             if synth_file == -1:
                 no_raw_op.add(kernel_name)
                 continue
             if synth_file == -2:
-                bad_type.add(kernel_name)
+                unsupported_type.add(kernel_name)
                 continue
             if synth_file == -3:
-                empty_crash_logs.add(kernel_name)
+                no_args.add(kernel_name)
                 continue
 
             successful.add(kernel_name)
-            save_synth_file(synth_file, op_name, reproduce_path)
+            successful_ops.add(op_name)
+            save_synth_file(synth_file, op_name, reproduce_path, args.gettypes)
 
     no_raw_op = list([x for x in no_raw_op if x not in successful])
-    bad_type = list([x for x in bad_type if x not in successful])
+    unsupported_type = list(
+        [x for x in unsupported_type if x not in successful])
     print("No raw op:")
     print("\n".join(no_raw_op))
-    print("Bad Type:")
-    print("\n".join(bad_type))
+    print("unsupported type:")
+    print("\n".join(unsupported_type))
+    print(f"Total synth_failed: {len(synth_failed)}")
     print(f"Total no raw op: {len(no_raw_op)}")
-    print(f"Total bad Type: {len(bad_type)}")
+    print(f"Total empty files: {len(empty)}")
+    print(f"Total no args: {len(no_args)}")
+    print(f"Total unsupported type: {len(unsupported_type)}")
     print(f"Total other errors: {len(other_errors)}")
     print(f"Total successful: {len(successful)}")
     print(f"Total crash files: {len(all_kernels)}")
+    print(f"Total successful (unique ops): {len(successful_ops)}")
+
+    print([x for x in all_kernels if x not in no_raw_op and x not in empty and x not in unsupported_type
+           and x not in other_errors and x not in successful and x not in no_args])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,8 @@
+T=DT_FLOAT, scale_after_normalization=false, variance_epsilon=0.001
+Tensor<type: float shape: [1,1,6,2] values: [[[1 4][2...]]]...>
+Tensor<type: float shape: [2] values: 10 20>
+Tensor<type: float shape: [2] values: 0.25 0.5>
+Tensor<type: float shape: [2] values: 0.1 0.6>
+Tensor<type: float shape: [2] values: 0 0>
+
+--------------------------------------

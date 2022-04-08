@@ -1,0 +1,9 @@
+max_splits=2, num_buckets=2
+Tensor<type: int32 shape: [10] values: 0 1 1...>
+Tensor<type: float shape: [10,2] values: [2.41642356 3.24965119][1.43290794...]...>
+Tensor<type: float shape: [10,2] values: [2.44031596 4.42658663][1.22132432...]...>
+Tensor<type: int32 shape: [5,2] values: [0 0][1...]...>
+Tensor<type: int32 shape: [5] values: 1 0 0...>
+Tensor<type: int32 shape: [2] values: 10 1>
+
+--------------------------------------

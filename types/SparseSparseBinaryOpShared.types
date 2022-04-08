@@ -1,0 +1,9 @@
+T=DT_INT32
+Tensor<type: int64 shape: [1,1] values: [0]>
+Tensor<type: int32 shape: [1] values: 0>
+Tensor<type: int64 shape: [1] values: 7>
+Tensor<type: int64 shape: [1,1] values: [0]>
+Tensor<type: int32 shape: [1] values: 1>
+Tensor<type: int64 shape: [1] values: 7>
+
+--------------------------------------

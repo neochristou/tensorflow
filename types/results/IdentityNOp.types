@@ -1,0 +1,5 @@
+T=[DT_INT32, DT_DOUBLE]
+Tensor<type: int32 shape: [6] values: 1 2 3...>
+Tensor<type: double shape: [6] values: 7.3 8.3 9.3...>
+
+--------------------------------------

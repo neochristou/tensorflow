@@ -1,0 +1,7 @@
+T=DT_FLOAT, Tindices=DT_INT32, validate_indices=true
+Tensor<type: int32 shape: [3] values: 1 3 4>
+Tensor<type: int32 shape: [1] values: 5>
+Tensor<type: float shape: [] values: 2>
+Tensor<type: float shape: [] values: -2>
+
+--------------------------------------

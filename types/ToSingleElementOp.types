@@ -1,0 +1,4 @@
+output_shapes=[[1,2,2,3]], output_types=[DT_INT32]
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::DatasetVariantWrapper value: TakeDatasetOp::Dataset>>
+
+--------------------------------------

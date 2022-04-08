@@ -1,0 +1,4 @@
+T=DT_INT8, fill="", precision=-1, scientific=false, shortest=false, width=-1
+Tensor<type: int8 shape: [3] values: -42 0 42>
+
+--------------------------------------

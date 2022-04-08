@@ -1,0 +1,6 @@
+Tin=DT_INT64, Tout=DT_INT64, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Resource
+Tensor<type: int64 shape: [32,1] values: [0][0][0]...>
+Tensor<type: int64 shape: [32,1] values: [0][0][0]...>
+
+--------------------------------------

@@ -1,0 +1,5 @@
+T=DT_FLOAT, Tlabels=DT_INT32
+Tensor<type: float shape: [15,4] values: [-1.60943794 -1.89712 -1.04982209...]...>
+Tensor<type: int32 shape: [15] values: 0 1 2...>
+
+--------------------------------------

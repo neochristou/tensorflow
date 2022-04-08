@@ -1,0 +1,8 @@
+Tinput=DT_QINT32, out_type=DT_QUINT8
+Tensor<type: qint32 shape: [3] values: ? ? ?>
+Tensor<type: float shape: [1] values: -256>
+Tensor<type: float shape: [1] values: 256>
+Tensor<type: float shape: [1] values: -1>
+Tensor<type: float shape: [1] values: 1>
+
+--------------------------------------

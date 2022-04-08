@@ -1,0 +1,9 @@
+T=DT_HALF, pad_to_max_output_size=false
+Tensor<type: half shape: [6,4] values: [0 0 1...]...>
+Tensor<type: half shape: [6] values: 0.899902344 0.75 0.600097656...>
+Tensor<type: int32 shape: [] values: 3>
+Tensor<type: half shape: [] values: 0.5>
+Tensor<type: half shape: [] values: -inf>
+Tensor<type: half shape: [] values: 0>
+
+--------------------------------------

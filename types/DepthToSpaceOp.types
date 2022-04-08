@@ -1,0 +1,4 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, block_size=2, data_format="NHWC", _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [7,5,8,20] values: [[[0 280 560...]]]...>
+
+--------------------------------------

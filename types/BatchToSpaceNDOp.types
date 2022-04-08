@@ -1,0 +1,6 @@
+T=DT_FLOAT, Tblock_shape=DT_INT64, Tcrops=DT_INT64, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [20,5,8,7] values: [[[0 1 2...]]]...>
+Tensor<type: int64 shape: [2] values: 2 2>
+Tensor<type: int64 shape: [2,2] values: [0 0][0...]...>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+T=DT_INT32, _kernel="host", dst_format="NCHW", src_format="NHWC", _device="/GPU:0"
+Tensor<type: int32 shape: [4] values: 1 198 198...>
+
+--------------------------------------

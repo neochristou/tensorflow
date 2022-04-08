@@ -1,0 +1,5 @@
+Tidx=DT_INT32
+Tensor<type: int32 shape: [3] values: 2 5 7>
+Tensor<type: int32 shape: [2] values: 3 0>
+
+--------------------------------------

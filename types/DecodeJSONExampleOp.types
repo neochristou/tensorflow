@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [2,1] values: [{\n  \"features\": {\n    \"feature\": {\n      \"a\": {\n        \"floatList\": {\n          \"value\": [\n            1.0,\n            1.0,\n            3.0\n          ]\n        }\n      }\n    }\n  }\n}][{\n  \"features\": {\n    \"feature\": {\n      \"a\": {\n        \"floatList\": {\n          \"value\": [\n            -1.0,\n            -1.0,\n            2.0\n          ]\n        }\n      }\n    }\n  }\n}]>
+
+--------------------------------------

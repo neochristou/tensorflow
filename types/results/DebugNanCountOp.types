@@ -1,0 +1,4 @@
+T=DT_FLOAT, debug_urls=[], device_name="", gated_grpc=false, tensor_name="FakeTensor:0"
+Tensor<type: float shape: [6] values: 1.1 nan 3.3...>
+
+--------------------------------------

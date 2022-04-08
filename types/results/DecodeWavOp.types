@@ -1,0 +1,4 @@
+desired_channels=-1, desired_samples=-1, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: RIFF,\000\000\000WAVEfmt \020\000\000\000\001\000\001\000\0237\000\000&n\000\000\002\000\020\000data\010\000\000\000\000\000ÿ?ÿ\177\000€>
+
+--------------------------------------

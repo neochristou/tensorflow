@@ -1,0 +1,6 @@
+external_state_policy=0
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::DatasetVariantWrapper value: PrefetchDatasetOp::Dataset>>
+Tensor<type: string shape: [] values: localhost:41179>
+Tensor<type: string shape: [] values: grpc>
+
+--------------------------------------

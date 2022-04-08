@@ -1,0 +1,7 @@
+Index=DT_INT32, T=DT_INT32, _XlaHasReferenceVars=false, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [4] values: 1 2 3...>
+Tensor<type: int32 shape: [1] values: 3>
+Tensor<type: int32 shape: [1] values: 4>
+Tensor<type: int32 shape: [1] values: 1>
+
+--------------------------------------

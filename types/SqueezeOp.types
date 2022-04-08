@@ -1,0 +1,4 @@
+T=DT_BOOL, _class=["loc:@Func/Assert/AssertGuard/then/_0/input/_11"], squeeze_dims=[]
+Tensor<type: bool shape: [] values: 1>
+
+--------------------------------------

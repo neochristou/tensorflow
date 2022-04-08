@@ -1,0 +1,6 @@
+N=2, T=DT_FLOAT, id=120, reshape=false, sa_name="test", shape=[32]
+Tensor<type: float shape: [32] values: 0 0 -4.01561692e-07...>
+Tensor<type: float shape: [16] values: 0 0 -4.01561692e-07...>
+Tensor<type: float shape: [16] values: 1.79366e-43 0 6.72623e-44...>
+
+--------------------------------------

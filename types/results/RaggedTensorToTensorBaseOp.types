@@ -1,0 +1,8 @@
+T=DT_FLOAT, Tindex=DT_INT32, Tshape=DT_INT32, num_row_partition_tensors=2, row_partition_types=["FIRST_DIM_SIZE", "VALUE_ROWIDS"]
+Tensor<type: int32 shape: [2] values: 4 4>
+Tensor<type: float shape: [9] values: 0.1 0.2 0.3...>
+Tensor<type: float shape: [] values: 1.5>
+Tensor<type: int32 shape: [] values: 4>
+Tensor<type: int32 shape: [9] values: 0 0 0...>
+
+--------------------------------------

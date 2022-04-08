@@ -1,0 +1,8 @@
+S=DT_INT32, T=DT_FLOAT, dtype=DT_FLOAT
+Resource
+Tensor<type: int64 shape: [] values: 1>
+Tensor<type: int32 shape: [1] values: 6>
+Tensor<type: float shape: [6] values: 5 5 5...>
+Tensor<type: float shape: [6] values: 0 1 nan...>
+
+--------------------------------------

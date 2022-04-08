@@ -1,0 +1,4 @@
+T=DT_STRING
+Tensor<type: string shape: [] values: >
+
+--------------------------------------

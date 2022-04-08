@@ -1,0 +1,9 @@
+T1=DT_QUINT8, T2=DT_QUINT8, out_type=DT_QINT32
+Tensor<type: quint8 shape: [2,3] values: [43 85 128]...>
+Tensor<type: quint8 shape: [3] values: 85 170 255>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 60>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 3>
+
+--------------------------------------

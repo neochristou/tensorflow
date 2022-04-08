@@ -1,0 +1,4 @@
+T=DT_INT32, _XlaHasReferenceVars=false, seed=1066, seed2=2021, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [5] values: 0 1 2...>
+
+--------------------------------------

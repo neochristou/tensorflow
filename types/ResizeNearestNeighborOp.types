@@ -1,0 +1,5 @@
+T=DT_INT64, align_corners=false, half_pixel_centers=true
+Tensor<type: int64 shape: [1,4,2,1] values: [[[0][1]][[2]]]...>
+Tensor<type: int32 shape: [2] values: 2 2>
+
+--------------------------------------

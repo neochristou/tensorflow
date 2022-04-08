@@ -1,0 +1,5 @@
+T=DT_FLOAT, padding="VALID", rates=[1, 1, 1, 1], strides=[1, 1, 1, 1]
+Tensor<type: float shape: [1,2,2,1] values: [[[0.1][0.2]][[0.3]]]...>
+Tensor<type: float shape: [2,2,1] values: [[0.4][0.3]][[0.1]]...>
+
+--------------------------------------

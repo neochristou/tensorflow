@@ -1,0 +1,9 @@
+T1=DT_QUINT8, T2=DT_QUINT8, Tactivation=DT_QUINT8, Toutput=DT_QINT32, transpose_a=false, transpose_b=false
+Tensor<type: quint8 shape: [2,3] values: [1 2 3]...>
+Tensor<type: quint8 shape: [3,4] values: [7 8 9...]...>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 255>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 255>
+
+--------------------------------------

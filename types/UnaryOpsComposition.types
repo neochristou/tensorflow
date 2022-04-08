@@ -1,0 +1,4 @@
+T=DT_FLOAT, op_names=["Sqrt", "Sqrt"]
+Tensor<type: float shape: [] values: 81>
+
+--------------------------------------

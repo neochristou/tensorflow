@@ -1,0 +1,5 @@
+T=DT_UINT16, Tindices=DT_INT64
+Tensor<type: uint16 shape: [] values: 10>
+Tensor<type: int64 shape: [0] values: >
+
+--------------------------------------

@@ -1,0 +1,5 @@
+OUT_TYPE=[DT_INT32], field_delim=",", na_value="", select_cols=[], use_quote_delim=true
+Tensor<type: string shape: [2,2] values: [1 2][\"\"...]...>
+Tensor<type: int32 shape: [1] values: 5>
+
+--------------------------------------

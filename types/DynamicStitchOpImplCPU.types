@@ -1,0 +1,7 @@
+N=2, T=DT_FLOAT
+Tensor<type: int32 shape: [3] values: 0 4 7>
+Tensor<type: int32 shape: [5] values: 1 6 2...>
+Tensor<type: float shape: [3] values: 0 40 70>
+Tensor<type: float shape: [5] values: 10 60 20...>
+
+--------------------------------------

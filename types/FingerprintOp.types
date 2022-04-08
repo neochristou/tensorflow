@@ -1,0 +1,5 @@
+T=DT_UINT8
+Tensor<type: uint8 shape: [0] values: >
+Tensor<type: string shape: [] values: farmhash64>
+
+--------------------------------------

@@ -1,0 +1,5 @@
+T=DT_DOUBLE, Tidx=DT_INT32, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: double shape: [3,1] values: [0.49671415301123267][-0.13826430117118466][0.64768853810069249]>
+Tensor<type: int32 shape: [1] values: 1>
+
+--------------------------------------

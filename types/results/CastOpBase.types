@@ -1,0 +1,4 @@
+DstT=DT_UINT8, SrcT=DT_UINT8, Truncate=false
+Tensor<type: uint8 shape: [1,2,2,1] values: [[[1][2]][[3]]]...>
+
+--------------------------------------

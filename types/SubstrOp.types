@@ -1,0 +1,6 @@
+T=DT_INT32, unit="BYTE"
+Tensor<type: string shape: [4,3] values: [ten eleven twelve]...>
+Tensor<type: int32 shape: [3] values: 1 -4 3>
+Tensor<type: int32 shape: [3] values: 1 2 3>
+
+--------------------------------------

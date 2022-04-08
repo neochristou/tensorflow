@@ -1,0 +1,4 @@
+T=DT_INT32, out_type=DT_INT32
+Tensor<type: int32 shape: [3] values: 25 30 20>
+
+--------------------------------------

@@ -1,0 +1,4 @@
+T=DT_FLOAT, message="Input is not a number."
+Tensor<type: float shape: [5,4] values: [nan nan nan...]...>
+
+--------------------------------------

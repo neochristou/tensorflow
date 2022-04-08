@@ -1,0 +1,6 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, _class=["loc:@gradients/AddN"], data_format="NHWC", dilations=[1, 1, 1, 1], explicit_paddings=[], padding="SAME", strides=[1, 1, 1, 1], use_cudnn_on_gpu=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [1,2,2,5] values: [[[9.56056404 3.99471593 14.3794823...]]]...>
+Tensor<type: int32 shape: [4] values: 5 5 5...>
+Tensor<type: float shape: [1,2,2,5] values: [[[0.1 0.1 0.1...]]]...>
+
+--------------------------------------

@@ -1,0 +1,21 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, use_peephole=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [] values: 1>
+Tensor<type: float shape: [1,1,1] values: [[0.504355371]]>
+Tensor<type: float shape: [1,8] values: [0.916770935 0.820951164 0.869588554...]...>
+Tensor<type: float shape: [1,8] values: [0.916770935 0.820951164 0.869588554...]...>
+Tensor<type: float shape: [9,32] values: [0.184634328 0.77481091 0.590182185...]...>
+Tensor<type: float shape: [8] values: 0 0 0...>
+Tensor<type: float shape: [8] values: 0 0 0...>
+Tensor<type: float shape: [8] values: 0 0 0...>
+Tensor<type: float shape: [32] values: 0.173398286 0.378669113 0.655852258...>
+Tensor<type: float shape: [1,1,8] values: [[0.947548032 0.951398373 0.98175776...]]...>
+Tensor<type: float shape: [1,1,8] values: [[1.82585835 1.76277089 1.8299675...]]...>
+Tensor<type: float shape: [1,1,8] values: [[0.960281253 0.990710735 0.97614491...]]...>
+Tensor<type: float shape: [1,1,8] values: [[0.952910185 0.976993263 0.874629915...]]...>
+Tensor<type: float shape: [1,1,8] values: [[0.997839093 0.997947752 0.999353468...]]...>
+Tensor<type: float shape: [1,1,8] values: [[0.949419379 0.942811668 0.949822783...]]...>
+Tensor<type: float shape: [1,1,8] values: [[0.904711425 0.921120644 0.830743432...]]...>
+Tensor<type: float shape: [1,1,8] values: [[1 1 1...]]...>
+Tensor<type: float shape: [1,1,8] values: [[1 1 1...]]...>
+
+--------------------------------------

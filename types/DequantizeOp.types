@@ -1,0 +1,6 @@
+T=DT_QUINT8, axis=-1, dtype=DT_FLOAT, mode="MIN_COMBINED", narrow_range=false
+Tensor<type: quint8 shape: [255] values: 0 1 2...>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [] values: 255>
+
+--------------------------------------

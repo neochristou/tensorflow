@@ -1,0 +1,6 @@
+T=DT_FLOAT, axis=-1, narrow_range=false, num_bits=8, range_given=false, round_mode="HALF_TO_EVEN", signed_input=true
+Tensor<type: float shape: [1] values: -3.5>
+Tensor<type: float shape: [] values: 0>
+Tensor<type: float shape: [] values: 0>
+
+--------------------------------------

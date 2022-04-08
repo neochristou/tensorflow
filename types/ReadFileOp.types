@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [] values: /tmp/io_ops_test81p5mf4e/tmpz3c3vnee/ReadFileTestfnr9ugnn>
+
+--------------------------------------

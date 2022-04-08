@@ -1,0 +1,7 @@
+T=DT_QUINT8, Tshape=DT_INT32
+Tensor<type: quint8 shape: [10,20] values: [0 1 2...]...>
+Tensor<type: int32 shape: [3] values: 5 10 4>
+Tensor<type: float shape: [1] values: -10>
+Tensor<type: float shape: [1] values: 20>
+
+--------------------------------------

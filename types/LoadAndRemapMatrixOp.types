@@ -1,0 +1,8 @@
+max_rows_in_memory=-1, num_cols=16, num_rows=7
+Tensor<type: string shape: [1] values: /tmp/checkpoint_ops_test4rspd7es/bundle_checkpoint>
+Tensor<type: string shape: [] values: some_scope/matrix>
+Tensor<type: int64 shape: [7] values: -1 -1 -1...>
+Tensor<type: int64 shape: [0] values: >
+Tensor<type: float shape: [112] values: 42 42 42...>
+
+--------------------------------------

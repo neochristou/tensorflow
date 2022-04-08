@@ -1,0 +1,4 @@
+T=DT_FLOAT, alpha=0.1, beta=2, bias=1, depth_radius=5
+Tensor<type: float shape: [1,1,1,96] values: [[[1 2 3...]]]...>
+
+--------------------------------------

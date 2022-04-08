@@ -1,0 +1,4 @@
+T=DT_DOUBLE, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: double shape: [3,3] values: [7 4 3]...>
+
+--------------------------------------

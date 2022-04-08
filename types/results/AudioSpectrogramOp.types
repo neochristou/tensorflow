@@ -1,0 +1,4 @@
+magnitude_squared=false, stride=1, window_size=8, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [8,1] values: [-1][0][1]...>
+
+--------------------------------------

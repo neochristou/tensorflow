@@ -1,0 +1,6 @@
+dt=DT_INT32, preferred_shard=-1
+Tensor<type: string shape: [] values: /home/neo/.cache/bazel/_bazel_neo/393d995a358fc7b156deb55ee2581794/execroot/org_tensorflow/_tmp/aa8a8c78961330944213844b04568343/tensor_int>
+Tensor<type: string shape: [] values: tensor_int>
+Tensor<type: string shape: [] values: 4 16 0,2:->
+
+--------------------------------------

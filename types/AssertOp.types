@@ -1,0 +1,5 @@
+T=[DT_FLOAT], summarize=3
+Tensor<type: bool shape: [] values: 1>
+Tensor<type: float shape: [] values: 3>
+
+--------------------------------------

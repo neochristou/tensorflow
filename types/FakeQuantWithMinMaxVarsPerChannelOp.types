@@ -1,0 +1,6 @@
+narrow_range=false, num_bits=8
+Tensor<type: float shape: [4] values: 0 0 0...>
+Tensor<type: float shape: [4] values: 0 0 0...>
+Tensor<type: float shape: [4] values: 0 0 0...>
+
+--------------------------------------

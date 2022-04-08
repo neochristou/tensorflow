@@ -1,0 +1,5 @@
+delete_old_dirs=false
+Tensor<type: string shape: [2] values: /home/neo/.cache/bazel/_bazel_neo/393d995a358fc7b156deb55ee2581794/execroot/org_tensorflow/_tmp/bff12a2fbbc6860084698a413d10a244/worker0/ckpt0 /home/neo/.cache/bazel/_bazel_neo/393d995a358fc7b156deb55ee2581794/execroot/org_tensorflow/_tmp/bff12a2fbbc6860084698a413d10a244/worker1/ckpt1>
+Tensor<type: string shape: [] values: /home/neo/.cache/bazel/_bazel_neo/393d995a358fc7b156deb55ee2581794/execroot/org_tensorflow/_tmp/bff12a2fbbc6860084698a413d10a244/merged/ckpt>
+
+--------------------------------------

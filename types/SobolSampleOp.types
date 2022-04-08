@@ -1,0 +1,6 @@
+dtype=DT_DOUBLE
+Tensor<type: int32 shape: [] values: 2>
+Tensor<type: int32 shape: [] values: 4>
+Tensor<type: int32 shape: [] values: 0>
+
+--------------------------------------

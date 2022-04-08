@@ -1,0 +1,4 @@
+dtype=DT_INT64, shape_dtype=DT_INT64
+Tensor<type: int64 shape: [1] values: 3>
+
+--------------------------------------

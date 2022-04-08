@@ -1,0 +1,5 @@
+T=DT_FLOAT, align_corners=false, half_pixel_centers=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [1,10,10,1] values: [[[1][2][3]]]...>
+Tensor<type: int32 shape: [2] values: 10 10>
+
+--------------------------------------

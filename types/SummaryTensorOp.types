@@ -1,0 +1,4 @@
+T=DT_FLOAT, description="tensor_summary", display_name="test", labels=["3", "summary"]
+Tensor<type: float shape: [] values: 3>
+
+--------------------------------------

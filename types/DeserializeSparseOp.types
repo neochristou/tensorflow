@@ -1,0 +1,4 @@
+Tserialized=DT_VARIANT, _XlaHasReferenceVars=false, dtype=DT_FLOAT, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [3] values: Variant<type: tensorflow::Tensor value: Tensor<type: int64 shape: [2,2] values: [0 1][10...]...>> Variant<type: tensorflow::Tensor value: Tensor<type: float shape: [2] values: 3 5>> Variant<type: tensorflow::Tensor value: Tensor<type: int64 shape: [2] values: 100 100>>>
+
+--------------------------------------

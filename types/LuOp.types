@@ -1,0 +1,4 @@
+T=DT_FLOAT, output_idx_type=DT_INT32
+Tensor<type: float shape: [3,3] values: [4 -1 2]...>
+
+--------------------------------------

@@ -1,0 +1,5 @@
+T=DT_UINT8, align_corners=false, half_pixel_centers=false
+Tensor<type: uint8 shape: [1,6,6,1] values: [[[128][128][64]]]...>
+Tensor<type: int32 shape: [2] values: 8 8>
+
+--------------------------------------

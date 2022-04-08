@@ -1,0 +1,4 @@
+T=DT_QINT32, client_terminated=true, recv_device="/device:CPU:0", send_device="/device:CPU:0", send_device_incarnation=-571241548278819229, tensor_name="add:0"
+Tensor<type: qint32 shape: [10] values: ? ? ?...>
+
+--------------------------------------

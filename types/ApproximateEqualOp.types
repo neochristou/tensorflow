@@ -1,0 +1,5 @@
+T=DT_FLOAT, tolerance=0.3
+Tensor<type: float shape: [] values: 3>
+Tensor<type: float shape: [] values: 2.8>
+
+--------------------------------------

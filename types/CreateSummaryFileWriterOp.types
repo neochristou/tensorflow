@@ -1,0 +1,8 @@
+
+Resource
+Tensor<type: string shape: [] values: /tmp/summary_ops_test6sqdu4bq/tmphgkk_w0x>
+Tensor<type: int32 shape: [] values: 10>
+Tensor<type: int32 shape: [] values: 120000>
+Tensor<type: string shape: [] values: .v2>
+
+--------------------------------------

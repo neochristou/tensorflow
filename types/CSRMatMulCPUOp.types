@@ -1,0 +1,5 @@
+T=DT_COMPLEX64, _XlaHasReferenceVars=false, adjoint_a=false, adjoint_b=false, conjugate_output=false, transpose_a=false, transpose_b=false, transpose_output=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::CSRSparseMatrix value: Tensor<type: int64 shape: [2] values: 5 11>>>
+Tensor<type: complex64 shape: [11,13] values: ? ? ?...>
+
+--------------------------------------

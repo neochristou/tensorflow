@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, little_endian=true, out_type=DT_UINT8, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [2] values: string1 string2>
+
+--------------------------------------

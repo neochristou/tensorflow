@@ -1,0 +1,5 @@
+T=DT_COMPLEX128, Tlen=DT_INT64, batch_dim=2, seq_dim=0
+Tensor<type: complex128 shape: [4,2,3,1,1] values: ? ? ?...>
+Tensor<type: int64 shape: [3] values: 3 0 4>
+
+--------------------------------------

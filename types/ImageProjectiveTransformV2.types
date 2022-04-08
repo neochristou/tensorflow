@@ -1,0 +1,7 @@
+dtype=DT_FLOAT, fill_mode="REFLECT", interpolation="BILINEAR"
+Tensor<type: float shape: [2,5,8,3] values: [[[0.184634328 0.77481091 0.590182185]]]...>
+Tensor<type: float shape: [2,8] values: [0.378575385 0.925570488 0.323845148...]...>
+Tensor<type: int32 shape: [2] values: 5 8>
+Tensor<type: float shape: [] values: 0>
+
+--------------------------------------

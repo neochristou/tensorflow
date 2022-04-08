@@ -1,0 +1,6 @@
+_XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [1000,100] values: [0.554979503 -0.636879683 -0.956390321...]...>
+Tensor<type: float shape: [2000,100] values: [0.19839339 -1.76155496 0.429193527...]...>
+Tensor<type: int64 shape: [] values: 1>
+
+--------------------------------------

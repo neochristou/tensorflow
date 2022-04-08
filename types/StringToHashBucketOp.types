@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, num_buckets=10, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: string shape: [4] values: a b c...>
+
+--------------------------------------

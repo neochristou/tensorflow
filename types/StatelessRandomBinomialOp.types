@@ -1,0 +1,7 @@
+S=DT_INT32, T=DT_FLOAT, Tseed=DT_INT32, dtype=DT_HALF
+Tensor<type: int32 shape: [1] values: 1000>
+Tensor<type: int32 shape: [2] values: 12 34>
+Tensor<type: float shape: [] values: 10>
+Tensor<type: float shape: [] values: 0.4>
+
+--------------------------------------

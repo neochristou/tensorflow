@@ -1,0 +1,18 @@
+Tinput=DT_QUINT8, out_type=DT_QINT32, scale_after_normalization=false, variance_epsilon=0.001
+Tensor<type: quint8 shape: [1,1,6,2] values: [[[129 132][130...]]]...>
+Tensor<type: float shape: [1] values: -128>
+Tensor<type: float shape: [1] values: 127>
+Tensor<type: quint8 shape: [2] values: 128 255>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 20>
+Tensor<type: quint8 shape: [2] values: 64 128>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 1>
+Tensor<type: quint8 shape: [2] values: 26 153>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 1>
+Tensor<type: quint8 shape: [2] values: 0 0>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 1>
+
+--------------------------------------

@@ -1,0 +1,9 @@
+Tfilter=DT_QUINT8, Tinput=DT_QUINT8, dilations=[1, 1, 1, 1], out_type=DT_QINT32, padding="SAME", strides=[1, 1, 1, 1]
+Tensor<type: quint8 shape: [1,3,4,1] values: [[[21][43][64]]]...>
+Tensor<type: quint8 shape: [3,3,1,1] values: [[[0]][[96]][[191]]]...>
+Tensor<type: float shape: [1] values: 0>
+Tensor<type: float shape: [1] values: 12>
+Tensor<type: float shape: [1] values: 1>
+Tensor<type: float shape: [1] values: 9>
+
+--------------------------------------

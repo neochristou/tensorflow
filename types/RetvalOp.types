@@ -1,0 +1,4 @@
+T=DT_QINT32, index=0, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: qint32 shape: [10] values: ? ? ?...>
+
+--------------------------------------

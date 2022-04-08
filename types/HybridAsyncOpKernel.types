@@ -1,0 +1,5 @@
+
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::DatasetVariantWrapper value: MapDatasetOp::Dataset>>
+Resource
+
+--------------------------------------

@@ -1,0 +1,7 @@
+T=DT_FLOAT, antialias=true, kernel_type="lanczos1"
+Tensor<type: float shape: [1,4,6,1] values: [[[1][0][0]]]...>
+Tensor<type: float shape: [1,2,3,1] values: [[[0][1][2]]]...>
+Tensor<type: float shape: [2] values: 1 1>
+Tensor<type: float shape: [2] values: 0 0>
+
+--------------------------------------

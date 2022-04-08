@@ -1,0 +1,10 @@
+T=DT_FLOAT, Treal=DT_FLOAT
+Tensor<type: int64 shape: [4,2] values: [0 1][1...]...>
+Tensor<type: float shape: [4] values: 1 2 3...>
+Tensor<type: int64 shape: [2] values: 3 2>
+Tensor<type: int64 shape: [4,2] values: [0 1][1...]...>
+Tensor<type: float shape: [4] values: 1 2 3...>
+Tensor<type: int64 shape: [2] values: 3 2>
+Tensor<type: float shape: [] values: 0>
+
+--------------------------------------

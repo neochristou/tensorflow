@@ -1,0 +1,6 @@
+OUTPUT_RAGGED_RANK=1, PARAMS_RAGGED_RANK=1, Tindices=DT_INT32, Tsplits=DT_INT64, Tvalues=DT_FLOAT
+Tensor<type: int64 shape: [5] values: 0 3 3...>
+Tensor<type: float shape: [9] values: 0.1 0.2 0.3...>
+Tensor<type: int32 shape: [4] values: 2 1 0...>
+
+--------------------------------------

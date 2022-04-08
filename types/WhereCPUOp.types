@@ -1,0 +1,4 @@
+T=DT_BOOL, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: bool shape: [1] values: 1>
+
+--------------------------------------

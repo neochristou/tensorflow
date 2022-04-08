@@ -1,0 +1,6 @@
+T=DT_COMPLEX128, Tlen=DT_INT32, _XlaHasReferenceVars=false, num_split=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: complex128 shape: [0,2] values: >
+Tensor<type: int32 shape: [1] values: 0>
+Tensor<type: int32 shape: [] values: -2>
+
+--------------------------------------

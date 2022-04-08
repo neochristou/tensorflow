@@ -1,0 +1,4 @@
+DstT=DT_HALF, SrcT=DT_FLOAT, Truncate=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [1,1,1,1] values: [[[1]]]>
+
+--------------------------------------

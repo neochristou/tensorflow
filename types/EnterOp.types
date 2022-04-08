@@ -1,0 +1,4 @@
+T=DT_INT32, _XlaHasReferenceVars=false, frame_name="while", is_constant=false, parallel_iterations=10, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [3] values: 0 1 2>
+
+--------------------------------------

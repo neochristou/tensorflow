@@ -1,0 +1,5 @@
+T=DT_INT32, _XlaHasReferenceVars=false, binary_output=false, maxlength=6, minlength=6, output_type=DT_INT32, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [2,3] values: [1 2 3]...>
+Tensor<type: int32 shape: [0] values: >
+
+--------------------------------------

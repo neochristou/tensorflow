@@ -1,0 +1,12 @@
+N=3, dense_types=[], hash_key=956888297470, hashed_output=true, internal_type=DT_STRING, num_buckets=1000, out_type=DT_INT64, sparse_types=[DT_STRING, DT_STRING, DT_STRING]
+Tensor<type: int64 shape: [3,2] values: [0 0][0...]...>
+Tensor<type: int64 shape: [1,2] values: [0 0]>
+Tensor<type: int64 shape: [2,2] values: [0 0][0...]...>
+Tensor<type: string shape: [3] values: batch1-FC1-F1 batch1-FC1-F2 batch1-FC1-F3>
+Tensor<type: string shape: [1] values: batch1-FC2-F1>
+Tensor<type: string shape: [2] values: batch1-FC3-F1 batch1-FC3-F2>
+Tensor<type: int64 shape: [2] values: 1 3>
+Tensor<type: int64 shape: [2] values: 1 1>
+Tensor<type: int64 shape: [2] values: 1 2>
+
+--------------------------------------

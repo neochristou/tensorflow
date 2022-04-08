@@ -1,0 +1,4 @@
+Tcomplex=DT_COMPLEX128, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: complex128 shape: [0,0,0] values: >
+
+--------------------------------------

@@ -1,0 +1,4 @@
+T=DT_COMPLEX64, ksizes=[1, 1, 1, 1], padding="VALID", rates=[1, 1, 1, 1], strides=[1, 1, 1, 1]
+Tensor<type: complex64 shape: [2,3,4,5] values: ? ? ?...>
+
+--------------------------------------

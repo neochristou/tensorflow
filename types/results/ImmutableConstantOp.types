@@ -1,0 +1,3 @@
+dtype=DT_FLOAT, memory_region_name="test:///2", shape=[4,1], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+
+--------------------------------------

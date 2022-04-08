@@ -1,0 +1,5 @@
+skip_empty=false
+Tensor<type: string shape: [1] values: hello>
+Tensor<type: string shape: [] values: >
+
+--------------------------------------

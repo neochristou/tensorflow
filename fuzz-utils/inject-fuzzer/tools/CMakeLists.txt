@@ -2,12 +2,18 @@
 # ====================================================
 set(INJECT_FUZZER_TOOLS
     inject-fuzzer
+    inject-gettypes
 )
 
 
 set(inject-fuzzer_SOURCES
     InjectFuzzerMain.cpp
   ../lib/InjectFuzzer.cpp
+)
+
+set(inject-gettypes_SOURCES
+    InjectGetTypesMain.cpp
+  ../lib/InjectGetTypes.cpp
 )
 
 # CONFIGURE THE TOOLS

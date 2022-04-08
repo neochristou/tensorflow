@@ -1,0 +1,5 @@
+T=DT_DOUBLE, num_split=3
+Tensor<type: int32 shape: [] values: 0>
+Tensor<type: double shape: [6,5,7] values: [[0.18463433217903202 0.77481091683645753 0.5901821703159541...]]...>
+
+--------------------------------------

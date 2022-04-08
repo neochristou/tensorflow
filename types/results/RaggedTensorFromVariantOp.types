@@ -1,0 +1,4 @@
+Tsplits=DT_INT64, Tvalues=DT_INT32, input_ragged_rank=2, output_ragged_rank=2
+Tensor<type: variant shape: [] values: Variant<type: RaggedTensorVariant value: RaggedTensorVariant(dtype=int32, ragged_rank=2, splits_dtype=int64>>
+
+--------------------------------------

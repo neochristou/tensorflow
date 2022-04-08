@@ -1,0 +1,4 @@
+_XlaHasReferenceVars=false, external_state_policy=0, strip_device_assignment=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: variant shape: [] values: Variant<type: tensorflow::DatasetVariantWrapper value: BatchDatasetV2Op(32)::Dataset>>
+
+--------------------------------------

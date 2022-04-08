@@ -1,0 +1,19 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, use_peephole=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [28,29] values: [0.837607 0.605162084 0.886076212...]...>
+Tensor<type: float shape: [28,17] values: [0.592631638 0.994871914 0.355206579...]...>
+Tensor<type: float shape: [28,17] values: [0.592631638 0.994871914 0.355206579...]...>
+Tensor<type: float shape: [46,68] values: [0.887386262 0.00591640268 0.161135852...]...>
+Tensor<type: float shape: [17] values: 0 0 0...>
+Tensor<type: float shape: [17] values: 0 0 0...>
+Tensor<type: float shape: [17] values: 0 0 0...>
+Tensor<type: float shape: [68] values: 0.75259006 0.344102651 0.555410087...>
+Tensor<type: float shape: [28,17] values: [1 0.999994755 0.999984622...]...>
+Tensor<type: float shape: [28,17] values: [1.59262991 1.99486446 1.35518765...]...>
+Tensor<type: float shape: [28,17] values: [0.999997139 0.999997735 0.999990225...]...>
+Tensor<type: float shape: [28,17] values: [0.999997735 0.999995232 0.999999285...]...>
+Tensor<type: float shape: [28,17] values: [1 1 1...]...>
+Tensor<type: float shape: [28,17] values: [0.920551538 0.963662863 0.875272214...]...>
+Tensor<type: float shape: [28,17] values: [0.756519377 0.98194015 0.32840392...]...>
+Tensor<type: float shape: [28,17] values: [0.579045 0.0185588375 0.657388508...]...>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+Tin=DT_INT64, Tout=DT_INT64
+Resource
+Tensor<type: int64 shape: [4] values: 11 12 13...>
+Tensor<type: int64 shape: [4] values: 0 1 2...>
+
+--------------------------------------

@@ -1,0 +1,7 @@
+T=DT_DOUBLE
+Tensor<type: int64 shape: [0,2] values: >
+Tensor<type: double shape: [0] values: >
+Tensor<type: int64 shape: [2] values: 2 5>
+Tensor<type: double shape: [] values: -1>
+
+--------------------------------------

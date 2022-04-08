@@ -1,0 +1,6 @@
+T=DT_FLOAT, epsilon=0.0001, fused_ops=["BiasAdd"], leakyrelu_alpha=0.2, num_args=1, transpose_a=false, transpose_b=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [256,256] values: [0.171153069 0.700084925 0.598664761...]...>
+Tensor<type: float shape: [256,256] values: [-0.361611724 0.0516349077 -0.444359183...]...>
+Tensor<type: float shape: [256] values: 1.15254724 0.791390777 0.561616898...>
+
+--------------------------------------
