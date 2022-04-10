@@ -1,5 +1,0 @@
-RAGGED_RANK=1, Tsplits=DT_INT64, Tvalues=DT_INT32, batched_input=false
-Tensor<type: int64 shape: [] values: 0>
-Tensor<type: int32 shape: [3] values: 203 1729 203>
-
---------------------------------------

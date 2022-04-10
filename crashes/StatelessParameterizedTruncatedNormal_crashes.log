@@ -1,9 +1,0 @@
-S=DT_INT32, Tseed=DT_INT32, _XlaHasReferenceVars=false, dtype=DT_FLOAT, _device="/job:localhost/replica:0/task:0/device:CPU:0"
-Tensor<type: int32 shape: [1] values: 100000>
-Tensor<type: int32 shape: [2] values: -536870912 -536870912>
-Tensor<type: float shape: [] values: 0>
-Tensor<type: float shape: [] values: 0>
-Tensor<type: float shape: [] values: 0>
-Tensor<type: float shape: [] values: 1>
-
---------------------------------------

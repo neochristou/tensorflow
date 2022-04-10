@@ -1,6 +1,0 @@
-T=DT_QUINT8, ksize=[1, 2, 2, 1], padding="SAME", strides=[1, 2, 2, 1]
-Tensor<type: quint8 shape: [1,4,4,2] values: [[[1 2][3...]]]...>
-Tensor<type: float shape: [0] values: >
-Tensor<type: float shape: [1] values: 0>
-
---------------------------------------

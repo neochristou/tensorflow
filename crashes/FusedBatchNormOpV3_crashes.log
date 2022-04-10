@@ -1,8 +1,0 @@
-T=DT_FLOAT, U=DT_FLOAT, _XlaHasReferenceVars=false, data_format="NHWC", epsilon=0.001, exponential_avg_factor=1, is_training=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
-Tensor<type: float shape: [3,2,4,2] values: [[[0 0][0...]]]...>
-Tensor<type: float shape: [2] values: 0 0>
-Tensor<type: float shape: [2] values: 1 1>
-Tensor<type: float shape: [0] values: >
-Tensor<type: float shape: [2] values: 1 1>
-
---------------------------------------

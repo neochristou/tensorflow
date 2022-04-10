@@ -1,6 +1,0 @@
-Tidx=DT_INT32, _XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
-Tensor<type: int32 shape: [10,19,22] values: [[-1879048192 -1879048192 -1879048192...]]...>
-Tensor<type: int32 shape: [22,19,5,13] values: [[[1879048192 1879048192 1879048192...]]]...>
-Tensor<type: int32 shape: [22,19,5,13] values: [[[1879048192 1879048192 1879048192...]]]...>
-
---------------------------------------

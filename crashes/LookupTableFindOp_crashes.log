@@ -1,6 +1,0 @@
-Tin=DT_INT64, Tout=DT_INT64
-Resource
-Tensor<type: int64 shape: [7] values: 10 11 13...>
-Tensor<type: int64 shape: [] values: 1250999896764>
-
---------------------------------------

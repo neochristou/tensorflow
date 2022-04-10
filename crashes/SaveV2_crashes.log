@@ -1,8 +1,0 @@
-_XlaHasReferenceVars=false, dtypes=[DT_COMPLEX128, DT_STRING], _device="/job:localhost/replica:0/task:0/device:CPU:0"
-Tensor<type: string shape: [] values: /tmp/linear_operator_adjoint_testrjc3sttl/tmpf9klfnvb/variables/variables_temp/part-00000-of-00001>
-Tensor<type: string shape: [2] values:  >
-Tensor<type: string shape: [2] values:  >
-Tensor<type: complex128 shape: [0,2] values: >
-Tensor<type: string shape: [] values: /tmp/linear_operator_adjoint_testrjc3sttl/tmpf9klfnvb/variables/variables_temp/part-00000-of-00001>
-
---------------------------------------

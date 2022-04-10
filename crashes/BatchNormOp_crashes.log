@@ -1,8 +1,0 @@
-T=DT_FLOAT, _XlaHasReferenceVars=false, scale_after_normalization=true, variance_epsilon=0.001, _device="/job:localhost/replica:0/task:0/device:CPU:0"
-Tensor<type: float shape: [3,5,4,2] values: [[[0 0][0...]]]...>
-Tensor<type: float shape: [0] values: >
-Tensor<type: float shape: [2] values: 0.317702532 0.948696>
-Tensor<type: float shape: [2] values: 0.317702532 0.948696>
-Tensor<type: float shape: [2] values: 0.317702532 0.948696>
-
---------------------------------------

@@ -1,6 +1,0 @@
-Tinput=DT_QUINT8, out_type=DT_QUINT8
-Tensor<type: quint8 shape: [4,2] values: [28 127][128...]...>
-Tensor<type: float shape: [0] values: >
-Tensor<type: float shape: [1] values: -128>
-
---------------------------------------

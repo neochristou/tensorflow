@@ -1,8 +1,0 @@
-
-Resource
-Tensor<type: string shape: [] values: /tmp/sidecar_evaluator_testh1d21o_m/tmpeuyn657s/summary/train>
-Tensor<type: int32 shape: [] values: 10>
-Tensor<type: int32 shape: [0] values: >
-Tensor<type: string shape: [] values: /tmp/sidecar_evaluator_testh1d21o_m/tmpeuyn657s/summary/train>
-
---------------------------------------
