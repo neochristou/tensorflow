@@ -59,7 +59,7 @@ def main():
     print("\n".join([f"\t{k}: {v}" for k, v in skipped_reasons.items()]))
 
     with open(f"{out_prefix}all.txt", "w") as f:
-        f.write('\n'.join(modified))
+        f.write('\n'.join(all_kernels))
 
     with open(f"{out_prefix}modified.txt", "w") as f:
         f.write('\n'.join(modified))
