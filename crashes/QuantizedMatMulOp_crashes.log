@@ -1,0 +1,36 @@
+T1=DT_QUINT8, T2=DT_QUINT8, Tactivation=DT_QUINT8, Toutput=DT_QINT32, transpose_a=true, transpose_b=false
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+
+--------------------------------------
+T1=DT_QUINT8, T2=DT_QUINT8, Tactivation=DT_QUINT8, Toutput=DT_QINT32, transpose_a=true, transpose_b=false
+Tensor<type: quint8 shape: [3,4] values: [11 10 9...]...>
+Tensor<type: quint8 shape: [3,4] values: [11 10 9...]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+
+--------------------------------------
+T1=DT_QUINT8, T2=DT_QUINT8, Tactivation=DT_QUINT8, Toutput=DT_QINT32, transpose_a=true, transpose_b=false
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+
+--------------------------------------
+T1=DT_QUINT8, T2=DT_QUINT8, Tactivation=DT_QUINT8, Toutput=DT_QINT32, transpose_a=true, transpose_b=false
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: quint8 shape: [1,1] values: [11]>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+Tensor<type: float shape: [1] values: -12>
+
+--------------------------------------

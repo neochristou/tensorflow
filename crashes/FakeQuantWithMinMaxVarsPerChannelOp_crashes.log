@@ -1,0 +1,6 @@
+narrow_range=false, num_bits=8
+Tensor<type: float shape: [10,19,22] values: [[-3.5e+35 -3.5e+35 -3.5e+35...]]...>
+Tensor<type: float shape: [22,19,5,13] values: [[[3.5e+35 3.5e+35 3.5e+35...]]]...>
+Tensor<type: float shape: [22,19,5,13] values: [[[3.5e+35 3.5e+35 3.5e+35...]]]...>
+
+--------------------------------------

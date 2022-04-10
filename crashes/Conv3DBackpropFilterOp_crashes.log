@@ -1,3 +1,4 @@
+T=DT_HALF, _XlaHasReferenceVars=false, data_format="NDHWC", dilations=[1, 1, 1, 1, 1], padding="VALID", strides=[1, 1, 1, 1, 1], _device="/job:localhost/replica:0/task:0/device:CPU:0"
 Tensor<type: half shape: [2,2,2,2,1] values: [[[[0.505371094][1.99804688]][[1.63183594]]]]...>
 Tensor<type: int32 shape: [] values: 0>
 Tensor<type: half shape: [2,2,2,2,1] values: [[[[0.505371094][1.99804688]][[1.63183594]]]]...>

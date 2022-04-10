@@ -1,3 +1,4 @@
+_XlaHasReferenceVars=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
 Tensor<type: string shape: [] values: aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac>
 Tensor<type: int32 shape: [0] values: >
 Tensor<type: int32 shape: [18,22,19,5] values: [[[536870912 536870912 536870912...]]]...>

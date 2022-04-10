@@ -1,3 +1,4 @@
+_XlaHasReferenceVars=false, capacity=3, container="", dtypes=[DT_INT32], fake_dtypes=[DT_INT32], memory_limit=0, shared_name="MapStagingArea", _device="/job:localhost/replica:0/task:0/device:CPU:0"
 Tensor<type: int64 shape: [] values: -1250999896764>
 Tensor<type: int32 shape: [1] values: 0>
 Tensor<type: int32 shape: [1] values: 0>

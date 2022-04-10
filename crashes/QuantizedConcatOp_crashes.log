@@ -1,0 +1,10 @@
+N=2, T=DT_QINT32
+Tensor<type: int32 shape: [] values: 0>
+Tensor<type: qint32 shape: [2,2,3] values: ? ? ?...>
+Tensor<type: qint32 shape: [2,2,3] values: ? ? ?...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [] values: -1200>
+Tensor<type: float shape: [] values: -2400>
+Tensor<type: float shape: [] values: -2400>
+
+--------------------------------------

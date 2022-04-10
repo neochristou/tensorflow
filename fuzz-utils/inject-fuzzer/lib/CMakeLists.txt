@@ -2,11 +2,15 @@
 # ======================================================
 set(INJECT_FUZZER_LOC_PASS_PLUGINS
     InjectFuzzer
+    InjectGetTypes
     )
 
 
 set(InjectFuzzer_SOURCES
     InjectFuzzer.cpp)
+
+set(InjectGetTypes_SOURCES
+    InjectGetTypes.cpp)
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================

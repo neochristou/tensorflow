@@ -1,3 +1,4 @@
+T=DT_FLOAT, Tindices=DT_INT64
 Tensor<type: int64 shape: [17,2] values: [0 3][1...]...>
 Tensor<type: float shape: [0] values: >
 Tensor<type: int64 shape: [2] values: 6 12>

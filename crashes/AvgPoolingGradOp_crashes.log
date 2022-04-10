@@ -1,0 +1,5 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, data_format="NHWC", ksize=[1, 1, 1, 1], padding="VALID", strides=[1, 1, 1, 1], _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int32 shape: [4] values: -536870912 -536870912 -536870912...>
+Tensor<type: float shape: [2,1,5,2] values: [[[1 0][0...]]]...>
+
+--------------------------------------

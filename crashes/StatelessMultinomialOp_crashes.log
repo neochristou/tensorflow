@@ -1,5 +1,0 @@
-Tensor<type: float shape: [1,2] values: [-1.20397282 -0.356674969]>
-Tensor<type: int32 shape: [] values: 1879048192>
-Tensor<type: int64 shape: [2] values: 1987023866 1093230745>
-
---------------------------------------

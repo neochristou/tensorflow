@@ -86,6 +86,9 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   bool IsDef = ComputeDecl->isThisDeclarationADefinition();
   const CXXRecordDecl* ParentClass = ComputeDecl->getParent();
 
+  /* ====================== */
+  /* ====================== */
+
   if (!ParentClass) {
     llvm::outs() << "No parent: " << SourceFile << " " << ComputeDecl->getNameInfo().getAsString() << "\n";
     return;
@@ -121,11 +124,23 @@ void ComputeDeclMatcher::run(const MatchFinder::MatchResult &Result) {
   std::string DoCallPrefix = "";
 
   if (ComputeDeclText.find("::Compute(") != std::string::npos) {
+
     if (ComputeDeclText.find(OpName.str() + "::Compute(") == std::string::npos) {
-      llvm::outs() << "Skipping " << OpName << " (template)\n";
-      return;
+      bool InParent = false;
+      const auto Parents = Ctx->getParents(*ComputeDecl);
+      for (auto ParentNode : Parents) {
+        if (isa<CXXRecordDecl>(ParentNode.get<Decl>())){
+          InParent = true;
+          break;
+        }
+      }
+      if (!InParent) {
+        llvm::outs() << "Skipping " << OpName << " (template)\n";
+        return;
+      }
+    } else {
+      DoCallPrefix = OpName.str() + "::";
     }
-    DoCallPrefix = OpName.str() + "::";
   }
 
   memset(NewFname, 0, 0x100);

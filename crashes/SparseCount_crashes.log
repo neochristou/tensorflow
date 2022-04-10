@@ -1,6 +1,7 @@
-Tensor<type: int64 shape: [5,2] values: [-1879048192 -1879048192][-1879048192...]...>
-Tensor<type: int64 shape: [5] values: 0 2 1...>
-Tensor<type: int64 shape: [5,2] values: [0 0][1...]...>
-Tensor<type: int64 shape: [5] values: 0 2 1...>
+T=DT_INT64, _XlaHasReferenceVars=false, binary_output=false, maxlength=6, minlength=6, output_type=DT_INT64, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [7] values: 1879048192 1879048192 1879048192...>
+Tensor<type: int64 shape: [0] values: >
+Tensor<type: int64 shape: [0] values: >
+Tensor<type: int64 shape: [0] values: >
 
 --------------------------------------

@@ -1,3 +1,4 @@
+T=DT_BOOL, _XlaHasReferenceVars=false, fill="", precision=-1, scientific=false, shortest=false, width=-1, _device="/job:localhost/replica:0/task:0/device:CPU:0"
 Tensor<type: bool shape: [] values: 0>
 
 --------------------------------------

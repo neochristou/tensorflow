@@ -1,3 +1,4 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, data_format="NDHWC", dilations=[1, 1, 1, 1, 1], padding="SAME", strides=[1, 2, 2, 2, 1], _device="/job:localhost/replica:0/task:0/device:CPU:0"
 Tensor<type: float shape: [2,6,8,6,2] values: [[[[1 0][0...]]]]...>
 Tensor<type: int32 shape: [] values: 0>
 Tensor<type: float shape: [2,6,8,6,2] values: [[[[1 0][0...]]]]...>

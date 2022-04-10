@@ -1,0 +1,6 @@
+T=DT_FLOAT, _XlaHasReferenceVars=false, data_format="NHWC", dilations=[1, 1, 1, 1], epsilon=0, explicit_paddings=[], fused_ops=["BiasAdd"], leakyrelu_alpha=0.2, num_args=1, padding="VALID", strides=[1, 1, 1, 1], use_cudnn_on_gpu=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: float shape: [2,5,5,3] values: [[[0.318660557 0.905886889 0.801266134]]]...>
+Tensor<type: float shape: [3,3,3,5] values: [[[-0.0601802841 0.0830296278 0.120514542...]]]...>
+Tensor<type: float shape: [0] values: >
+
+--------------------------------------

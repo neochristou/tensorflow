@@ -1,5 +1,6 @@
-Tensor<type: int32 shape: [2,3] values: [1 2 3]...>
-Tensor<type: int32 shape: [2,3] values: [1 2 3]...>
+T=DT_FLOAT, Tidx=DT_INT64, _XlaHasReferenceVars=false, binary_output=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: int64 shape: [2,4] values: [1 1 2...]...>
+Tensor<type: int64 shape: [2,4] values: [1 1 2...]...>
 Tensor<type: float shape: [0] values: >
 
 --------------------------------------
