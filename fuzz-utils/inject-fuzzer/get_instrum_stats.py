@@ -58,11 +58,14 @@ def main():
     print(f"{len(skipped)} skipped. Breakdown:")
     print("\n".join([f"\t{k}: {v}" for k, v in skipped_reasons.items()]))
 
+    with open(f"{out_prefix}all.txt", "w") as f:
+        f.write('\n'.join(modified))
+
     with open(f"{out_prefix}modified.txt", "w") as f:
-        f.write(''.join(modified))
+        f.write('\n'.join(modified))
 
     with open(f"{out_prefix}skipped.txt", "w") as f:
-        f.write(''.join(skipped))
+        f.write('\n'.join(skipped))
 
 
 if __name__ == "__main__":
