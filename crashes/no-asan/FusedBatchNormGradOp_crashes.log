@@ -1,0 +1,8 @@
+T=DT_FLOAT, data_format="NHWC", epsilon=0.001, is_training=true
+Tensor<type: float shape: [1,1,6,2] values: [[[1 1][7...]]]...>
+Tensor<type: float shape: [1,1,6,2] values: [[[2 2][9...]]]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [2] values: 4 4>
+Tensor<type: float shape: [2] values: 4 4>
+
+--------------------------------------

@@ -1,0 +1,6 @@
+Duration (secs): 47
+T=DT_FLOAT, output_dtype=DT_INT32, seed=87654321, seed2=979136014
+Tensor<type: float shape: [1,5] values: [-48.3272514 -54.0554 -47.6145325...]...>
+Tensor<type: int32 shape: [] values: 5>
+
+--------------------------------------

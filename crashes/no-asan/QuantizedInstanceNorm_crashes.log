@@ -1,0 +1,6 @@
+T=DT_QUINT8, given_y_max=0, given_y_min=0, min_separation=0.001, output_range_given=false, variance_epsilon=1e-05, _device="/job:localhost/replica:0/task:0/device:CPU:0"
+Tensor<type: quint8 shape: [1,4,4,32] values: [[[0 0 0...]]]...>
+Tensor<type: float shape: [0] values: >
+Tensor<type: float shape: [] values: 2>
+
+--------------------------------------
